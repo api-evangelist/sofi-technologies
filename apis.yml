@@ -347,6 +347,14 @@ apis:
   - url: https://docs.tech.sofi.com/pro/
     type: Documentation
 common:
+- type: AgenticAccess
+  url: agentic-access/sofi-technologies-agentic-access.yml
+- type: Pricing
+  url: https://www.sofi.com/sofi-plus/
+- type: StatusPage
+  url: https://sofi.statuspage.io
+- type: X
+  url: https://twitter.com/SoFi
 - type: Webhooks
   url: asyncapi/sofi-technologies-webhooks.yml
 - type: MCPServer

@@ -1,0 +1,46 @@
+generated: '2026-07-23'
+method: generated
+source: openapi/sofi-home-loan-affiliate-lead-api-openapi.yml, openapi/sofi-partner-offer-api-openapi.yml
+description: Recommended x-agentic-access execution contracts, classified heuristically from
+  the OpenAPI. A governance starting point for exposing this API to AI agents — review and bind
+  audience per deployment. See research/curity/agentic-governance/.
+summary:
+  operations: 2
+  by_action_class:
+    acting: 2
+  by_consequence:
+    write: 2
+  human_in_the_loop_required: 0
+operations:
+- path: /afpq/api/v1/affiliate/lead/home-loan
+  method: post
+  operationId: createHomeLoanLead
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /po/api/v2/loan-offer/json
+  method: post
+  operationId: getLoanOffer
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
