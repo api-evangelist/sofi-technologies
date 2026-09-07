@@ -1,0 +1,125 @@
+specification: API Commons Decline Codes
+specificationVersion: '0.1'
+provider: SoFi Technologies
+providerId: sofi-technologies
+generated: '2026-09-06'
+method: searched
+source: https://docs.tech.sofi.com/pro/reference/api-reference-authorization-status-codes
+docs:
+  - https://docs.tech.sofi.com/pro/reference/api-reference-authorization-status-codes
+  - https://docs.tech.sofi.com/pro/reference/api-reference-events-api-denied-auth
+  - https://docs.tech.sofi.com/pro/reference/api-reference-avs-codes
+  - https://docs.tech.sofi.com/pro/reference/api-reference-advice-reason-codes
+  - https://docs.tech.sofi.com/pro/reference/api-reference-ach-return-codes
+description: >-
+  SoFi Tech Solutions is a card issuer-processor, so its decline vocabulary is not one flat list.
+  Authorization outcomes arrive as ISO 8583 network messages, are recorded as a single-letter
+  AUTHORIZATION STATUS, and are surfaced to the client as typed webhook events - one event code
+  per common denial reason, with a generic DAUT catching everything else. The client can also
+  become the decider: the Auth API webhook hands over the network's proposed response_code and
+  lets the client override it.
+envelope:
+  authorization_status_field: AUTHORIZATION STATUS
+  where: >-
+    Authorized Transactions RDF and Posted Transactions RDF; also reachable through Get
+    Authorization History (post_getauthhistory).
+  webhook_override_field: response_code
+  webhook_override_note: >-
+    In the Auth API webhook payload, response_code is the code that WILL be returned to the
+    merchant unless the client overrides it in the HTTP response body. This is the only place in
+    the platform where a client authors a decline rather than reading one.
+  network_standard: ISO 8583
+authorization_statuses:
+  - { code: A, meaning: 'Authorized, not settled; available balance updated', outcome: approved }
+  - { code: B, meaning: Backed out, outcome: reversed }
+  - { code: C, meaning: 'Canceled completion (Mastercard only)', outcome: reversed }
+  - { code: D, meaning: Denied, outcome: declined }
+  - { code: E, meaning: Expired, outcome: expired }
+  - { code: I, meaning: Balance inquiry, outcome: informational }
+  - { code: J, meaning: 'Expired merchant credit, AVS-only check, transfer, or unmatched auth reversal', outcome: informational }
+  - { code: P, meaning: Settled and posted, outcome: approved }
+  - { code: R, meaning: Reversed out, outcome: reversed }
+  - { code: T, meaning: 'Payment approved, posted to payments table', outcome: approved }
+  - { code: V, meaning: 'Pending merchant credit, approved, available balance not updated', outcome: approved }
+  - { code: X, meaning: 'Load reversal, approved', outcome: reversed }
+  - { code: Z, meaning: 'Advice, approved, available balance not updated', outcome: approved }
+decline_codes:
+  - code: BNSF
+    event: denied_auth_nsf
+    meaning: Authorization denied for insufficient funds.
+    action: >-
+      Fund the account or reduce the amount. Available balance is unchanged by the denial.
+    masked_to_buyer: true
+  - code: BPAN
+    event: denied_auth_bad_pan
+    meaning: Authorization denied because the PAN presented is not valid.
+    action: Verify the card number; reissue if the card is wrong or damaged.
+    masked_to_buyer: true
+  - code: NACT
+    event: denied_auth_inactive_card
+    meaning: Authorization denied because the card is not active.
+    action: Activate the card (post_activatecard) or check card status (post_getcard).
+    masked_to_buyer: true
+  - code: IPIN
+    event: denied_auth_invalid_pin
+    meaning: Authorization denied because the PIN was invalid.
+    action: >-
+      Retry with the correct PIN; watch the PIN fail count and reset it with Reset Card PIN Fail
+      Count if the card locks.
+    masked_to_buyer: true
+  - code: PUMP
+    event: denied_auth_gas
+    meaning: Authorization denied at an automated fuel dispenser.
+    action: >-
+      Fuel-pump authorizations carry network-specific pre-auth amounts; check the account's
+      spend controls and available balance.
+    masked_to_buyer: true
+  - code: BNPD
+    event: denied_auth_buy_now_pay_later
+    meaning: >-
+      Mastercard denied an authorization request because the merchant does not support
+      Mastercard's buy now, pay later (BNPL) program. Mastercard denies this on SoFi Tech
+      Solutions' behalf and sends an advice.
+    action: >-
+      Nothing is actionable on the issuer side - the merchant has opted out of the Mastercard
+      BNPL program. Route the purchase to a non-BNPL tender.
+    masked_to_buyer: true
+  - code: DAUT
+    event: denied_auth
+    meaning: >-
+      Authorization request denied for a reason not covered by BNSF, BPAN, NACT, IPIN or PUMP.
+      Available balance has not changed. Triggered when the client OR SoFi Tech Solutions denies
+      an authorization request.
+    action: >-
+      Read the ISO 8583 data elements on the event (and the DE003/DE022/DE025/DE061 enumerations)
+      to determine the actual reason - DAUT is deliberately a catch-all.
+    masked_to_buyer: true
+supporting_enumerations:
+  - name: AVS result codes
+    field: 'avs_result (Auth API webhook body), avs_response (Auth API response), ADDRESS VERIFICATION RESPONSE (Authorized Transactions RDF)'
+    note: >-
+      Per-network code tables (Mastercard, Visa, Discover, Pulse, STAR) for address/zip match
+      outcomes. The same concept uses different letters per network, so a code cannot be read
+      without knowing which network sent it.
+    docs: https://docs.tech.sofi.com/pro/reference/api-reference-avs-codes
+  - name: Advice reason codes
+    field: DE060 in the authorization databases; DE60 in the RDFs; stip_info on STPN events; stip.detail in the Auth API payload
+    note: Mastercard and Visa advice reason codes, including stand-in-processing (STIP) reasons.
+    docs: https://docs.tech.sofi.com/pro/reference/api-reference-advice-reason-codes
+  - name: ACH return codes
+    note: Nacha ACH return reason codes for returned debits and credits.
+    docs: https://docs.tech.sofi.com/pro/reference/api-reference-ach-return-codes
+  - name: ISO 8583 data element enumerations
+    note: DE003 (processing code), DE022 (POS entry mode), DE025 (POS condition code), DE061 (subfields).
+    docs: https://docs.tech.sofi.com/pro/reference/api-reference-de003-codes
+completeness:
+  note: >-
+    This is the published, client-facing decline vocabulary. The underlying network response
+    codes (the ISO 8583 DE039 values a merchant sees) are not enumerated in SoFi Tech Solutions'
+    public documentation - they are network property - so no such table is recorded here.
+see_also:
+  problem_types: errors/sofi-technologies-problem-types.yml
+  conventions: conventions/sofi-technologies-conventions.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

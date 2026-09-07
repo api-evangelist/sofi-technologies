@@ -1,0 +1,311 @@
+specification: API Commons Error Catalog
+specificationVersion: '0.1'
+provider: SoFi Technologies
+providerId: sofi-technologies
+generated: '2026-09-06'
+method: searched
+source: https://docs.tech.sofi.com/pro/reference/api-reference-global-response-statuses
+docs:
+- https://docs.tech.sofi.com/pro/reference/errors
+- https://docs.tech.sofi.com/pro/reference/api-reference-global-response-statuses
+- https://docs.tech.sofi.com/pro/reference/response
+format: proprietary
+format_note: Not RFC 9457. SoFi Tech Solutions returns a flat application envelope with the outcome in
+  a numeric status_code field and a human string in status; when the code is an error, an errors[] list
+  carries the detail. HTTP status is usually 200 even on a business failure, so an agent that branches
+  on HTTP status alone will read every rejection as a success. Content type is application/json or application/xml,
+  selected by the response-content-type request header.
+envelope:
+  code_field: status_code
+  message_field: status
+  detail_field: errors
+  detail_note: errors[] normally sits beside response_data; in a few endpoints it is nested INSIDE response_data
+    as {"errors":{"error":"..."}} - both shapes are documented and both occur in production.
+  correlation_fields:
+  - rtoken
+  - echo.transaction_id
+  - echo.provider_transaction_id
+code_scheme:
+  global: bare integers, negative for system failures, 0 for success
+  endpoint_specific: '{3-digit-prefix}-xx or {4-digit-prefix}-xx, documented in each operation description'
+  note: Endpoint-specific codes are not enumerated in one place; they live in the 167 Program API operation
+    descriptions and are carried verbatim in openapi/sofi-technologies-program-api-openapi.json.
+description: The catalogue of status codes common to most SoFi Tech Solutions Program API endpoints, read
+  from the provider's own Global Response Statuses enumeration, plus the Cloudflare edge codes the platform
+  documents because its API web services sit behind Cloudflare.
+problem_types:
+- code: -5
+  title: Provider configuration error
+  category: server
+  scope: global
+- code: -4
+  title: Unknown endpoint
+  category: server
+  scope: global
+- code: -3
+  title: Network or system failure
+  category: server
+  scope: global
+- code: -2
+  title: External system failure
+  category: server
+  scope: global
+- code: -1
+  title: System failure
+  category: server
+  scope: global
+- code: 0
+  title: Success
+  category: success
+  scope: global
+- code: 1
+  title: Missing parameters
+  category: validation
+  scope: global
+- code: 2
+  title: Invalid parameter(s)
+  category: validation
+  scope: global
+- code: 4
+  title: Failed API login
+  category: auth
+  scope: global
+- code: 12
+  title: Invalid customer account
+  category: business
+  scope: global
+- code: 16
+  title: Failure
+  category: business
+  scope: global
+- code: 17
+  title: Invalid API usage. Consult documentation for correct usage.
+  category: validation
+  scope: global
+- code: 18
+  title: Unauthorized access to this version of the API
+  category: auth
+  scope: global
+- code: 21
+  title: Unregistered IP address
+  category: auth
+  scope: global
+- code: 22
+  title: Method not allowed for this provider
+  category: configuration
+  scope: global
+- code: 23
+  title: Invalid date range
+  category: validation
+  scope: global
+- code: 24
+  title: Duplicate transaction
+  category: idempotency
+  scope: global
+- code: 25
+  title: Invalid or unconfigured type
+  category: validation
+  scope: global
+- code: 26
+  title: Limit violation
+  category: limit
+  scope: global
+- code: 27
+  title: Request cannot be completed
+  category: business
+  scope: global
+- code: 28
+  title: Product not allowed for this provider
+  category: configuration
+  scope: global
+- code: 29
+  title: Incorrect provider ID
+  category: auth
+  scope: global
+- code: 30
+  title: Invalid enrollment transaction
+  category: business
+  scope: global
+- code: 31
+  title: Unknown or unregistered transaction
+  category: business
+  scope: global
+- code: 32
+  title: Account and transaction details do not match
+  category: business
+  scope: global
+- code: 33
+  title: Recipient not found
+  category: business
+  scope: global
+- code: 34
+  title: Non-unique recipient criteria
+  category: business
+  scope: global
+- code: 35
+  title: A problem exists with the recipient account
+  category: business
+  scope: global
+- code: 36
+  title: Recipient same as sender
+  category: business
+  scope: global
+- code: 37
+  title: Recipient velocity failure
+  category: limit
+  scope: global
+- code: 38
+  title: Sender velocity failure
+  category: limit
+  scope: global
+- code: 39
+  title: Invalid recipient ID
+  category: validation
+  scope: global
+- code: 40
+  title: Insufficient balance
+  category: business
+  scope: global
+- code: 41
+  title: Recipient is not in the same program
+  category: business
+  scope: global
+- code: 42
+  title: Recipient is not related to the primary account
+  category: business
+  scope: global
+- code: 43
+  title: Recipient does not have an active account
+  category: business
+  scope: global
+- code: 44
+  title: No records found
+  category: business
+  scope: global
+- code: 46
+  title: Invalid product
+  category: validation
+  scope: global
+- code: 47
+  title: PAN is required as accountNo no in multi-card/account situations. There are multiple cards for
+    the same PRN. CAD can be used instead of PAN.
+  category: business
+  scope: global
+- code: 48
+  title: Configuration error
+  category: configuration
+  scope: global
+- code: 49
+  title: Maximum recordset page size exceeded
+  category: validation
+  scope: global
+- code: 50
+  title: Invalid JWT
+  category: auth
+  scope: global
+- code: 51
+  title: Referenced account is not a credit product
+  category: business
+  scope: global
+- code: 52
+  title: Invalid program ID
+  category: validation
+  scope: global
+- code: 53
+  title: Account not allowed to load funds
+  category: configuration
+  scope: global
+- code: 54
+  title: This end point has been deprecated and will be removed in the very near future. If you feel that
+    this is not valid, contact SoFi Tech Solutions
+  category: deprecation
+  scope: global
+- code: 55
+  title: This transaction is already being processed
+  category: business
+  scope: global
+- code: 57
+  title: Account is bankrupt or undergoing the bankruptcy process
+  category: business
+  scope: global
+- code: 100
+  title: Success (Verify)
+  category: success
+  scope: global
+- code: 101
+  title: Multiple cards found when searching by PRN
+  category: business
+  scope: global
+- code: 102
+  title: No card found for account
+  category: business
+  scope: global
+- code: 103
+  title: Too many results were found (>400). Modify search criteria to reduce the number of results.
+  category: business
+  scope: global
+transport_codes:
+- code: 200
+  title: OK - Request was successful.
+  layer: cloudflare-edge
+- code: 301
+  title: Moved Permanently - The target resource has been assigned a new permanent URI and any future
+    references to this resource ought to use one of the enclosed URIs.
+  layer: cloudflare-edge
+- code: 400
+  title: 'Bad Request - The web client did not send a correct request to the server. This is a web client
+    error: malformed request syntax, invalid request, message framing, or deceptive request routing'
+  layer: cloudflare-edge
+- code: 403
+  title: Forbidden - If you're seeing a 403 error without Cloudflare branding, this is always returned
+    directly from the origin web server, not Cloudflare, and is generally related to permission rules
+    on t
+  layer: cloudflare-edge
+- code: 404
+  title: Not Found - Origin server was unable or unwilling to find the resource requested. This usually
+    means the host server could not find the resource.
+  layer: cloudflare-edge
+- code: 499
+  title: Client Close Request - nginx-specific response code to indicate when the connection has been
+    closed by the web client while the server is still processing its request, making the server unable
+    to
+  layer: cloudflare-edge
+- code: 500
+  title: Internal Server Error - Error 500 generally indicates an issue with the origin web server.
+  layer: cloudflare-edge
+- code: 502
+  title: Bad Gateway - Cloudflare is unable to establish contact with the origin web server.
+  layer: cloudflare-edge
+- code: 503
+  title: Service Unavailable - The server cannot handle the request (because it is overloaded or down
+    for maintenance). Generally, this is a temporary state.
+  layer: cloudflare-edge
+- code: 504
+  title: Gateway Timeout - Cloudflare is unable to establish contact with the origin web server.
+  layer: cloudflare-edge
+- code: 520
+  title: Web server returns an unknown error -  The origin server returns an empty, unknown, or unexpected
+    response to Cloudflare.
+  layer: cloudflare-edge
+- code: 521
+  title: Web server is down - The origin server refused connections from Cloudflare. Security solutions
+    at the origin may be blocking legitimate connections from certain Cloudflare IP addresses.
+  layer: cloudflare-edge
+- code: 524
+  title: A timeout occurred - Cloudflare was able to complete a TCP connection to the origin server but
+    did not receive a timely HTTP response. In the event that a TCP session is interrupted by AWS-firewal
+  layer: cloudflare-edge
+- code: 530
+  title: This error is returned along with a 1xxx error (https://developers.cloudflare.com/support/troubleshooting/cloudflare-errors/troubleshooting-cloudflare-1xxx-errors).
+  layer: cloudflare-edge
+derived_from_spec:
+  note: The harvested OpenAPI definitions declare only a default response per operation; they carry no
+    4xx/5xx response objects to derive from. Everything above came from the documentation, not from the
+    specs.
+  specs_checked: 11
+see_also:
+  decline_codes: errors/sofi-technologies-decline-codes.yml
+  conventions: conventions/sofi-technologies-conventions.yml
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

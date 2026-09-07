@@ -64,7 +64,7 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-SoFi Technologies is a major US corporation and Fortune 1000 company. The SoFi Technologies API provides programmatic access to its platform services, data, and integrations for enterprise customers and partners.
+SoFi Technologies, Inc. (NASDAQ: SOFI) is a US member-centric digital financial services company and federally chartered bank holding company. Alongside its consumer banking, lending and investing business it operates SoFi Tech Solutions - the B2B financial technology platform formed from its acquisitions of Galileo Financial Technologies and Technisys, and rebranded under the SoFi name in 2026. SoFi Tech Solutions is the API business: a card issuer-processor and banking-as-a-service platform whose public developer hub at docs.tech.sofi.com publishes eleven OpenAPI definitions covering 258 operations - the 167-operation Program API for accounts, cards, authorizations, ACH and bill pay, plus Payment Hub, Dispute, Loan, Risk and Public Config APIs and three client-hosted webhook contracts. The platform declares ISO 20022, ISO 8583, Nacha ACH, EMV and 3-D Secure in its own contracts, and discovery runs through a real RFC 9727 api-catalog linkset.
 
 **URL:** [Visit APIs.json URL](https://raw.githubusercontent.com/api-evangelist/sofi-technologies/refs/heads/main/apis.yml)
 
@@ -72,12 +72,12 @@ SoFi Technologies is a major US corporation and Fortune 1000 company. The SoFi T
 
 ## Tags:
 
- - Fintech, Personal Finance, Banking
+ - Fintech, Payments, Banking, Card Issuing, Banking as a Service, Personal Finance, Lending, ACH, ISO 20022, Disputes, Identity Verification, Webhooks
 
 ## Timestamps
 
 - **Created:** 2026-04-19
-- **Modified:** 2026-04-19
+- **Modified:** 2026-09-06
 
 ## Maintainers
 

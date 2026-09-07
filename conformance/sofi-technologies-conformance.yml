@@ -1,0 +1,164 @@
+specification: API Commons Conformance
+specificationVersion: '0.1'
+provider: SoFi Technologies
+providerId: sofi-technologies
+generated: '2026-09-06'
+method: searched
+source: openapi/ (11 harvested definitions) and https://docs.tech.sofi.com/pro/
+description: >-
+  Standards conformance for the SoFi Tech Solutions platform, asserted only where the CONTRACT or
+  a named reference page says so, with evidence pointing at the exact location. This is a card
+  issuer-processor and payments platform, so the relevant regime is payments - and it is one of
+  the rare providers whose own OpenAPI declares its market's message standard rather than
+  claiming it on a marketing page.
+conformance:
+  - id: iso-20022
+    name: ISO 20022 financial messaging
+    conforms: true
+    scope: Payment Hub Api 2.0 (FedNow instant payments)
+    evidence: >-
+      openapi/sofi-technologies-payment-hub-api-openapi.json - the CreateTransfer / return schemas
+      document ISO 20022 message types by name. Transfer status enum: "SENT - Outbound-only state
+      indicating payment message (pacs.008 or pacs.004) successfully published to the payment
+      network, awaiting pacs.002 status report." The return reason Code field: "FEDNOW: Required.
+      Uses ISO 20022 External Status Reason Codes (pacs.002 StsRsnInf/Rsn/Cd). Must be 1-4
+      characters. Common codes include AC01, AC03, AC04, AC13, AC14, AC15, AG01. Refer to ISO
+      20022 ExternalCodeSets for the complete list." additionalInfo: "Maps to ISO 20022 pacs.002
+      StsRsnInf/AddtlInf."
+    evidence_url: https://docs.tech.sofi.com/pro/reference/paymenthub_post_createtransfer
+    domain_standard: true
+    note: >-
+      This is the domain-standard signature for the payments market. A counterparty that already
+      speaks pacs.008/pacs.004/pacs.002 and the ExternalCodeSets integrates without a bespoke
+      mapping layer; the field names and code sets are the standard's, not SoFi's.
+  - id: fednow
+    name: FedNow Service instant payments
+    conforms: true
+    scope: Payment Hub Api 2.0
+    evidence: >-
+      openapi/sofi-technologies-payment-hub-api-openapi.json - FEDNOW is a first-class rail value
+      throughout the transfer schemas, with FedNow-specific field validations (return code
+      required, additionalInfo maximum 105 characters).
+    domain_standard: true
+  - id: iso-8583
+    name: ISO 8583 card authorization messaging
+    conforms: true
+    scope: Auth API 2.0.0 and the Program API authorization surface
+    evidence: >-
+      openapi/sofi-technologies-auth-api-openapi.json - "As values come in with the ISO 8583
+      authorization request, we populate the respective payload fields with the data the network
+      sends." The DE0xx data-element enumerations (DE003 processing code, DE022 POS entry mode,
+      DE025 POS condition code, DE060 advice reason, DE061 subfields) are published as reference
+      pages.
+    evidence_url: https://docs.tech.sofi.com/pro/reference/api-reference-de003-codes
+    domain_standard: true
+  - id: 3-d-secure
+    name: 3-D Secure (3DS) cardholder authentication
+    conforms: true
+    scope: platform capability - SoFi Tech Solutions operates a 3DS Access-Control Server
+    evidence: >-
+      "The 3-D Secure (3DS) protocol provides the framework for authenticating CNP transactions.
+      Many countries and jurisdictions require 3DS for online transactions. SoFi Tech Solutions'
+      support for 3DS helps you comply with such requirements." CAVV result codes are a published
+      enumeration and cavv fields appear in openapi/sofi-technologies-auth-api-openapi.json.
+    evidence_url: https://docs.tech.sofi.com/pro/docs/3-d-secure-access-control-server
+    domain_standard: true
+  - id: nacha-ach
+    name: Nacha ACH Operating Rules (SEC codes, return reason codes)
+    conforms: true
+    scope: Program API ACH surface and External Trans API
+    evidence: >-
+      openapi/sofi-technologies-program-api-openapi.json carries Nacha SEC codes on Create ACH
+      Transaction (WEB for online/mobile B2C authorization, PPD default), and the platform
+      publishes a full ACH return-code enumeration. The Breaking Change Policy lists "updating
+      sequence numbers in accordance with Nacha rules" as a non-breaking change.
+    evidence_url: https://docs.tech.sofi.com/pro/reference/api-reference-ach-return-codes
+    domain_standard: true
+  - id: pci-dss
+    name: PCI DSS
+    conforms: true
+    scope: PCI-sensitive data handling on card endpoints
+    evidence: >-
+      "You can receive unmasked PCI-sensitive data (card_number, card_security_code, expiry_date)
+      only if your provider parameters permit it." Create Virtual Card Account: "You must be
+      PCI-compliant to use this endpoint." The platform gates unmasked PAN delivery on the
+      client's own PCI posture, which is a PCI DSS control, not a marketing claim.
+    evidence_url: https://docs.tech.sofi.com/pro/reference/pci-sensitive-data
+    note: >-
+      This records that the PLATFORM enforces PCI controls at the API boundary. It is not a
+      published PCI DSS attestation - no AOC or ROC is public. See trust_center below.
+  - id: emv
+    name: EMV chip card specifications
+    conforms: true
+    scope: card issuing and authorization
+    evidence: >-
+      EMV appears in openapi/sofi-technologies-program-api-openapi.json, the Auth API, the Risk
+      API 1.0 and the Public Config API schemas as a card-technology attribute of issued cards
+      and authorization messages.
+  - id: rtp
+    name: The Clearing House RTP network
+    conforms: true
+    scope: real-time payment rail
+    evidence: RTP appears as a rail value in openapi/sofi-technologies-program-api-openapi.json and openapi/sofi-technologies-risk-api-1-0-openapi.json.
+  - id: oauth2
+    conforms: false
+    evidence: >-
+      No securityScheme of type oauth2 or openIdConnect in any of the 11 definitions. The Program
+      API authenticates with body parameters (apiLogin / apiTransKey / providerId); the Loan API
+      and Risk APIs declare bearer tokens. See authentication/sofi-technologies-authentication.yml.
+  - id: oidc
+    conforms: false
+    evidence: >-
+      /.well-known/openid-configuration returns 404 on every host probed (see
+      well-known/sofi-technologies-well-known.yml). OIDC is used for SSO into the SoFi Tech
+      Solutions consoles, not for API authorization.
+  - id: rfc9457
+    conforms: false
+    evidence: >-
+      Errors are a proprietary flat envelope keyed on status_code, not application/problem+json.
+      See errors/sofi-technologies-problem-types.yml.
+  - id: idempotency
+    conforms: partial
+    evidence: >-
+      transactionId provides idempotency on 35 named endpoints out of 167 Program API operations,
+      with a 90-day uniqueness window. It is a body parameter, not the Idempotency-Key header of
+      the IETF draft. See conventions/sofi-technologies-conventions.yml.
+  - id: pagination
+    conforms: true
+    evidence: >-
+      Documented page-number pagination - recordCnt / page request parameters and
+      total_record_count / number_of_pages / page response fields.
+    evidence_url: https://docs.tech.sofi.com/pro/reference/record-set-paging
+  - id: fdx
+    conforms: false
+    evidence: >-
+      No FDX (Financial Data Exchange) surface in any definition, and no FDX claim in the docs.
+      SoFi Tech Solutions is an issuer-processor, not a data-aggregation counterparty.
+  - id: psd2
+    conforms: false
+    evidence: >-
+      No PSD2/berlin-group surface. The platform's documented geographies are the United States,
+      Mexico and Colombia; the international guide covers those, not the EEA.
+  - id: fapi
+    conforms: false
+    evidence: No FAPI profile, and no OAuth to profile.
+  - id: scim
+    conforms: false
+    evidence: >-
+      No SCIM schema URNs in any definition. Console user management is delegated to the client's
+      own IdP by SSO rather than provisioned over SCIM.
+  - id: odata
+    conforms: false
+    evidence: No $metadata surface; the APIs are RPC-over-form-POST.
+  - id: json:api
+    conforms: false
+    evidence: Proprietary envelope; media types are application/json and application/xml.
+trust_center:
+  published: false
+  note: >-
+    No public trust center, certification portal or downloadable SOC 2 / PCI AOC. Compliance
+    documentation is exchanged under a signed program agreement. Probed 2026-09-06:
+    tech.sofi.com/security 404, tech.sofi.com/trust 404.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

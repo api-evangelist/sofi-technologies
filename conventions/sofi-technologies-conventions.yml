@@ -1,0 +1,289 @@
+specification: API Commons Conventions
+specificationVersion: '0.1'
+provider: SoFi Technologies
+providerId: sofi-technologies
+generated: '2026-09-06'
+method: searched
+source: https://docs.tech.sofi.com/pro/reference/api-reference-authentication
+docs:
+  - https://docs.tech.sofi.com/pro/reference/api-reference-authentication
+  - https://docs.tech.sofi.com/pro/reference/idempotency
+  - https://docs.tech.sofi.com/pro/reference/response
+  - https://docs.tech.sofi.com/pro/reference/errors
+  - https://docs.tech.sofi.com/pro/reference/record-set-paging
+  - https://docs.tech.sofi.com/pro/reference/rate-limits
+  - https://docs.tech.sofi.com/pro/reference/breaking-change-policy
+  - https://docs.tech.sofi.com/pro/reference/system-time
+  - https://docs.tech.sofi.com/pro/reference/pci-sensitive-data
+description: >-
+  Cross-cutting runtime semantics for the SoFi Tech Solutions Program API and its sibling
+  platform APIs, read from the provider's own reference pages on docs.tech.sofi.com. This is an
+  older-generation RPC-over-form-POST design: every Program API operation is a POST to a named
+  endpoint with application/x-www-form-urlencoded parameters, and both request auth and
+  idempotency ride in the body rather than in headers.
+
+auth_style:
+  style: body-parameter credentials
+  transport: HTTPS, TLS 1.2 minimum, TLS 1.3 recommended
+  parameters: [apiLogin, apiTransKey, providerId, transactionId]
+  optional_parameters: [providerTransactionId, providerTimestamp]
+  issued_by: SoFi Tech Solutions during onboarding, bound to the requesting IP address
+  notes: >-
+    Credentials are per-IP, not per-user; an unregistered source IP is rejected with status_code
+    21. The Loan API and Risk APIs declare bearer/Authorization-header schemes instead - see
+    authentication/sofi-technologies-authentication.yml.
+  docs: https://docs.tech.sofi.com/pro/reference/api-reference-authentication
+
+request:
+  method: POST (all Program API operations)
+  content_type: application/x-www-form-urlencoded
+  response_format_selector: 'response-content-type header: json | xml'
+  uri_form: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/{endpointName}
+  uri_note: >-
+    corename is the client's assigned core; env is cv (client validation) or pd (production).
+    "All non-standard URIs will return a 404 error."
+
+idempotency:
+  supported: true
+  mechanism: request-body parameter, not a header
+  key: transactionId
+  key_form: string, max 60 characters, UUID preferred (Create Adjustment requires a 64-bit integer)
+  uniqueness_scope: transactionId + providerId + endpoint
+  retention: 90 days
+  duplicate_response: 'status_code: 24 (Duplicate transaction)'
+  replay_lookup: >-
+    Get Call Status (post_getcallstatus) returns the status code of the original successful
+    request, given the original transactionId and the endpoint name in camelCase.
+  failed_request_behavior: >-
+    A transactionId from an UNSUCCESSFUL call may be reused. Only a successful call burns the key
+    for 90 days.
+  coverage: partial
+  scope:
+    - Activate Card
+    - Add Account
+    - Add Card
+    - Assess Fee
+    - Cancel ACH Transaction
+    - Cancel Bill Payment
+    - Create Account
+    - Create Account Transfer
+    - Create ACH Transaction
+    - Create Adjustment
+    - Create Bill Payment
+    - Create Bulk Card Order
+    - Create IVR Call
+    - Create Payment
+    - Create Provisioning Request
+    - Create Single-Use Virtual Card
+    - Create Virtual Card
+    - Delete Account-Level Auth Control
+    - Delete Account-Level MCC Control
+    - Delete Account-Level Merchant Control
+    - Force Pass CIP
+    - Modify On-Demand Alert Status
+    - Modify Pending Deposit Status
+    - Modify Status
+    - Move Card
+    - Reset Card PIN Fail Count
+    - Reverse Adjustment
+    - Reverse Fee
+    - Set Account Feature
+    - Set Account-Level Auth Control
+    - Set Account-Level MCC Controls
+    - Set Account-Level Merchant Control
+    - Start Enrollment
+    - Update Account
+    - Update Pending Merchant Credit
+  coverage_basis: >-
+    The provider enumerates exactly 35 endpoints that use transactionId for idempotency, out of
+    167 published Program API operations. Read-only endpoints (get*, verify*, is*, search*) have
+    no idempotency check and need none; but the enumerated list is also not the whole mutating
+    surface - the docs say plainly "Other endpoints that are not listed above also do not have
+    idempotency checks." That is why this is partial and not full. Replace Lost/Stolen Card is
+    called out separately as using status codes (638-03 / 638-05) rather than transactionId to
+    prevent duplicates.
+  docs: https://docs.tech.sofi.com/pro/reference/idempotency
+
+reversibility:
+  grade: verified
+  basis: >-
+    Named reversal operations exist for the mutating flows that move money or create accounts,
+    AND each one states the window in which it works - as an eligibility state rather than a
+    clock, which is what a card-processing platform can honestly promise. Every window below is
+    quoted from the operation's own reference page; none is inferred.
+  operations:
+    - write: Create Adjustment (post_createadjustment)
+      reversal: Reverse Adjustment
+      operationId: post_reverseadjustment
+      window: >-
+        Pass the original call's transactionId instead of a new value. Fails with 447-01 if the
+        amount to be reversed does not match the original transaction amount.
+      docs: https://docs.tech.sofi.com/pro/reference/post_reverseadjustment
+    - write: Assess Fee (post_assessfee)
+      reversal: Reverse Fee
+      operationId: post_reversefee
+      window: >-
+        Once per fee - 479-01 "Fee has already been reversed". Fees not created by Assess Fee are
+        reversed by feeId from Get Fee History.
+      docs: https://docs.tech.sofi.com/pro/reference/post_reversefee
+    - write: Create Account Transfer (post_createaccounttransfer)
+      reversal: Reverse Account Transfer
+      operationId: post_reverseaccounttransfer
+      window: null
+      window_note: The reference page states no eligibility window; recorded as unstated rather than assumed.
+      docs: https://docs.tech.sofi.com/pro/reference/post_reverseaccounttransfer
+    - write: Create ACH Transaction (post_createachtransaction)
+      reversal: Cancel ACH Transaction
+      operationId: post_cancelachtransaction
+      window: >-
+        Before the ACH binaries process the transaction. After processing, 431-05 "ACH transaction
+        has been processed and cannot be canceled".
+      docs: https://docs.tech.sofi.com/pro/reference/post_cancelachtransaction
+    - write: Create Bill Payment (post_createbillpayment)
+      reversal: Cancel Bill Payment
+      operationId: post_cancelbillpayment
+      window: >-
+        Paper transactions in status N, W or P; electronic (RPPS) transactions in status N; and
+        any non-recurring transaction scheduled for a future date. Anything else returns 435-02
+        "Bill pay transaction not in a reversible state".
+      docs: https://docs.tech.sofi.com/pro/reference/post_cancelbillpayment
+    - write: Create Account (post_createaccount)
+      reversal: Void Create Account
+      operationId: post_voidcreateaccount
+      window: >-
+        Instant-issue (prepaid) card accounts only, before any transaction posts and before any
+        secondary or related card is added (412-03, 412-04), and not after a product change
+        (412-05). Other account types must be reversed by SoFi Tech Solutions through the
+        Customer Service Tool, not through the API.
+      docs: https://docs.tech.sofi.com/pro/reference/post_voidcreateaccount
+    - write: Add Card (post_addcard)
+      reversal: Void Add Card
+      operationId: post_voidaddcard
+      window: null
+      window_note: Eligibility conditions are in the operation's own status-code table; not restated here.
+      docs: https://docs.tech.sofi.com/pro/reference/post_voidaddcard
+    - write: Create Transfer (paymenthub_post_createtransfer)
+      reversal: Cancel Transfer
+      operationId: paymenthub_post_canceltransfer
+      window: 'Transfers must be in POSTED status to be eligible for cancellation.'
+      docs: https://docs.tech.sofi.com/pro/reference/paymenthub_post_canceltransfer
+    - write: Charge Off Account (post_chargeoffaccount)
+      reversal: Recover Charged-Off Account
+      operationId: post_recoverchargedoffaccount
+      window: null
+      docs: https://docs.tech.sofi.com/pro/reference/post_recoverchargedoffaccount
+  account_holder_refunds:
+    mechanism: refund check issued to the account holder on account closure
+    window: >-
+      The account holder must cash the check within 180 days (six months) of the check's issue
+      date; an uncashed check is voided 180 days after the check's date.
+    docs: https://docs.tech.sofi.com/pro/docs/account-holder-refunds
+  not_reversible:
+    - >-
+      Card authorizations are network events, not API writes - they are reversed by the network or
+      expire (see the Authorization Status Codes enumeration: B backed out, R reversed out, E
+      expired), not by a client-callable endpoint.
+
+dry_run_mode:
+  supported: true
+  mechanism: >-
+    Not a per-request dry-run flag. The platform ships a shared Sandbox environment with a fixed
+    program/product and simulation endpoints (Create Simulated Card Auth, Create Simulated Card
+    Settle, Create Simulated ACH Transaction, Cancel Simulated Incoming ACH Transaction) plus a
+    Client Validation environment that runs the client's own configuration with no movement of
+    real funds.
+  docs: https://docs.tech.sofi.com/pro/docs/environments
+  see: sandbox/sofi-technologies-sandbox.yml
+
+pagination:
+  style: page-number with caller-controlled page size
+  request_params:
+    - { name: recordCnt, description: 'records per page; default maximum 200, values above 200 are clamped to 200' }
+    - { name: page, description: 'page number to return' }
+  response_fields: [total_record_count, number_of_pages, page]
+  tuning: >-
+    The MXRPG provider parameter raises the per-page maximum; NOPGE returns all records in one
+    page regardless of MXRPG. Both are configured by SoFi Tech Solutions, not by the caller.
+  variance: >-
+    Search Accounts documents a different clamp - no value means 50 per page, 1-100 is honored,
+    over 100 gives 100 - so the 200 default is not universal.
+  docs: https://docs.tech.sofi.com/pro/reference/record-set-paging
+
+error_envelope:
+  shape: >-
+    Not RFC 9457. A flat application-level envelope returned with HTTP 200 in the ordinary case;
+    the real outcome is in status_code.
+  fields:
+    - { name: status_code, type: numeric-or-string, note: '0 is success; error codes are bare integers or {3-or-4-digit-prefix}-xx' }
+    - { name: status, type: string, note: human description of status_code }
+    - { name: processing_time, type: float, note: seconds between call and response }
+    - { name: response_data, type: object, note: endpoint-specific payload }
+    - { name: echo, type: object, note: 'provider_transaction_id, provider_timestamp, transaction_id echoed back' }
+    - { name: errors, type: list, note: present only when status_code is an error; occasionally nested inside response_data instead }
+    - { name: rtoken, type: uuid, note: system-generated call id, quoted to support when troubleshooting }
+    - { name: system_timestamp, type: datetime, note: response time in system time }
+  formats: [json, xml]
+  see: errors/sofi-technologies-problem-types.yml
+  docs: https://docs.tech.sofi.com/pro/reference/errors
+
+rate_limit_signaling:
+  headers: []
+  status_on_exhaustion: null
+  note: >-
+    No RateLimit-* / X-RateLimit-* / Retry-After headers are documented, and no exhaustion status
+    code is published. The provider states there is no default call limit and that a safe upper
+    bound is negotiated per program. This is the weakest runtime signal in the whole surface: an
+    agent has no way to learn it is approaching a limit.
+  see: rate-limits/sofi-technologies-rate-limits.yml
+  docs: https://docs.tech.sofi.com/pro/reference/rate-limits
+
+versioning:
+  scheme: path-embedded major version
+  current: 4.0 (Program API), carried in the URI as /intserv/4.0/
+  siblings:
+    - { api: Dispute API 3.0, version: '25.02', form: calendar-style release, path: /gft-dispute-api/1.0/ }
+    - { api: Payment Hub Api 2.0, path: /payment-hub/1.0/ }
+    - { api: Public Config API, path: /config/1.0/ }
+    - { api: Loan API, path: /lending/, version: 1.0.0-SNAPSHOT }
+  unauthorized_version_signal: 'status_code 18 - Unauthorized access to this version of the API'
+  see: lifecycle/sofi-technologies-lifecycle.yml
+
+request_tracing:
+  client_supplied: [transactionId, providerTransactionId, providerTimestamp]
+  server_supplied: [rtoken]
+  note: >-
+    rtoken is a per-call UUID the provider asks clients to quote when troubleshooting - the
+    functional equivalent of a request-id header, delivered in the body.
+
+field_semantics:
+  expansion: not supported
+  sparse_fieldsets: not supported
+  metadata: >-
+    No generic metadata bag. Client-side correlation is carried by providerTransactionId and
+    providerTimestamp, which are echoed back verbatim.
+  time_zone: >-
+    The platform runs on Arizona Standard Time (GMT-0700, MST, no daylight saving). Date and time
+    parameters are interpreted in that zone - a real correctness trap for any agent that assumes
+    UTC.
+  docs: https://docs.tech.sofi.com/pro/reference/system-time
+
+sensitive_data:
+  pci: >-
+    Unmasked card_number, card_security_code and expiry_date are returned only when the client's
+    provider parameters permit it and the client is PCI compliant; otherwise they are masked.
+  docs: https://docs.tech.sofi.com/pro/reference/pci-sensitive-data
+
+payload_limits:
+  request_max: 16 MB for many endpoints; per-endpoint limits confirmed with SoFi Tech Solutions
+  docs: https://docs.tech.sofi.com/pro/reference/rate-limits
+
+cross_links:
+  errors: errors/sofi-technologies-problem-types.yml
+  decline_codes: errors/sofi-technologies-decline-codes.yml
+  lifecycle: lifecycle/sofi-technologies-lifecycle.yml
+  authentication: authentication/sofi-technologies-authentication.yml
+  rate_limits: rate-limits/sofi-technologies-rate-limits.yml
+  sandbox: sandbox/sofi-technologies-sandbox.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

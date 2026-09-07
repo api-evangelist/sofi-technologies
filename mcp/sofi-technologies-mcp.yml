@@ -1,0 +1,54 @@
+specification: API Commons MCP
+specificationVersion: '0.1'
+provider: SoFi Technologies
+providerId: sofi-technologies
+name: SoFi Tech Solutions Documentation MCP
+generated: '2026-09-06'
+method: probed
+source: https://docs.tech.sofi.com/mcp
+status: published
+description: >-
+  A remote Model Context Protocol endpoint is live on the SoFi Tech Solutions developer hub at
+  https://docs.tech.sofi.com/mcp. It answers a JSON-RPC POST with a well-formed MCP error envelope
+  ({"jsonrpc":"2.0","error":{"code":-32001,"message":"Authorization required"}}) on both
+  tools/list and initialize, which is a real MCP server refusing an anonymous caller - not a 404
+  and not an HTML shell. It is the documentation MCP that the ReadMe platform provisions for a
+  developer hub, served under SoFi's own hostname; it is NOT an MCP front end for the Program,
+  Payment Hub, Dispute, Loan or Risk APIs, which have no MCP surface at all.
+deployment:
+  mode: remote
+  endpoint: https://docs.tech.sofi.com/mcp
+  install: null
+  package: null
+  auth: unknown
+  verified: probed
+platform: ReadMe (readme.com) - the hub identifies itself with meta readme-subdomain "galileo-pro"
+tools_enumerable: false
+tools: []
+notes: >-
+  tools/list is auth-gated so the live tool set and its inputSchemas could not be read, and there
+  is no published tool list to fall back on - the provider's llms.txt is a documentation index,
+  not an MCP manifest. Neither /.well-known/oauth-protected-resource nor
+  /.well-known/oauth-authorization-server is served on this host (both 404), so the authorization
+  server could not be discovered either; auth is recorded as unknown rather than guessed as oauth.
+  No tool list has been derived from the OpenAPI operations, because a derived candidate list
+  would misrepresent what this endpoint actually exposes.
+probes:
+  - url: https://docs.tech.sofi.com/mcp
+    method: 'POST {"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+    status: 401
+    body: '{"jsonrpc":"2.0","error":{"code":-32001,"message":"Authorization required"},"id":null}'
+  - url: https://docs.tech.sofi.com/mcp
+    method: 'POST {"jsonrpc":"2.0","id":1,"method":"initialize"}'
+    status: 401
+    body: '{"jsonrpc":"2.0","error":{"code":-32001,"message":"Authorization required"},"id":null}'
+  - url: https://docs.tech.sofi.com/.well-known/oauth-protected-resource
+    status: 404
+  - url: https://docs.tech.sofi.com/.well-known/oauth-authorization-server
+    status: 404
+  - url: https://tech.sofi.com/mcp
+    status: 301
+    note: redirect to the marketing site, no MCP surface
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

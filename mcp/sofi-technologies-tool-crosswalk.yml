@@ -1,0 +1,66 @@
+specification: API Commons Tool Crosswalk
+specificationVersion: '0.1'
+provider: SoFi Technologies
+providerId: sofi-technologies
+generated: '2026-09-06'
+method: derived
+source: >-
+  openapi/ (11 harvested SoFi Tech Solutions definitions) and the probe of
+  https://docs.tech.sofi.com/mcp recorded in mcp/sofi-technologies-mcp.yml
+description: >-
+  SoFi Tech Solutions has both an OpenAPI surface (258 operations across 11 definitions) and a
+  live MCP endpoint, so a crosswalk is emitted - but the two do not overlap. The MCP endpoint is
+  the ReadMe documentation MCP for the developer hub, not an agent front end for the payments
+  platform, and its tools/list is auth-gated so not one tool name is knowable anonymously.
+  crosswalk[] is therefore empty by measurement, not by omission: there is nothing to bind, and
+  guessing tool names from the operation list would invent a surface SoFi does not ship.
+surfaces:
+  openapi:
+    present: true
+    definitions: 11
+    operations: 258
+    discovery: https://docs.tech.sofi.com/pro/.well-known/api-catalog
+    gated: false
+    note: >-
+      The definitions are public. Calling the operations is not - credentials (apiLogin,
+      apiTransKey, providerId) are issued by SoFi Tech Solutions during onboarding.
+  graphql:
+    present: false
+  mcp:
+    present: true
+    url: https://docs.tech.sofi.com/mcp
+    gated: true
+    kind: documentation-mcp
+    note: 401 "Authorization required" on tools/list and initialize; tool set not enumerable.
+crosswalk: []
+mcp_only: []
+rest_only:
+  note: >-
+    Every one of the 258 published operations is REST-only - no MCP tool binds to any of them.
+    Listed here by definition rather than by operationId; the operationIds themselves are in
+    openapi/ and every one is present verbatim in its spec.
+  by_definition:
+    - { spec: openapi/sofi-technologies-program-api-openapi.json, api: Program API 4.0, operations: 167 }
+    - { spec: openapi/sofi-technologies-dispute-api-3-0-openapi.json, api: Dispute API 3.0 25.02, operations: 30 }
+    - { spec: openapi/sofi-technologies-dispute-api-2-0-openapi.json, api: Dispute API 2.0 1.0, operations: 22 }
+    - { spec: openapi/sofi-technologies-payment-hub-api-openapi.json, api: Payment Hub Api 2.0 1.0, operations: 11 }
+    - { spec: openapi/sofi-technologies-loan-api-openapi.json, api: Loan API 1.0.0-SNAPSHOT, operations: 10 }
+    - { spec: openapi/sofi-technologies-risk-api-2-0-openapi.json, api: Risk API 2.0 2.0, operations: 6 }
+    - { spec: openapi/sofi-technologies-events-api-openapi.json, api: Events API 1.0.0, operations: 4 }
+    - { spec: openapi/sofi-technologies-risk-api-1-0-openapi.json, api: Risk API 1.0 1.0, operations: 3 }
+    - { spec: openapi/sofi-technologies-auth-api-openapi.json, api: Auth API 2.0.0, operations: 2 }
+    - { spec: openapi/sofi-technologies-external-trans-api-openapi.json, api: External Trans API 1.0.0, operations: 2 }
+    - { spec: openapi/sofi-technologies-public-config-api-openapi.json, api: Public Config API 1.0, operations: 1 }
+coverage:
+  rest_operations: 258
+  mcp_tools_known: 0
+  bound: 0
+  mcp_only: 0
+  rest_only: 258
+  confidence: high
+  basis: >-
+    The count of REST operations is exact (parsed from the specs). The count of MCP tools is zero
+    KNOWN, not zero EXISTING - the endpoint refuses anonymous introspection.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

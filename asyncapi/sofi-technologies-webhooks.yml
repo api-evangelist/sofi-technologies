@@ -1,0 +1,221 @@
+specification: API Commons Webhooks
+specificationVersion: '0.1'
+provider: SoFi Technologies
+providerId: sofi-technologies
+generated: '2026-09-06'
+method: searched
+source: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+asyncapi:
+  published: false
+  note: SoFi Tech Solutions publishes NO AsyncAPI document. Its event surface is described with OpenAPI
+    documents that model the CLIENT side of the webhook - the client hosts the endpoint and the platform
+    POSTs to it - which is why every webhook definition has a placeholder server (https://client.domain.com,
+    https://example.client.domain.com) rather than a SoFi host. Nothing has been fabricated to fill the
+    AsyncAPI slot.
+description: 'SoFi Tech Solutions runs a substantial event surface: four webhook categories carrying at
+  least 124 documented event types, plus two decisioning webhooks the client answers synchronously. The
+  distinction matters - the Events API is a notification firehose the client consumes, while the Auth
+  API and External Trans API hand the client the authorization or ACH/billpay decision itself and read
+  the verdict out of the HTTP response body.'
+surfaces:
+- name: Events API
+  kind: notification
+  version: 1.0.0
+  spec: openapi/sofi-technologies-events-api-openapi.json
+  also_known_as: Alerts API
+  endpoints:
+  - path: /AccountEvent
+    operationId: webhook_account_event_post
+    category: Account Events
+  - path: /Authorization
+    operationId: webhook_authorization_event_post
+    category: Authorization Events
+  - path: /Settlement
+    operationId: webhook_settlement_event_post
+    category: Settlement Events
+  - path: /Transaction
+    operationId: webhook_transaction_event_post
+    category: Transaction Events
+  hosted_by: the client - the client provides the URLs; the platform POSTs to them
+  event_identifier: the type field in the payload
+  docs: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  security_docs: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api-security
+  retry_docs: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api-retry
+  field_selection: Each event has default fields included in the default webhook template plus optional
+    fields the client can enable, so two clients subscribed to the same event can receive different payloads.
+  setup_docs: https://docs.tech.sofi.com/pro/docs/event-setup-and-configuration
+- name: Auth API
+  kind: decisioning
+  version: 2.0.0
+  spec: openapi/sofi-technologies-auth-api-openapi.json
+  endpoints:
+  - path: /basepath/Authorization
+    operationId: webhook_authorization_post_2
+  - path: /base_path/Authorization
+    operationId: webhook_authorization_post_3
+  purpose: Lets the client participate in the authorization decision. The payload carries the network's
+    proposed response_code; the client overrides it in the HTTP response body to approve or deny.
+  wire_format: payload populated from the ISO 8583 authorization request the card network sends
+  security_scheme: bearerAuth (http bearer, JWT)
+  timeout_event: auth_api_timeout - the platform emits an event when the client does not answer in time
+  docs: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+- name: External Trans API
+  kind: decisioning
+  version: 1.0.0
+  spec: openapi/sofi-technologies-external-trans-api-openapi.json
+  endpoints:
+  - path: /achdebit
+    operationId: webhook_ach_debit_post
+  - path: /billpay
+    operationId: webhook_billpay_post
+  purpose: Lets the client approve or deny incoming ACH debits and bill payments. "Use the response_code
+    field in the response to communicate your decision to SoFi Tech Solutions."
+  docs: https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+event_catalog:
+  count: 125
+  basis: Enumerated from the provider's own llms.txt documentation index - every reference page under
+    the api-reference-events-api- prefix that documents an event type rather than a concept page. Each
+    slug below resolves to https://docs.tech.sofi.com/pro/reference/api-reference-events-api-<slug> and
+    its markdown twin at <url>.md. Event CODES (four-letter, e.g. DAUT, BNSF, NACT, IPIN, PUMP, BNPD,
+    STPN) are on the individual pages; only the codes actually read during this pass are asserted, in
+    errors/sofi-technologies-decline-codes.yml.
+  categories:
+  - Account Events
+  - Authorization Events
+  - Settlement Events
+  - Transaction Events
+  category_indexes:
+  - https://docs.tech.sofi.com/pro/reference/api-reference-events-api-account-events-index
+  - https://docs.tech.sofi.com/pro/reference/api-reference-events-api-authorization-events-index
+  - https://docs.tech.sofi.com/pro/reference/api-reference-events-api-settlement-events-index
+  - https://docs.tech.sofi.com/pro/reference/api-reference-events-api-transaction-events-index
+  event_types:
+  - account-closed
+  - account-feature-change
+  - account-status-change
+  - ach-credit-fail
+  - ach-credit-return
+  - ach-debit-fail
+  - ach-return
+  - addr-chg
+  - adj
+  - agserv-pin-change-fail
+  - agserv-pin-change-success
+  - app-completed
+  - atm-issuer-fee-inquiry
+  - auth
+  - auth-api-timeout
+  - auth-exp
+  - auth-exp-reversal
+  - auth-fallback
+  - auth-metadata
+  - auth-payment
+  - auth-stip-notification
+  - bal
+  - billpay
+  - billpay-cancelled
+  - billpay-check-cleared
+  - billpay-check-mailed
+  - billpay-expired
+  - billpay-limit-violation
+  - billpay-rejected
+  - billpay-request-made
+  - billpay-request-returned
+  - billpay-retry
+  - billpay-switch-event
+  - bulk-frozen
+  - card-activated
+  - card-expiring
+  - card-returned
+  - card-shipped
+  - card-status-change
+  - cardholder-info-changed
+  - case-created
+  - case-updated
+  - create-hold
+  - credit-limit-change
+  - denied-auth
+  - denied-auth-bad-pan
+  - denied-auth-buy-now-pay-later
+  - denied-auth-gas
+  - denied-auth-inactive-card
+  - denied-auth-invalid-pin
+  - denied-auth-nsf
+  - direct-deposit-switch-event
+  - dispute-created
+  - dispute-final-no-pc
+  - dispute-final-pc
+  - dispute-investigation-completed
+  - dispute-pc
+  - email-addr-change
+  - expire-hold
+  - ext-trans-debit-fail
+  - ext-trans-debit-retry
+  - external-account-status-change
+  - fail-id
+  - failed-id
+  - fed-benefits-status-confirmed
+  - fed-benefits-status-deposit
+  - fed-benefits-status-resubmit
+  - fed-benefits-status-returned
+  - fed-benefits-status-submitted
+  - fed-benefits-status-updated
+  - fee
+  - fee-reversal
+  - frozen
+  - greendot-auth
+  - greendot-auth-commit
+  - greendot-auth-commit-fail
+  - greendot-auth-failure
+  - insufficient-funds-to-emboss
+  - lost-stolen-card-no-replacement
+  - lost-stolen-card-with-replacement
+  - low-balance-notify
+  - mobile-activation-acn
+  - mobile-activation-api
+  - mobile-activation-rdp
+  - mobile-activation-tcn
+  - mobile-activation-tkc
+  - mobile-activation-tvd
+  - mobile-activation-tvn
+  - mobile-activation-tvr
+  - mobile-activation-ylp
+  - neg-bal
+  - note
+  - overdraft-authorization
+  - overdraft-credit-limit-change
+  - overdraft-limit-change
+  - overdraft-negative-balance
+  - overdraft-opt-in
+  - overdraft-opt-out
+  - overdraft-start-grace-period
+  - overdraft-status-change
+  - overdraft-suspended
+  - pass-id
+  - paths-and-content-types
+  - phone-changed
+  - pin-changed
+  - pin-changed-by-issuer-script
+  - pmt
+  - pmt-delayed
+  - pmt-hub-return
+  - pmt-split
+  - product-switched
+  - profile-changed
+  - ready-to-activate
+  - retry
+  - sched-billpay-fail
+  - security
+  - setl
+  - signature-example
+  - single-use-invalid-amount
+  - single-use-secondary-transaction
+  - system-pin-change
+  - three-ds-status
+  - token-update
+  - transfer-status-change
+  - unfrozen
+event_code_reference: https://docs.tech.sofi.com/pro/reference/api-reference-event-codes
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

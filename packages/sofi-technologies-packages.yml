@@ -1,0 +1,56 @@
+specification: API Commons Packages
+specificationVersion: '0.1'
+provider: SoFi Technologies
+providerId: sofi-technologies
+generated: '2026-09-06'
+method: searched
+source: >-
+  Registry searches against registry.npmjs.org and pypi.org, plus the SoFi Tech Solutions
+  developer hub index at https://docs.tech.sofi.com/pro/llms.txt
+description: >-
+  SoFi Tech Solutions ships no first-party client libraries. The 679-line documentation index
+  covering every guide, reference and changelog page on the Pro hub contains no SDK, client
+  library or package page - the integration path it documents is raw HTTP plus a Postman
+  collection. Registry searches for the obvious names return nothing first-party.
+package_count: 0
+official_package_count: 0
+packages: []
+searched_registries:
+  - { registry: npm, endpoint: 'https://registry.npmjs.org/-/v1/search', queries: [galileo-ft, galileo-pro, sofi-tech-solutions, sofi-api, galileo-financial], first_party_hits: 0 }
+  - { registry: pypi, endpoint: 'https://pypi.org/pypi/<name>/json', queries: [galileo-ft, galileo-pro, sofi-tech-solutions], results: [404, 404, 404], first_party_hits: 0 }
+third_party:
+  - name: n8n-nodes-galileo
+    registry: npm
+    version: 1.0.0
+    published: '2026-04-25'
+    repository: https://github.com/Velocity-BPA/n8n-nodes-galileo
+    official: false
+    note: >-
+      A community n8n node for Galileo Financial Technologies, published by Velocity-BPA, not by
+      SoFi. Recorded so a reader does not mistake it for a first-party SDK.
+name_collision_warning: >-
+  The npm and PyPI packages named "galileo", "galileo-python", "galileo-js" and "galileo-generated"
+  belong to rungalileo (Galileo Technologies, the AI evaluation and observability company) and
+  have nothing to do with SoFi Tech Solutions. They are catalogued separately under
+  all/galileo-technologies. Any automated harvest keying on the string "galileo" will pick them
+  up wrongly.
+integration_tooling:
+  - name: Galileo Pro Collection
+    kind: postman-collection
+    official: true
+    version: null
+    published: '2026-07-22'
+    published_source: Postman collection API lastUpdated field, fetched 2026-09-06
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+    workspace: https://www.postman.com/galileo-ft/workspace
+    note: >-
+      Not a package - there is no registry to version it in - but it is the only first-party
+      client artifact SoFi Tech Solutions distributes. Recorded here rather than in packages[] so
+      it cannot be counted as an SDK.
+notes: >-
+  No SDKs pointer is emitted in apis.yml, because sdk_count would then read a first-party SDK
+  count of zero as a presence. An honest zero is the finding: a payments platform with 258
+  published operations and no client library in any language.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

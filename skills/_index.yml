@@ -1,0 +1,40 @@
+specification: API Commons Agent Skills
+specificationVersion: '0.1'
+provider: SoFi Technologies
+providerId: sofi-technologies
+generated: '2026-09-06'
+method: generated
+source: openapi/ - every operationId in every skill was verified to exist verbatim in the referenced specification
+description: 'Packaged agent skills for the three marquee flows on the SoFi Tech Solutions platform: opening
+  a card account, moving money over ACH, and filing a cardholder dispute. Each carries the platform''s
+  real transport rules (form-encoded POST, body credentials, transactionId idempotency, Arizona system
+  time), the stated reversal windows, and the status codes worth branching on. No skill was authored for
+  the Auth API, External Trans API or Events API because those are webhooks the CLIENT hosts - there is
+  nothing for an agent to call.'
+verification: All 42 operationIds across the three skills were grepped against the harvested specs; zero
+  misses.
+skills:
+- file: skills/sofi-technologies-ach-money-movement.md
+  name: sofi-technologies-ach-money-movement
+  description: Move money on the SoFi Tech Solutions Program API over ACH - link an external bank account,
+    originate a transaction, read history, and cancel inside the stated window.
+  api: SoFi Tech Solutions Program API 4.0
+  spec: openapi/sofi-technologies-program-api-openapi.json
+  operations: 11
+- file: skills/sofi-technologies-file-dispute-claim.md
+  name: sofi-technologies-file-dispute-claim
+  description: File and track a cardholder dispute on the SoFi Tech Solutions Dispute API 3.0 - intake,
+    reasons, transactions, questionnaire, documents, submit, then list and act on tasks.
+  api: SoFi Tech Solutions Dispute API 3.0 (25.02)
+  spec: openapi/sofi-technologies-dispute-api-3-0-openapi.json
+  operations: 21
+- file: skills/sofi-technologies-open-card-account.md
+  name: sofi-technologies-open-card-account
+  description: Open a SoFi Tech Solutions card account for a new customer on the Program API - enrollment,
+    customer ID verification, account creation, card activation and the void path if it goes wrong.
+  api: SoFi Tech Solutions Program API 4.0
+  spec: openapi/sofi-technologies-program-api-openapi.json
+  operations: 10
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

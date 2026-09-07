@@ -4,46 +4,40 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: SoFi Technologies
 providerId: sofi-technologies
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-05'
-reconciled: false
+modified: '2026-09-06'
+generated: '2026-09-06'
+method: searched
+source: https://tech.sofi.com/
+reconciled: true
 tags:
   - Fintech
-  - Personal Finance
+  - Payments
   - Banking
-description: SoFi Technologies operates a direct-to-consumer banking, lending, and investing platform.
-  It does not publish a developer pricing page or a partner-facing API plan SKU on sofi.com. Member-facing
-  product pricing (loans, deposits, investing) is regulated and disclosed per product, not as an API
-  plan. Treat as a closed B2C provider with no public developer plan.
-sources:
-  - https://www.sofi.com
-notes: SoFi does not publish developer-facing API pricing or plan tiers; sofi.com/api returns a 404 and
-  no api.sofi.com developer portal is publicly listed. Product-level rates (APYs, loan APRs) are member
-  disclosures, not API plans. Artifact trimmed to a single Contact Sales placeholder; reconciled is false.
-plans:
-  - id: sofi-technologies-contact-sales
-    name: Contact Sales
-    type: enterprise
-    description: SoFi Technologies has no public developer plan. Any partner / B2B integration (e.g.,
-      Galileo Financial Technologies, Technisys — both SoFi subsidiaries) is negotiated bilaterally with
-      the SoFi Technologies B2B partnerships team.
-    entries:
-      - label: Partner Integration
-        name: partner_integration
-        type: subscription
-        metric: varies
-        limit: -1
-        timeFrame: usage
-        geo: US
-        unit: 1
-        price: contact sales
-        userMultiplied: false
-    elements:
-      - name: SoFi Member Banking & Lending Products
-      - name: Galileo Financial Technologies (SoFi subsidiary, separately documented)
-      - name: Technisys (SoFi subsidiary, separately documented)
+description: >-
+  SoFi Tech Solutions publishes no developer pricing. The platform is sold through a signed
+  program agreement negotiated with the SoFi Tech Solutions team, and pricing depends on the
+  program's card, deposit and payment configuration. There is no self-serve tier, no rate card,
+  no per-call price and no published minimum. Sandbox access is free but is requested through a
+  form and granted by SoFi, not provisioned on signup.
+plan_count: 0
+plans: []
+probes:
+  - { url: 'https://tech.sofi.com/pricing', status: 200, result: 'redirects to https://tech.sofi.com/ - no pricing page exists' }
+  - { url: 'https://tech.sofi.com/contact', status: 200, result: 'redirects to https://tech.sofi.com/contact-us/ - the sales gate' }
+  - { url: 'https://www.galileo-ft.com/request-access/', status: 200, result: 'redirects to https://tech.sofi.com/lp/request-access/ - Sandbox access request form' }
+  - { url: 'https://docs.tech.sofi.com/pro/llms.txt', status: 200, result: '679-line documentation index with no pricing page in it' }
+access_model:
+  self_serve: false
+  free_tier: false
+  trial: 'Sandbox access on request - no card, no clock, but a human grants it'
+  contact_sales: https://tech.sofi.com/contact-us/
+  sandbox_request: https://tech.sofi.com/lp/request-access/
+notes: >-
+  A plan_count of 0 here is a measurement, not a gap in this pass: the entire public developer
+  hub was indexed via the provider's own llms.txt and it contains no pricing, plan or rate-card
+  page. This artifact replaces a 2026-05-04 bulk-sweep placeholder that described SoFi
+  Technologies as a closed B2C bank with no developer surface at all - which was wrong about the
+  surface, though right that there is no published price.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

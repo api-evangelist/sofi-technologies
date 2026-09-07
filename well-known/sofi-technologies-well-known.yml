@@ -1,0 +1,114 @@
+specification: API Commons Well-Known
+specificationVersion: '0.1'
+provider: SoFi Technologies
+providerId: sofi-technologies
+generated: '2026-09-06'
+method: probed
+source: >-
+  Anonymous HTTPS GETs of the five canonical /.well-known/ paths against every host this record
+  knows: the registrable domain and www, the API host in apis.yml, the SoFi Tech Solutions
+  marketing host, the ReadMe-hosted developer hub, the legacy SoFi Business Banking docs host,
+  and the Sandbox hosts named in the SoFi Tech Solutions Environments guide.
+description: >-
+  SoFi Technologies serves exactly one real /.well-known document across its estate: an RFC 9727
+  api-catalog linkset on the SoFi Tech Solutions developer hub (docs.tech.sofi.com), which is how
+  the eleven OpenAPI definitions in openapi/ were discovered. Every other canonical path 404s.
+  Three paths on docs.tech.sofi.com answer HTTP 200 with the ReadMe single-page-app HTML shell
+  (952 KB of markup, not a document) and are recorded as misses, not hits.
+notes: >-
+  The /pro/.well-known/api-catalog document is not at the RFC 9727 origin-root location - ReadMe
+  serves a per-project catalog under the project basepath - but it is a real
+  application/linkset+json body naming 101 service-desc entries. It is the highest-value
+  discovery document in this repo.
+hosts:
+  - host: sofi.com
+    documents:
+      - { path: /.well-known/security.txt, status: 404 }
+      - { path: /.well-known/openid-configuration, status: 404 }
+      - { path: /.well-known/oauth-authorization-server, status: 404 }
+      - { path: /.well-known/api-catalog, status: 404 }
+      - { path: /.well-known/ai-plugin.json, status: 404 }
+  - host: www.sofi.com
+    documents:
+      - { path: /.well-known/security.txt, status: 404 }
+      - { path: /.well-known/openid-configuration, status: 404 }
+      - { path: /.well-known/oauth-authorization-server, status: 404 }
+      - { path: /.well-known/api-catalog, status: 404 }
+      - { path: /.well-known/ai-plugin.json, status: 404 }
+  - host: api.sofi.com
+    documents:
+      - { path: /.well-known/security.txt, status: 404 }
+      - { path: /.well-known/openid-configuration, status: 404 }
+      - { path: /.well-known/oauth-authorization-server, status: 404 }
+      - { path: /.well-known/api-catalog, status: 404 }
+      - { path: /.well-known/ai-plugin.json, status: 404 }
+  - host: tech.sofi.com
+    documents:
+      - { path: /.well-known/security.txt, status: 404 }
+      - { path: /.well-known/openid-configuration, status: 404 }
+      - { path: /.well-known/oauth-authorization-server, status: 404 }
+      - { path: /.well-known/api-catalog, status: 404 }
+      - { path: /.well-known/ai-plugin.json, status: 404 }
+  - host: docs.tech.sofi.com
+    documents:
+      - path: /.well-known/api-catalog
+        status: 200
+        file: sofi-technologies-api-catalog.json
+        content_type: application/linkset+json
+        note: >-
+          Real RFC 9727 linkset. One anchor (https://docs.tech.sofi.com/pro) whose service-desc
+          points at the per-project catalog below.
+      - path: /pro/.well-known/api-catalog
+        status: 200
+        file: sofi-technologies-pro-api-catalog.json
+        content_type: application/linkset+json
+        note: >-
+          Real RFC 9727 linkset, 101 service-desc entries of media type
+          application/vnd.oai.openapi+json. Fetching each yielded 11 distinct parseable OpenAPI
+          definitions (258 operations); the remaining 90 ids return the ReadMe HTML shell and are
+          superseded or non-public spec revisions.
+      - { path: /.well-known/openid-configuration, status: 404 }
+      - { path: /.well-known/oauth-authorization-server, status: 404 }
+      - path: /.well-known/security.txt
+        status: 200
+        note: >-
+          NOT a document. Returns the 952 KB ReadMe single-page-app HTML shell, as every unmatched
+          path on this host does. Recorded as a miss.
+      - path: /.well-known/ai-plugin.json
+        status: 200
+        note: NOT a document - same ReadMe SPA HTML shell. Recorded as a miss.
+      - path: /.well-known/agent-card.json
+        status: 200
+        note: >-
+          NOT an agent card - same ReadMe SPA HTML shell, the dominant false positive on this
+          probe. No A2A artifact was written.
+      - path: /.well-known/agent.json
+        status: 200
+        note: NOT an agent card - same ReadMe SPA HTML shell. Recorded as a miss.
+  - host: docs.sofi.com
+    documents:
+      - { path: /.well-known/api-catalog, status: 404 }
+      - { path: /.well-known/openid-configuration, status: 404 }
+      - { path: /.well-known/oauth-authorization-server, status: 404 }
+      - path: /.well-known/security.txt
+        status: 200
+        note: >-
+          NOT a document. docs.sofi.com is the SoFi Business Banking ReadMe hub and 302s every
+          path to https://dash.readme.com/to/sofi-parent-group - a login gate. Recorded as a miss.
+  - host: sandbox.gpsrv.com
+    documents:
+      - { path: /.well-known/security.txt, status: 404 }
+      - { path: /.well-known/openid-configuration, status: 404 }
+      - { path: /.well-known/oauth-authorization-server, status: 404 }
+      - { path: /.well-known/api-catalog, status: 404 }
+      - { path: /.well-known/ai-plugin.json, status: 404 }
+  - host: sandbox-api.gpsrv.com
+    documents:
+      - { path: /.well-known/security.txt, status: 0, note: TCP connect timed out - the Sandbox API host is IP-allowlisted, not open to anonymous probes. }
+      - { path: /.well-known/api-catalog, status: 0, note: TCP connect timed out. }
+  - host: developer.sofi.com
+    documents:
+      - { path: /.well-known/api-catalog, status: 0, note: "NXDOMAIN - developer.sofi.com does not resolve. It was the humanURL in this record before this pass and has been removed." }
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

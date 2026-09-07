@@ -1,0 +1,115 @@
+specification: API Commons Lifecycle
+specificationVersion: '0.1'
+provider: SoFi Technologies
+providerId: sofi-technologies
+generated: '2026-09-06'
+method: searched
+source: https://docs.tech.sofi.com/pro/reference/breaking-change-policy
+docs:
+  - https://docs.tech.sofi.com/pro/reference/breaking-change-policy
+  - https://docs.tech.sofi.com/pro/changelog
+  - https://docs.tech.sofi.com/pro/docs/environments
+description: >-
+  SoFi Tech Solutions publishes a real, specific Breaking Change Policy - not a boilerplate
+  "we may change this at any time" clause. It enumerates what counts as breaking and what does
+  not, for APIs, RDFs (raw data files), file formats and protocols alike, and commits to advance
+  notice with time for client validation. That is unusually concrete for a bank-processing
+  platform, and it is the strongest lifecycle signal in this repo.
+versioning:
+  scheme: path-embedded major version
+  current: '4.0'
+  location: 'URI path segment - https://api-{corename}.{env}.gpsrv.com/intserv/4.0/{endpoint}'
+  wrong_version_signal: 'status_code 18 - Unauthorized access to this version of the API'
+  per_api:
+    - { api: Program API, version: '4.0', path: /intserv/4.0/ }
+    - { api: Dispute API 3.0, version: '25.02', path: /gft-dispute-api/1.0/, note: 'calendar-style contract version over a 1.0 path' }
+    - { api: Dispute API 2.0, version: '1.0', note: superseded by Dispute API 3.0 but still published }
+    - { api: Payment Hub Api 2.0, version: '1.0', path: /payment-hub/1.0/ }
+    - { api: Public Config API, version: '1.0', path: /config/1.0/ }
+    - { api: Loan API, version: 1.0.0-SNAPSHOT, path: /lending/, note: 'the contract still carries a SNAPSHOT version marker' }
+    - { api: Risk API 1.0, version: '1.0' }
+    - { api: Risk API 2.0, version: '2.0' }
+    - { api: Auth API, version: 2.0.0 }
+    - { api: Events API, version: 1.0.0 }
+    - { api: External Trans API, version: 1.0.0 }
+breaking_change_policy:
+  published: true
+  url: https://docs.tech.sofi.com/pro/reference/breaking-change-policy
+  scope: 'APIs, RDFs, file formats and protocols'
+  notice: >-
+    Breaking changes are communicated before rollout, with supporting documentation and time for
+    client validation before deployment to production, through existing channels - the product
+    roadmap, monthly updates and client meetings.
+  notice_period_days: null
+  notice_period_note: >-
+    No number of days is stated. "Before the release" and "allow time for client validation" is
+    the whole commitment, so an agent cannot compute a deadline from it.
+  exception: >-
+    A change necessary for critical legal, security or compliance concerns is deployed WITHOUT
+    prior notice. This exception is explicit in the policy.
+  breaking_examples:
+    - Requiring a new input field
+    - Making a previously optional input field required
+    - Updating an existing field or data element in an existing response payload
+    - Changes to request or response headers
+    - Updating existing required product configuration parameters
+    - 'Changing agreed file-exchange details: name patterns, field widths, data types, field order, format, line endings in ACH files'
+    - 'RDFs: removing a field, changing a primary key, renaming a field, changing a data type, changing field semantics, changing filenames, modifying a fixed-width schema, updating a file trailer'
+  non_breaking_examples:
+    - Adding a new optional input field
+    - Adding a new required field that has a default value
+    - Adding a new response code for new functionality
+    - Adding a new field to an existing response payload
+    - Adding or removing an optional request header
+    - Adding a new endpoint
+    - Updating a parameter description
+    - Updating sequence numbers in accordance with Nacha rules
+deprecation:
+  policy_published: true
+  mechanism: >-
+    In-band, through the response envelope rather than through headers. Global status_code 54
+    means "This end point has been deprecated and will be removed in the very near future. If you
+    feel that this is not valid, contact SoFi Tech Solutions."
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  rfc8594_note: >-
+    No Sunset or Deprecation response headers are documented. A client learns an endpoint is
+    deprecated only by calling it and reading status_code 54 - and "the very near future" is not
+    a date.
+  deprecated_operations_in_spec: 0
+  deprecated_operations_note: >-
+    None of the 258 operations across the 11 harvested definitions carries deprecated: true.
+    Deprecation is signalled at runtime, not in the contract.
+  superseded_surfaces:
+    - { api: Dispute API 2.0, superseded_by: Dispute API 3.0, still_published: true, note: 'Both contracts remain in the api-catalog; no sunset date is published for 2.0.' }
+    - { api: Risk API 1.0, superseded_by: Risk API 2.0, still_published: true }
+sla:
+  published: false
+  note: >-
+    No public SLA, uptime target or credit schedule. Terms are bilateral - SoFi Tech Solutions
+    onboards clients under a signed program agreement.
+status_page:
+  published: false
+  probed:
+    - { url: 'https://status.tech.sofi.com', result: 'NXDOMAIN' }
+    - { url: 'https://tech.sofi.com/status', status: 404 }
+    - { url: 'https://galileo.statuspage.io', status: 200, note: 'redirects to /access/login - a PRIVATE Statuspage for signed clients, not a public status page' }
+  note: >-
+    The platform's Statuspage exists but is access-controlled, so no StatusPage pointer is
+    emitted. https://sofi.statuspage.io is public but it covers the SoFi consumer bank, not the
+    Tech Solutions platform, and belongs to the sibling all/sofi record.
+changelog:
+  published: true
+  url: https://docs.tech.sofi.com/pro/changelog
+  cadence: monthly
+  see: changelog/sofi-technologies-changelog.yml
+environments:
+  docs: https://docs.tech.sofi.com/pro/docs/environments
+  tiers:
+    - { name: Sandbox, purpose: 'shared standard program/product, no real funds', url: 'https://sandbox.gpsrv.com/' }
+    - { name: Client Validation, env_token: cv, purpose: "client's own programs and products, no real funds" }
+    - { name: Production, env_token: pd, purpose: 'live customer data, real funds' }
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

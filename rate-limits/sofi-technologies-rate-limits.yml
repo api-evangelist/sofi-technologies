@@ -4,33 +4,94 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: SoFi Technologies
 providerId: sofi-technologies
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-05'
-reconciled: false
+modified: '2026-09-06'
+generated: '2026-09-06'
+method: searched
+source: https://docs.tech.sofi.com/pro/reference/rate-limits
+reconciled: true
 tags:
   - Fintech
   - Banking
+  - Payments
   - Rate Limiting
-description: SoFi Technologies does not publish a public developer API or rate-limit page. SoFi member
-  apps consume internal APIs that are not externally documented. B2B integrations are run via SoFi's
-  banking subsidiaries (Galileo, Technisys) which maintain their own rate-limit documentation under separate
-  records.
-sources:
-  - https://www.sofi.com
-notes: No public developer portal or rate-limit page exists at sofi.com. Banking-as-a-service rate limits
-  for SoFi-owned platforms are documented under the Galileo / Technisys provider records, not here.
-responseCodes: {}
+description: >-
+  SoFi Tech Solutions publishes a Rate Limits reference page for the Program API, and what it
+  publishes is mostly the absence of a number: there is no default call limit, the safe upper
+  bound is negotiated per program, and exceeding it is described as causing system failure rather
+  than as returning a throttling response. The one hard published limit is on the shared Sandbox -
+  1000 API requests every 10 minutes. There are no rate-limit response headers and no documented
+  exhaustion status code, so a client has no runtime signal at all.
+limit_count: 2
 limits:
-  - name: No public limits documented
-    scope: account
-    metric: varies
-    limit: 'not publicly published'
+  - name: Sandbox request ceiling
+    scope: per-sandbox-account
+    metric: requests
+    limit: 1000
+    window: 10 minutes
+    burst: null
+    environment: Sandbox
+    source: https://docs.tech.sofi.com/pro/docs/environments
+    note: The only numeric API call limit SoFi Tech Solutions publishes anywhere.
+  - name: Request payload ceiling
+    scope: per-request
+    metric: bytes
+    limit: 16 MB
+    window: null
+    environment: all
+    source: https://docs.tech.sofi.com/pro/reference/rate-limits
+    note: >-
+      "For many endpoints the payload for an endpoint request cannot exceed 16 MB. Some endpoints
+      can handle larger payloads." Per-endpoint limits are confirmed with SoFi Tech Solutions, not
+      published.
+  - name: Search Accounts result ceiling
+    scope: per-request
+    metric: records
+    limit: 400
+    window: null
+    environment: all
+    source: https://docs.tech.sofi.com/pro/reference/api-reference-global-response-statuses
+    note: >-
+      Not a rate limit but a result-set ceiling - status_code 103, "Too many results were found
+      (>400). Modify search criteria to reduce the number of results." Not counted in limit_count.
+production_limit:
+  published: false
+  statement: >-
+    "SoFi Tech Solutions does not specify a default limit on the number of API calls that a
+    program can make; however, it is still possible to overwhelm the system with an excessive
+    number of calls during a given period. You will need to work with us to calculate a safe
+    upper limit for your program."
+  consequence_stated: >-
+    "Failure to conform to this upper limit can result in system failure, with high numbers of
+    request failures and other unexpected negative results."
+  note: >-
+    The limit exists but is bilateral and unpublished. An integrator cannot read their ceiling
+    from the docs, and neither can an agent.
+responseCodes:
+  exhaustion_status: null
+  note: >-
+    No HTTP status or application status_code is documented for exceeding a rate limit. Global
+    status_code 26 is "Limit violation" but the documentation attaches it to product/account
+    transaction limits, not to call rate, so it is NOT recorded here as the throttling signal.
+headers:
+  ratelimit: []
+  retry_after: false
+  note: >-
+    None. No RateLimit-*, X-RateLimit-* or Retry-After header is documented or observed. This is
+    the platform's largest agent-readiness gap: there is no runtime backpressure signal to read.
 policies:
-  - name: B2C provider
-    description: SoFi Technologies is a B2C bank/fintech holding company; partner-facing rate limits are
-      governed by bilateral integration agreements rather than a public limits page.
+  - name: Negotiated program ceiling
+    description: >-
+      The safe upper bound is calculated jointly with SoFi Tech Solutions per program, and varies
+      with core configuration and transactions per account.
+  - name: Sandbox credential expiry
+    description: >-
+      Sandbox API credentials must be regenerated every 30 days by the company's Sandbox team
+      admin; using expired details fails requests and can lock the company account.
+    source: https://docs.tech.sofi.com/pro/docs/environments
+notes: >-
+  This artifact replaces a 2026-05-04 bulk-sweep placeholder that recorded "no public developer
+  API or rate-limit page" for SoFi Technologies. That was wrong: the SoFi Tech Solutions Pro
+  developer hub at docs.tech.sofi.com is public and publishes a Rate Limits reference page.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

@@ -1,0 +1,170 @@
+specification: API Commons Data Model
+specificationVersion: '0.1'
+provider: SoFi Technologies
+providerId: sofi-technologies
+generated: '2026-09-06'
+method: derived
+source: >-
+  openapi/ - 468 component schemas and 167 internal $ref edges across the six definitions that
+  declare components, plus the identifier parameters counted across all 167 Program API
+  operations. Identifier semantics (PRN, PAN, CAD, balance ID) come from
+  https://docs.tech.sofi.com/pro/docs/about-accounts and the operation descriptions.
+description: >-
+  The SoFi Tech Solutions object graph as it is actually expressed in the contracts. It is a
+  two-speed model: the newer surfaces (Payment Hub, Dispute 3.0, Loan, Risk 2.0, Public Config)
+  are schema-first with 468 named components and real $ref links, while the Program API - the
+  167-operation core that owns accounts, cards and money movement - declares ZERO component
+  schemas and carries every entity as flat form parameters and inline response objects. An agent
+  reading only the specs sees the periphery modelled and the centre unmodelled.
+schema_inventory:
+  total_component_schemas: 468
+  internal_ref_edges: 167
+  by_definition:
+    - { spec: openapi/sofi-technologies-payment-hub-api-openapi.json, schemas: 129 }
+    - { spec: openapi/sofi-technologies-dispute-api-3-0-openapi.json, schemas: 128 }
+    - { spec: openapi/sofi-technologies-dispute-api-2-0-openapi.json, schemas: 95 }
+    - { spec: openapi/sofi-technologies-public-config-api-openapi.json, schemas: 37 }
+    - { spec: openapi/sofi-technologies-risk-api-2-0-openapi.json, schemas: 35 }
+    - { spec: openapi/sofi-technologies-loan-api-openapi.json, schemas: 25 }
+    - { spec: openapi/sofi-technologies-risk-api-1-0-openapi.json, schemas: 19 }
+    - { spec: openapi/sofi-technologies-program-api-openapi.json, schemas: 0 }
+    - { spec: openapi/sofi-technologies-auth-api-openapi.json, schemas: 0 }
+    - { spec: openapi/sofi-technologies-events-api-openapi.json, schemas: 0 }
+    - { spec: openapi/sofi-technologies-external-trans-api-openapi.json, schemas: 0 }
+identifier_vocabulary:
+  # Counts are the number of Program API operations (of 167) whose contract mentions the
+  # parameter - the strongest available evidence of which identifier the graph turns on.
+
+  - { id: providerId, operations: 167, role: tenant, note: 'the client organisation, issued by SoFi Tech Solutions; also an auth parameter' }
+  - { id: transactionId, operations: 167, role: request-identity, note: 'caller-supplied per-request id; also the idempotency key on 35 endpoints' }
+  - { id: accountNo, operations: 123, role: account-lookup, note: 'polymorphic - accepts a PRN or a PAN, and in multi-card situations a CAD can be used instead of a PAN (status_code 47)' }
+  - { id: prodId, operations: 17, role: product, note: 'the product configuration an account is opened against' }
+  - { id: prn, operations: 4, role: account-identity, note: 'primary reference number - the durable account identifier that survives card reissue' }
+  - { id: billerId, operations: 4, role: biller }
+  - { id: programId, operations: 4, role: program, note: 'a program groups products under a provider' }
+  - { id: groupId, operations: 4, role: account-group }
+  - { id: achAccountNo, operations: 3, role: external-bank-account }
+  - { id: authId, operations: 2, role: authorization, note: 'system-generated, unique only per subnetwork - NOT globally unique' }
+  - { id: cardId, operations: 1, role: card }
+  - { id: customerId, operations: 1, role: customer }
+  - { id: feeId, operations: 1, role: fee, note: 'used to reverse a fee that Assess Fee did not create' }
+  - { id: balance ID, operations: null, role: balance, note: 'called the "Galileo account number" in the docs; accounts that share a balance ID share a balance - this is the join that makes Get Balance return several accounts at once' }
+entities:
+  - name: Provider
+    key: providerId
+    description: The client organisation integrating with SoFi Tech Solutions.
+    relationships:
+      - { type: has_many, target: Program, via: programId }
+      - { type: has_many, target: Product, via: prodId }
+  - name: Program
+    key: programId
+    relationships:
+      - { type: belongs_to, target: Provider, via: providerId }
+      - { type: has_many, target: Product, via: prodId }
+  - name: Product
+    key: prodId
+    description: >-
+      The configuration an account is opened against - card type, interest, overdraft, spend
+      controls. Read through the Public Config API (pubconfig_post_getproductconfig).
+    relationships:
+      - { type: belongs_to, target: Program, via: programId }
+      - { type: has_many, target: Account, via: prodId }
+  - name: Customer
+    key: customerId
+    description: >-
+      Created by Start Enrollment or as a side effect of Create Account. Carries the identity
+      documents that Customer ID Verification (IVS/CIP) checks.
+    relationships:
+      - { type: has_many, target: Account, via: accountNo }
+      - { type: has_one, target: Verification, via: 'Risk API 2.0 verifyCustomer' }
+  - name: Account
+    key: prn
+    also_addressed_by: [accountNo, PAN, CAD]
+    relationships:
+      - { type: belongs_to, target: Customer, via: customerId }
+      - { type: belongs_to, target: Product, via: prodId }
+      - { type: has_many, target: Card, via: accountNo }
+      - { type: has_one, target: Balance, via: 'balance ID' }
+      - { type: has_many, target: Transaction, via: accountNo }
+      - { type: has_many, target: Fee, via: accountNo }
+      - { type: has_many, target: AchAccount, via: achAccountNo }
+      - { type: belongs_to, target: AccountGroup, via: groupId }
+  - name: Balance
+    key: balance ID (Galileo account number)
+    description: >-
+      Several accounts can share one balance. Get Balance returns the balances for all accounts
+      sharing the balance ID, which is why a single-account read can return several rows.
+  - name: Card
+    key: PAN / CAD
+    relationships:
+      - { type: belongs_to, target: Account, via: accountNo }
+      - { type: has_many, target: Authorization, via: authId }
+  - name: Authorization
+    key: authId
+    note: authId is unique only per subnetwork.
+    relationships:
+      - { type: belongs_to, target: Card, via: PAN }
+      - { type: has_one, target: Transaction, via: settlement }
+  - name: Transaction
+    relationships:
+      - { type: belongs_to, target: Account, via: accountNo }
+      - { type: has_many, target: DisputeClaim, via: 'Dispute API claim/intake/addTransactions' }
+  - name: Fee
+    key: feeId
+    relationships:
+      - { type: belongs_to, target: Account, via: accountNo }
+  - name: AchAccount
+    key: achAccountNo
+    description: An external bank account linked for ACH debit/credit.
+    relationships:
+      - { type: belongs_to, target: Account, via: accountNo }
+  - name: Biller
+    key: billerId
+    relationships:
+      - { type: has_many, target: BillPayment, via: billerId }
+  - name: Transfer
+    api: Payment Hub Api 2.0
+    key: transferId
+    relationships:
+      - { type: belongs_to, target: ExternalAccountLink, via: externalAccountLinkId }
+  - name: ExternalAccountLink
+    api: Payment Hub Api 2.0
+    relationships:
+      - { type: has_many, target: Transfer }
+  - name: DisputeClaim
+    api: Dispute API 3.0
+    key: claimId
+    relationships:
+      - { type: has_many, target: Transaction, via: 'claim/intake/addTransactions' }
+      - { type: has_many, target: Document, via: 'claim/documents/add' }
+      - { type: has_many, target: Task, via: 'task/list' }
+  - name: Loan
+    api: Loan API
+    relationships:
+      - { type: has_one, target: AmortizationSchedule }
+      - { type: has_many, target: LoanTransaction }
+  - name: Verification
+    api: Risk API 2.0
+    key: applicationId
+    relationships:
+      - { type: belongs_to, target: Customer }
+      - { type: has_many, target: RuleOutcome }
+gaps:
+  - >-
+    The Program API declares no component schemas, so no $ref graph can be derived for the
+    platform's core entities. Every relationship above that touches Account, Card, Authorization,
+    Fee or Transaction was derived from parameter names and operation prose, not from the
+    contract's own type system, and is marked as such by its via: value.
+  - >-
+    accountNo is polymorphic (PRN or PAN, sometimes CAD). A caller cannot tell from the contract
+    which identifier a given response returned; status_code 47 exists specifically because the
+    ambiguity is unresolvable in multi-card situations.
+  - >-
+    authId is not globally unique. Any agent keying an authorization by authId alone will collide
+    across subnetworks.
+see_also:
+  conventions: conventions/sofi-technologies-conventions.yml
+  errors: errors/sofi-technologies-problem-types.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

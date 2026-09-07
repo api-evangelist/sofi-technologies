@@ -1,0 +1,78 @@
+specification: API Commons ChangeLog
+specificationVersion: '0.1'
+provider: SoFi Technologies
+providerId: sofi-technologies
+generated: '2026-09-06'
+method: searched
+source: https://docs.tech.sofi.com/pro/changelog
+docs: https://docs.tech.sofi.com/pro/changelog
+description: >-
+  SoFi Tech Solutions publishes a dated, monthly changelog on the Pro developer hub, with one
+  entry per calendar month plus an annual year-in-review. Entries name the exact endpoints and
+  fields that changed and link to the operation reference, which is materially more useful than
+  a version bump. The index is machine-readable via the hub's llms.txt.
+scheme:
+  cadence: monthly
+  form: 'one page per month, slug <month>-<year>; annual "<year> Year in Review"'
+  index: https://docs.tech.sofi.com/pro/llms.txt
+  markdown: 'append .md to any changelog URL for the markdown source'
+current_version:
+  program_api: '4.0'
+  note: >-
+    The changelog is not versioned - the Program API major version has been 4.0 throughout the
+    published window. Change communication is by dated entry plus the Breaking Change Policy,
+    not by semantic version.
+window:
+  earliest_published: '2025 Year in Review'
+  latest_published: '2026-09'
+  entries_indexed: 10
+entries:
+  - version: null
+    date: '2026-09'
+    url: https://docs.tech.sofi.com/pro/changelog/september-2026
+    breaking: false
+    highlights:
+      - >-
+        Create ACH Transaction (post_createachtransaction) B2C debit classification sharpened -
+        SEC code WEB for online/mobile authorization, other B2C defaulting to PPD.
+      - Added product_id and program_id to both versions of the Auth API webhook message.
+      - Added the Interest-Bearing Accounts guide and Interest Calculation Worksheets.
+  - version: null
+    date: '2026-08'
+    url: https://docs.tech.sofi.com/pro/changelog/august-2026
+    breaking: true
+    breaking_note: >-
+      companyEntryDesc became a REQUIRED field on Create ACH Transaction - by the provider's own
+      Breaking Change Policy, "making a previously optional input field a required field" is a
+      breaking change.
+    additions:
+      - New endpoint Get AutoPay Plan (post_getautopayplan) added to the Program API.
+    highlights:
+      - >-
+        Set Overdraft Limit response field corrected to old_overdraft_limit (was documented as
+        previous_overdraft_limit).
+      - Get Overdraft Balance response field descriptions clarified, including ActualWithPrimary.
+      - >-
+        Service and Product RDF databases migrated - standardized columns for all clients,
+        currency amounts now rendered as 15.0 rather than 15.00, and RDFs no longer split per
+        prog_id / prod_id.
+      - Outgoing ACH RDF confirmed to post empty files on weekends and bank holidays.
+      - Reopened-case and TTI information added.
+  - version: null
+    date: '2026-07'
+    url: https://docs.tech.sofi.com/pro/changelog/july-2026
+    breaking: null
+  - { version: null, date: '2026-06', url: 'https://docs.tech.sofi.com/pro/changelog/june-2026' }
+  - { version: null, date: '2026-05', url: 'https://docs.tech.sofi.com/pro/changelog/may-2026' }
+  - { version: null, date: '2026-04', url: 'https://docs.tech.sofi.com/pro/changelog/april-2026' }
+  - { version: null, date: '2026-03', url: 'https://docs.tech.sofi.com/pro/changelog/march-2026' }
+  - { version: null, date: '2026-02', url: 'https://docs.tech.sofi.com/pro/changelog/february-2026' }
+  - { version: null, date: '2026-01', url: 'https://docs.tech.sofi.com/pro/changelog/january-2026' }
+  - { version: null, date: '2025-12', url: 'https://docs.tech.sofi.com/pro/changelog/2025-year-in-review', note: '2025 Year in Review' }
+notes: >-
+  Only the three most recent entries were read in full; the remainder are indexed from the
+  provider's llms.txt with their real URLs and dates and are marked with no claims about their
+  content. Entries older than the 2025 Year in Review are not exposed in the index.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

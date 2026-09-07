@@ -2,63 +2,462 @@ aid: sofi-technologies
 url: https://raw.githubusercontent.com/api-evangelist/sofi-technologies/refs/heads/main/apis.yml
 name: SoFi Technologies
 type: Index
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+description: 'SoFi Technologies, Inc. (NASDAQ: SOFI) is a US member-centric digital financial services
+  company and federally chartered bank holding company. Alongside its consumer banking, lending and investing
+  business it operates SoFi Tech Solutions - the B2B financial technology platform formed from its acquisitions
+  of Galileo Financial Technologies and Technisys, and rebranded under the SoFi name in 2026. SoFi Tech
+  Solutions is the API business: a card issuer-processor and banking-as-a-service platform whose public
+  developer hub at docs.tech.sofi.com publishes eleven OpenAPI definitions covering 258 operations - the
+  167-operation Program API for accounts, cards, authorizations, ACH and bill pay, plus Payment Hub, Dispute,
+  Loan, Risk and Public Config APIs and three client-hosted webhook contracts. The platform declares ISO
+  20022, ISO 8583, Nacha ACH, EMV and 3-D Secure in its own contracts, and discovery runs through a real
+  RFC 9727 api-catalog linkset.'
+tags:
+- Fintech
+- Payments
+- Banking
+- Card Issuing
+- Banking as a Service
+- Personal Finance
+- Lending
+- ACH
+- ISO 20022
+- Disputes
+- Identity Verification
+- Webhooks
+created: '2026-04-19'
+modified: '2026-09-06'
+specificationVersion: '0.23'
 deliveryModel:
-  model: unknown
+  model: commercial-hosted
   open_source: false
-  commercial: false
-  callable_host: false
-  label: Delivery model not determined — needs a product licence on record
-  confidence: low
+  commercial: true
+  callable_host: true
+  label: Commercial hosted platform - credentials issued under a signed program agreement
+  confidence: high
   source:
-  - none
-  generated: '2026-08-28'
-  method: derived
+  - https://docs.tech.sofi.com/pro/reference/api-reference-authentication
+  - https://docs.tech.sofi.com/pro/docs/environments
+  generated: '2026-09-06'
+  method: searched
 accessModel:
   pricing: enterprise
-  onboarding: unknown
-  trial: false
+  onboarding: sales-assisted
+  trial: true
   try_now: false
   public: false
-  label: Enterprise
-  confidence: medium
+  label: Enterprise - public contracts, gated credentials
+  confidence: high
   source:
-  - plans
-  generated: '2026-07-22'
-  method: derived
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
-tags:
-  - Fintech
-  - Personal Finance
-  - Banking
-description: >-
-  SoFi Technologies is a major US corporation and Fortune 1000 company. The SoFi Technologies API provides programmatic access to its platform services, data, and integrations for enterprise customers and partners.
-created: '2026-04-19'
-modified: '2026-04-19'
-specificationVersion: '0.23'
+  - https://tech.sofi.com/lp/request-access/
+  - plans/sofi-technologies-plans-pricing.yml
+  generated: '2026-09-06'
+  method: searched
+  note: 'The specifications and the entire developer hub are public and need no login. Calling anything
+    does not: apiLogin / apiTransKey / providerId are issued during onboarding and bound to the caller
+    IP. Sandbox access is requested through a form and granted by a human.'
 apis:
-  - aid: sofi-technologies:sofi-technologies-api
-    name: SoFi Technologies API
-    tags:
-      - Fintech
-      - Personal Finance
-      - Banking
-    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-    baseURL: https://api.sofi.com
-    humanURL: https://developer.sofi.com
-    properties:
-      - url: https://developer.sofi.com/docs
-        type: Documentation
-    description: >-
-      The SoFi Technologies API provides access to platform services and data for enterprise integration and automation.
+- aid: sofi-technologies:sofi-tech-solutions-program-api
+  name: SoFi Tech Solutions Program API
+  description: 'The core of the SoFi Tech Solutions card issuer-processor platform: 167 operations covering
+    customer enrollment and identity verification, account and card creation, balances, authorizations,
+    transaction and fee history, adjustments, ACH origination, bill pay, spend controls and card provisioning.
+    Every operation is a POST with application/x-www-form-urlencoded parameters and returns a proprietary
+    envelope whose outcome is in status_code, not in the HTTP status.'
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Fintech
+  - Payments
+  - Banking
+  - Card Issuing
+  - Banking as a Service
+  - Accounts
+  - Cards
+  - ACH
+  properties:
+  - url: openapi/sofi-technologies-program-api-openapi.json
+    type: OpenAPI
+  - url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+    type: APIReference
+  - url: https://docs.tech.sofi.com/pro/
+    type: Documentation
+  - url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+    type: Postman
+  - url: overlays/sofi-technologies-program-api-overlay.yaml
+    type: Overlay
+  - url: skills/sofi-technologies-open-card-account.md
+    type: AgentSkill
+  - url: skills/sofi-technologies-ach-money-movement.md
+    type: AgentSkill
+- aid: sofi-technologies:sofi-tech-solutions-payment-hub-api
+  name: SoFi Tech Solutions Payment Hub API 2.0
+  description: Money movement over instant-payment rails, with external account linking. The contract
+    declares ISO 20022 message types by name - pacs.008 and pacs.004 outbound, pacs.002 status reports,
+    and the ISO 20022 External Status Reason Codes for FedNow returns - which makes it one of the few
+    contracts in the catalog that states its own market standard rather than claiming it on a marketing
+    page.
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  baseURL: https://{corename}.payment-hub.{env}.gpsrv.com/payment-hub/1.0/
+  tags:
+  - Fintech
+  - Payments
+  - Banking
+  - Card Issuing
+  - Banking as a Service
+  - ISO 20022
+  - FedNow
+  - Transfers
+  properties:
+  - url: openapi/sofi-technologies-payment-hub-api-openapi.json
+    type: OpenAPI
+  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+    type: APIReference
+  - url: https://docs.tech.sofi.com/pro/
+    type: Documentation
+- aid: sofi-technologies:sofi-tech-solutions-dispute-api-30
+  name: SoFi Tech Solutions Dispute API 3.0
+  description: Cardholder dispute intake and case management, split into an Intake API that stages a claim
+    - reasons, disputed transactions, similar transactions, questionnaire, document requirements, summary,
+    submit - and an Interaction API that lists, reopens, withdraws and works the resulting task queue.
+    Supersedes Dispute API 2.0, which remains published with no announced sunset.
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  baseURL: https://{corename}.gft-dispute-api.{env}.gpsrv.com/gft-dispute-api/1.0/
+  tags:
+  - Fintech
+  - Payments
+  - Banking
+  - Card Issuing
+  - Banking as a Service
+  - Disputes
+  - Chargebacks
+  - Regulation E
+  properties:
+  - url: openapi/sofi-technologies-dispute-api-3-0-openapi.json
+    type: OpenAPI
+  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+    type: APIReference
+  - url: https://docs.tech.sofi.com/pro/
+    type: Documentation
+  - url: skills/sofi-technologies-file-dispute-claim.md
+    type: AgentSkill
+- aid: sofi-technologies:sofi-tech-solutions-dispute-api-20
+  name: SoFi Tech Solutions Dispute API 2.0
+  description: The previous generation of the dispute surface - 22 operations for creating a case, attaching
+    reasons and transactions, answering the questionnaire and submitting. Superseded by Dispute API 3.0
+    but still published in the provider api-catalog, with no sunset date and no Deprecation or Sunset
+    header on the wire.
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  baseURL: https://dispute-api-{corename}.{env}.gpsrv.com/
+  tags:
+  - Fintech
+  - Payments
+  - Banking
+  - Card Issuing
+  - Banking as a Service
+  - Disputes
+  - Chargebacks
+  - Deprecated
+  properties:
+  - url: openapi/sofi-technologies-dispute-api-2-0-openapi.json
+    type: OpenAPI
+  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+    type: APIReference
+  - url: https://docs.tech.sofi.com/pro/
+    type: Documentation
+- aid: sofi-technologies:sofi-tech-solutions-loan-api
+  name: SoFi Tech Solutions Loan API
+  description: Lending operations on the platform - loan status, payment schedule and amortization, transaction
+    history, installment statuses and loan simulation. This is the only SoFi Tech Solutions contract that
+    declares a bearer token security scheme in the specification itself, and its info.version still carries
+    a 1.0.0-SNAPSHOT marker.
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  baseURL: https://lending-{corename}.{env}.gpsrv.com/lending/
+  tags:
+  - Fintech
+  - Payments
+  - Banking
+  - Card Issuing
+  - Banking as a Service
+  - Lending
+  - Loans
+  - Amortization
+  properties:
+  - url: openapi/sofi-technologies-loan-api-openapi.json
+    type: OpenAPI
+  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+    type: APIReference
+  - url: https://docs.tech.sofi.com/pro/
+    type: Documentation
+- aid: sofi-technologies:sofi-tech-solutions-risk-api-20
+  name: SoFi Tech Solutions Risk API 2.0
+  description: Identity verification for consumers and businesses - verify a customer, read application
+    and customer status, close an application, and retrieve verification documents and rule outcomes.
+    This is the IVS surface that Create Account calls when the EIVS provider parameter is set, exposed
+    directly for callers that want to verify before they open anything.
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  baseURL: https://{corename}.risk.{env}.gpsrv.com/
+  tags:
+  - Fintech
+  - Payments
+  - Banking
+  - Card Issuing
+  - Banking as a Service
+  - Identity Verification
+  - KYC
+  - Risk
+  properties:
+  - url: openapi/sofi-technologies-risk-api-2-0-openapi.json
+    type: OpenAPI
+  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+    type: APIReference
+  - url: https://docs.tech.sofi.com/pro/
+    type: Documentation
+- aid: sofi-technologies:sofi-tech-solutions-risk-api-10
+  name: SoFi Tech Solutions Risk API 1.0
+  description: The Payment Risk Platform surface - card transaction fraud scoring, money movement fraud
+    scoring and instant verification. Three operations, superseded in part by Risk API 2.0 but still published
+    in the provider api-catalog.
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  baseURL: https://risk-{corename}.{env}.gpsrv.com/
+  tags:
+  - Fintech
+  - Payments
+  - Banking
+  - Card Issuing
+  - Banking as a Service
+  - Fraud
+  - Risk
+  - Identity Verification
+  properties:
+  - url: openapi/sofi-technologies-risk-api-1-0-openapi.json
+    type: OpenAPI
+  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+    type: APIReference
+  - url: https://docs.tech.sofi.com/pro/
+    type: Documentation
+- aid: sofi-technologies:sofi-tech-solutions-public-config-api
+  name: SoFi Tech Solutions Public Config API
+  description: A single read operation that returns the full product configuration behind an account -
+    account and card features, authorization limits, BIN information, country blocks, embossing partners
+    and stock. It is the contract that lets an integrator discover why a Program API call behaved the
+    way it did, since almost every Program API behaviour is driven by product parameters rather than by
+    request fields.
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  baseURL: https://{corename}.config-api.{env}.gpsrv.com/config/1.0/
+  tags:
+  - Fintech
+  - Payments
+  - Banking
+  - Card Issuing
+  - Banking as a Service
+  - Configuration
+  - Product Config
+  properties:
+  - url: openapi/sofi-technologies-public-config-api-openapi.json
+    type: OpenAPI
+  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+    type: APIReference
+  - url: https://docs.tech.sofi.com/pro/
+    type: Documentation
+- aid: sofi-technologies:sofi-tech-solutions-events-api
+  name: SoFi Tech Solutions Events API
+  description: 'The platform notification firehose, also called the Alerts API: four webhooks - AccountEvent,
+    Authorization, Settlement and Transaction - carrying at least 124 documented event types identified
+    by a type field. The client hosts the endpoints and SoFi Tech Solutions POSTs to them, which is why
+    the specification carries a placeholder server rather than a SoFi host.'
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  baseURL: https://client.domain.com
+  tags:
+  - Fintech
+  - Payments
+  - Banking
+  - Card Issuing
+  - Banking as a Service
+  - Webhooks
+  - Events
+  - Notifications
+  properties:
+  - url: openapi/sofi-technologies-events-api-openapi.json
+    type: OpenAPI
+  - url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+    type: APIReference
+  - url: https://docs.tech.sofi.com/pro/
+    type: Documentation
+  - url: asyncapi/sofi-technologies-webhooks.yml
+    type: Webhooks
+- aid: sofi-technologies:sofi-tech-solutions-auth-api
+  name: SoFi Tech Solutions Auth API
+  description: The authorization controller webhook. SoFi Tech Solutions hands the client the in-flight
+    card authorization - populated from the ISO 8583 message the network sent, including CAVV and 3-D
+    Secure fields - along with the response_code it intends to return to the merchant, and the client
+    overrides that code in the HTTP response body to approve or deny. This is the platform surface where
+    the client, not the processor, makes the decision.
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  baseURL: https://example.client.domain.com
+  tags:
+  - Fintech
+  - Payments
+  - Banking
+  - Card Issuing
+  - Banking as a Service
+  - Webhooks
+  - Authorization
+  - ISO 8583
+  properties:
+  - url: openapi/sofi-technologies-auth-api-openapi.json
+    type: OpenAPI
+  - url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+    type: APIReference
+  - url: https://docs.tech.sofi.com/pro/
+    type: Documentation
+- aid: sofi-technologies:sofi-tech-solutions-external-trans-api
+  name: SoFi Tech Solutions External Trans API
+  description: The decisioning webhook for incoming ACH debits and bill payments - the ACH and billpay
+    counterpart to the Auth API. The client answers with a response_code to approve or deny the transaction.
+    Two operations, both client-hosted.
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+  baseURL: https://client.domain.com
+  tags:
+  - Fintech
+  - Payments
+  - Banking
+  - Card Issuing
+  - Banking as a Service
+  - Webhooks
+  - ACH
+  - Bill Pay
+  properties:
+  - url: openapi/sofi-technologies-external-trans-api-openapi.json
+    type: OpenAPI
+  - url: https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+    type: APIReference
+  - url: https://docs.tech.sofi.com/pro/
+    type: Documentation
 common:
-  - type: DomainSecurity
-    url: security/sofi-technologies-domain-security.yml
-  - type: LinkedIn
-    url: https://www.linkedin.com/company/sofi-technologies
-  - type: Website
-    url: https://www.sofi.com
+- type: Webhooks
+  url: asyncapi/sofi-technologies-webhooks.yml
+- type: MCPServer
+  url: mcp/sofi-technologies-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/sofi-technologies-tool-crosswalk.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/sofi-technologies-llms.txt
+- type: WellKnown
+  url: well-known/sofi-technologies-well-known.yml
+- type: Conventions
+  url: conventions/sofi-technologies-conventions.yml
+- type: Idempotency
+  url: conventions/sofi-technologies-conventions.yml
+- type: Authentication
+  url: authentication/sofi-technologies-authentication.yml
+- type: ErrorCatalog
+  url: errors/sofi-technologies-problem-types.yml
+- type: DeclineCodes
+  url: errors/sofi-technologies-decline-codes.yml
+- type: Lifecycle
+  url: lifecycle/sofi-technologies-lifecycle.yml
+- type: Deprecation
+  url: lifecycle/sofi-technologies-lifecycle.yml
+- type: ChangeLog
+  url: changelog/sofi-technologies-changelog.yml
+- type: Conformance
+  url: conformance/sofi-technologies-conformance.yml
+- type: DataModel
+  url: data-model/sofi-technologies-data-model.yml
+- type: Sandbox
+  url: sandbox/sofi-technologies-sandbox.yml
+- type: Packages
+  url: packages/sofi-technologies-packages.yml
+- type: Plans
+  url: plans/sofi-technologies-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/sofi-technologies-rate-limits.yml
+- type: FinOps
+  url: finops/sofi-technologies-finops.yml
+- type: DomainSecurity
+  url: security/sofi-technologies-domain-security.yml
+- type: VulnerabilityDisclosure
+  url: security/sofi-technologies-vulnerability-disclosure.yml
+- type: Security
+  url: https://hackerone.com/sofi-1
+- type: Overlay
+  url: overlays/sofi-technologies-program-api-overlay.yaml
+- type: Website
+  url: https://www.sofi.com
+- type: DeveloperPortal
+  url: https://docs.tech.sofi.com/pro/
+- type: Documentation
+  url: https://docs.tech.sofi.com/pro/docs/introduction
+- type: APIReference
+  url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+- type: GettingStarted
+  url: https://docs.tech.sofi.com/pro/docs/quickstart
+- type: Postman
+  url: https://www.postman.com/galileo-ft/workspace
+- type: SignUp
+  url: https://tech.sofi.com/lp/request-access/
+- type: Support
+  url: https://tech.sofi.com/contact-us/
+- type: Blog
+  url: https://tech.sofi.com/blog/
+- type: Newsroom
+  url: https://tech.sofi.com/news/
+- type: About
+  url: https://tech.sofi.com/about/
+- type: Careers
+  url: https://tech.sofi.com/careers/
+- type: TermsOfService
+  url: https://www.sofi.com/terms-of-use/
+- type: PrivacyPolicy
+  url: https://www.sofi.com/privacy-policies/
+- type: LinkedIn
+  url: https://www.linkedin.com/company/sofi-technologies
 maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
-x-parent: sofi
-x-relationship: product
+- FN: Kin Lane
+  email: kin@apievangelist.com
+x-parent:
+  slug: sofi
+x-relationship:
+  kind: product
+x-api-bases:
+  note: 'STEP 22b: repair-api-bases.py reports `disagreement` for this record, and the disagreement is
+    correct rather than a defect. SoFi Tech Solutions gives each API family its own host template - api-{corename}.{env}.gpsrv.com
+    for the Program API, {corename}.payment-hub.{env}.gpsrv.com for Payment Hub, {corename}.gft-dispute-api.{env}.gpsrv.com
+    for Dispute 3.0, lending-{corename}.{env}.gpsrv.com for Loan, and so on - and each baseURL above was
+    taken from that API''s own servers[] block, never picked for all of them. The three webhook contracts
+    (Events, Auth, External Trans) carry placeholder hosts (client.domain.com, example.client.domain.com)
+    because the CLIENT hosts those endpoints and provides the URL; those are the provider''s own published
+    server values and are recorded verbatim rather than replaced with a SoFi host that does not exist.
+    corename is assigned per client at onboarding; env is cv (client validation) or pd (production). The
+    shared Sandbox is reached at https://sandbox-api.gpsrv.com/intserv/4.0/.'
+x-contract-ownership:
+  note: 'The eleven OpenAPI definitions in openapi/ were fetched from the RFC 9727 api-catalog at https://docs.tech.sofi.com/pro/.well-known/api-catalog
+    - SoFi Technologies own hostname - and they name their publisher in their own text: the External Trans
+    API describes "the SoFi Tech Solutions backoffice system", the Auth API says "SoFi Tech Solutions
+    initializes the webhook payload", and the reference pages say SoFi Tech Solutions throughout. The
+    gpsrv.com server hostnames and the gft- path prefixes are the legacy Galileo Financial Technologies
+    processing names, retained after SoFi Technologies acquired Galileo in 2020 and rebranded it to SoFi
+    Tech Solutions in 2026 (https://tech.sofi.com/news/galileo-financial-technologies-rebranding-to-sofi-tech-solutions/).
+    The sibling record all/galileo-fs documents the same platform under its pre-rebrand identity and legacy
+    docs.galileo-ft.com host; this record documents the surface as SoFi publishes it today.'
+x-enrichment:
+  date: '2026-09-06'
+  status: enriched
+  artifacts_added: 35
+  artifacts_updated: 5
+  pass: local-v3
