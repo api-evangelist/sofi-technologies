@@ -25,6 +25,19 @@ tags:
 - ISO 20022
 - Disputes
 - Identity Verification
+- Webhook
+tags_raw:
+- Fintech
+- Payments
+- Banking
+- Card Issuing
+- Banking as a Service
+- Personal Finance
+- Lending
+- ACH
+- ISO 20022
+- Disputes
+- Identity Verification
 - Webhooks
 created: '2026-04-19'
 modified: '2026-09-06'
@@ -58,295 +71,1362 @@ accessModel:
     does not: apiLogin / apiTransKey / providerId are issued during onboarding and bound to the caller
     IP. Sandbox access is requested through a form and granted by a human.'
 apis:
-- aid: sofi-technologies:sofi-tech-solutions-program-api
-  name: SoFi Tech Solutions Program API
-  description: 'The core of the SoFi Tech Solutions card issuer-processor platform: 167 operations covering
-    customer enrollment and identity verification, account and card creation, balances, authorizations,
-    transaction and fee history, adjustments, ACH origination, bill pay, spend controls and card provisioning.
-    Every operation is a POST with application/x-www-form-urlencoded parameters and returns a proprietary
-    envelope whose outcome is in status_code, not in the HTTP status.'
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+- aid: sofi-technologies:sofi-technologies-account-events-webhook-api
+  name: SoFi Technologies Account Events Webhook API
+  description: >-
+    The Account Events Webhook API from SoFi Technologies — 1 operation(s) for account events webhook.
   humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
   baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
   tags:
-  - Fintech
-  - Payments
-  - Banking
-  - Card Issuing
-  - Banking as a Service
-  - Accounts
-  - Cards
-  - ACH
+  - Account Events Webhook
   properties:
-  - url: openapi/sofi-technologies-program-api-openapi.json
-    type: OpenAPI
-  - url: https://docs.tech.sofi.com/pro/reference/program-api-intro
-    type: APIReference
-  - url: https://docs.tech.sofi.com/pro/
-    type: Documentation
-  - url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
-    type: Postman
-  - url: overlays/sofi-technologies-program-api-overlay.yaml
-    type: Overlay
-  - url: skills/sofi-technologies-open-card-account.md
-    type: AgentSkill
-  - url: skills/sofi-technologies-ach-money-movement.md
-    type: AgentSkill
-- aid: sofi-technologies:sofi-tech-solutions-payment-hub-api
-  name: SoFi Tech Solutions Payment Hub API 2.0
-  description: Money movement over instant-payment rails, with external account linking. The contract
-    declares ISO 20022 message types by name - pacs.008 and pacs.004 outbound, pacs.002 status reports,
-    and the ISO 20022 External Status Reason Codes for FedNow returns - which makes it one of the few
-    contracts in the catalog that states its own market standard rather than claiming it on a marketing
-    page.
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
-  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
-  baseURL: https://{corename}.payment-hub.{env}.gpsrv.com/payment-hub/1.0/
+  - type: OpenAPI
+    url: openapi/sofi-technologies-account-events-webhook-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-account-level-controls-api
+  name: SoFi Technologies Account-Level Controls API
+  description: >-
+    The Account-Level Controls API from SoFi Technologies — 9 operation(s) for account-level controls.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
   tags:
-  - Fintech
-  - Payments
-  - Banking
-  - Card Issuing
-  - Banking as a Service
-  - ISO 20022
-  - FedNow
+  - Account-Level Controls
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-account-level-controls-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-accounts-and-cards-api
+  name: SoFi Technologies Accounts and Cards API
+  description: >-
+    The Accounts and Cards API from SoFi Technologies — 47 operation(s) for accounts and cards.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Accounts and Cards
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-accounts-and-cards-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-ach-debit-webhook-api
+  name: SoFi Technologies ACH Debit Webhook API
+  description: The ACH Debit Webhook API from SoFi Technologies — 1 operation(s) for ach debit webhook.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - ACH Debit Webhook
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-ach-debit-webhook-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-alerts-api
+  name: SoFi Technologies Alerts API
+  description: The Alerts API from SoFi Technologies — 7 operation(s) for alerts.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Alerts
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-alerts-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-attachments-api
+  name: SoFi Technologies Attachments API
+  description: The Attachments API from SoFi Technologies — 1 operation(s) for attachments.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Attachments
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-attachments-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-auth-api-webhook-api
+  name: SoFi Technologies Auth API Webhook API
+  description: The Auth API Webhook API from SoFi Technologies — 2 operation(s) for auth api webhook.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Auth API Webhook
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-auth-api-webhook-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-authorization-events-webhook-api
+  name: SoFi Technologies Authorization Events Webhook API
+  description: >-
+    The Authorization Events Webhook API from SoFi Technologies — 1 operation(s) for authorization events
+    webhook.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Authorization Events Webhook
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-authorization-events-webhook-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-billpay-webhook-api
+  name: SoFi Technologies Billpay Webhook API
+  description: The Billpay Webhook API from SoFi Technologies — 1 operation(s) for billpay webhook.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Billpay Webhook
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-billpay-webhook-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-claim-api
+  name: SoFi Technologies Claim API
+  description: The Claim API from SoFi Technologies — 4 operation(s) for claim.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Claim
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-claim-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-configuration-api
+  name: SoFi Technologies Configuration API
+  description: The Configuration API from SoFi Technologies — 1 operation(s) for configuration.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Configuration
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-configuration-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-corporate-credit-and-rtf-api
+  name: SoFi Technologies Corporate Credit and RTF API
+  description: >-
+    The Corporate Credit and RTF API from SoFi Technologies — 8 operation(s) for corporate credit and
+    rtf.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Corporate Credit and RTF
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-corporate-credit-and-rtf-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-corporate-hierarchy-api
+  name: SoFi Technologies Corporate Hierarchy API
+  description: >-
+    The Corporate Hierarchy API from SoFi Technologies — 9 operation(s) for corporate hierarchy.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Corporate Hierarchy
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-corporate-hierarchy-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-credit-api
+  name: SoFi Technologies Credit API
+  description: The Credit API from SoFi Technologies — 8 operation(s) for credit.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Credit
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-credit-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-dispute-management-api
+  name: SoFi Technologies Dispute Management API
+  description: >-
+    The Dispute Management API from SoFi Technologies — 7 operation(s) for dispute management.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Dispute Management
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-dispute-management-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-disputed-transactions-api
+  name: SoFi Technologies Disputed Transactions API
+  description: >-
+    The Disputed Transactions API from SoFi Technologies — 1 operation(s) for disputed transactions.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Disputed Transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-disputed-transactions-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-documents-api
+  name: SoFi Technologies Documents API
+  description: The Documents API from SoFi Technologies — 2 operation(s) for documents.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Documents
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-documents-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-external-account-links-api
+  name: SoFi Technologies External Account Links API
+  description: >-
+    The External Account Links API from SoFi Technologies — 7 operation(s) for external account links.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - External Account Links
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-external-account-links-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-federal-benefit-enrollment-api
+  name: SoFi Technologies Federal Benefit Enrollment API
+  description: >-
+    The Federal Benefit Enrollment API from SoFi Technologies — 4 operation(s) for federal benefit enrollment.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Federal Benefit Enrollment
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-federal-benefit-enrollment-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-instant-issue-api
+  name: SoFi Technologies Instant Issue API
+  description: The Instant Issue API from SoFi Technologies — 7 operation(s) for instant issue.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Instant Issue
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-instant-issue-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-intake-api
+  name: SoFi Technologies Intake API
+  description: The Intake API from SoFi Technologies — 17 operation(s) for intake.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Intake
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-intake-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-intake-flow-api
+  name: SoFi Technologies Intake Flow API
+  description: The Intake Flow API from SoFi Technologies — 15 operation(s) for intake flow.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Intake Flow
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-intake-flow-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-ivr-api
+  name: SoFi Technologies IVR API
+  description: The IVR API from SoFi Technologies — 3 operation(s) for ivr.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - IVR
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-ivr-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-ivs-api
+  name: SoFi Technologies IVS API
+  description: The IVS API from SoFi Technologies — 6 operation(s) for ivs.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - IVS
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-ivs-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-loan-api
+  name: SoFi Technologies Loan API
+  description: Loan management endpoints.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Loan
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-loan-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-location-management-api
+  name: SoFi Technologies Location Management API
+  description: >-
+    The Location Management API from SoFi Technologies — 5 operation(s) for location management.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Location Management
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-location-management-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-miscellaneous-api
+  name: SoFi Technologies Miscellaneous API
+  description: The Miscellaneous API from SoFi Technologies — 5 operation(s) for miscellaneous.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Miscellaneous
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-miscellaneous-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-overdraft-api
+  name: SoFi Technologies Overdraft API
+  description: The Overdraft API from SoFi Technologies — 3 operation(s) for overdraft.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Overdraft
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-overdraft-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-risk-api
+  name: SoFi Technologies Risk API
+  description: The Risk API from SoFi Technologies — 3 operation(s) for risk.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Risk
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-risk-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-settlement-events-webhook-api
+  name: SoFi Technologies Settlement Events Webhook API
+  description: >-
+    The Settlement Events Webhook API from SoFi Technologies — 1 operation(s) for settlement events webhook.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Settlement Events Webhook
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-settlement-events-webhook-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-status-api
+  name: SoFi Technologies Status API
+  description: The Status API from SoFi Technologies — 1 operation(s) for status.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Status
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-status-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-tasks-api
+  name: SoFi Technologies Tasks API
+  description: The Tasks API from SoFi Technologies — 4 operation(s) for tasks.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Tasks
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-tasks-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-transaction-events-webhook-api
+  name: SoFi Technologies Transaction Events Webhook API
+  description: >-
+    The Transaction Events Webhook API from SoFi Technologies — 1 operation(s) for transaction events
+    webhook.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Transaction Events Webhook
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-transaction-events-webhook-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-transaction-simulation-api
+  name: SoFi Technologies Transaction Simulation API
+  description: >-
+    The Transaction Simulation API from SoFi Technologies — 6 operation(s) for transaction simulation.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Transaction Simulation
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-transaction-simulation-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-transactions-api
+  name: SoFi Technologies Transactions API
+  description: The Transactions API from SoFi Technologies — 46 operation(s) for transactions.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
+  - Transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/sofi-technologies-transactions-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
+- aid: sofi-technologies:sofi-technologies-transfers-api
+  name: SoFi Technologies Transfers API
+  description: The Transfers API from SoFi Technologies — 4 operation(s) for transfers.
+  humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
+  tags:
   - Transfers
   properties:
-  - url: openapi/sofi-technologies-payment-hub-api-openapi.json
-    type: OpenAPI
-  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
-    type: APIReference
-  - url: https://docs.tech.sofi.com/pro/
-    type: Documentation
-- aid: sofi-technologies:sofi-tech-solutions-dispute-api-30
-  name: SoFi Tech Solutions Dispute API 3.0
-  description: Cardholder dispute intake and case management, split into an Intake API that stages a claim
-    - reasons, disputed transactions, similar transactions, questionnaire, document requirements, summary,
-    submit - and an Interaction API that lists, reopens, withdraws and works the resulting task queue.
-    Supersedes Dispute API 2.0, which remains published with no announced sunset.
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
-  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
-  baseURL: https://{corename}.gft-dispute-api.{env}.gpsrv.com/gft-dispute-api/1.0/
-  tags:
-  - Fintech
-  - Payments
-  - Banking
-  - Card Issuing
-  - Banking as a Service
-  - Disputes
-  - Chargebacks
-  - Regulation E
-  properties:
-  - url: openapi/sofi-technologies-dispute-api-3-0-openapi.json
-    type: OpenAPI
-  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
-    type: APIReference
-  - url: https://docs.tech.sofi.com/pro/
-    type: Documentation
-  - url: skills/sofi-technologies-file-dispute-claim.md
-    type: AgentSkill
-- aid: sofi-technologies:sofi-tech-solutions-dispute-api-20
-  name: SoFi Tech Solutions Dispute API 2.0
-  description: The previous generation of the dispute surface - 22 operations for creating a case, attaching
-    reasons and transactions, answering the questionnaire and submitting. Superseded by Dispute API 3.0
-    but still published in the provider api-catalog, with no sunset date and no Deprecation or Sunset
-    header on the wire.
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
-  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
-  baseURL: https://dispute-api-{corename}.{env}.gpsrv.com/
-  tags:
-  - Fintech
-  - Payments
-  - Banking
-  - Card Issuing
-  - Banking as a Service
-  - Disputes
-  - Chargebacks
-  - Deprecated
-  properties:
-  - url: openapi/sofi-technologies-dispute-api-2-0-openapi.json
-    type: OpenAPI
-  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
-    type: APIReference
-  - url: https://docs.tech.sofi.com/pro/
-    type: Documentation
-- aid: sofi-technologies:sofi-tech-solutions-loan-api
-  name: SoFi Tech Solutions Loan API
-  description: Lending operations on the platform - loan status, payment schedule and amortization, transaction
-    history, installment statuses and loan simulation. This is the only SoFi Tech Solutions contract that
-    declares a bearer token security scheme in the specification itself, and its info.version still carries
-    a 1.0.0-SNAPSHOT marker.
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
-  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
-  baseURL: https://lending-{corename}.{env}.gpsrv.com/lending/
-  tags:
-  - Fintech
-  - Payments
-  - Banking
-  - Card Issuing
-  - Banking as a Service
-  - Lending
-  - Loans
-  - Amortization
-  properties:
-  - url: openapi/sofi-technologies-loan-api-openapi.json
-    type: OpenAPI
-  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
-    type: APIReference
-  - url: https://docs.tech.sofi.com/pro/
-    type: Documentation
-- aid: sofi-technologies:sofi-tech-solutions-risk-api-20
-  name: SoFi Tech Solutions Risk API 2.0
-  description: Identity verification for consumers and businesses - verify a customer, read application
-    and customer status, close an application, and retrieve verification documents and rule outcomes.
-    This is the IVS surface that Create Account calls when the EIVS provider parameter is set, exposed
-    directly for callers that want to verify before they open anything.
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
-  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
-  baseURL: https://{corename}.risk.{env}.gpsrv.com/
-  tags:
-  - Fintech
-  - Payments
-  - Banking
-  - Card Issuing
-  - Banking as a Service
-  - Identity Verification
-  - KYC
-  - Risk
-  properties:
-  - url: openapi/sofi-technologies-risk-api-2-0-openapi.json
-    type: OpenAPI
-  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
-    type: APIReference
-  - url: https://docs.tech.sofi.com/pro/
-    type: Documentation
-- aid: sofi-technologies:sofi-tech-solutions-risk-api-10
-  name: SoFi Tech Solutions Risk API 1.0
-  description: The Payment Risk Platform surface - card transaction fraud scoring, money movement fraud
-    scoring and instant verification. Three operations, superseded in part by Risk API 2.0 but still published
-    in the provider api-catalog.
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
-  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
-  baseURL: https://risk-{corename}.{env}.gpsrv.com/
-  tags:
-  - Fintech
-  - Payments
-  - Banking
-  - Card Issuing
-  - Banking as a Service
-  - Fraud
-  - Risk
-  - Identity Verification
-  properties:
-  - url: openapi/sofi-technologies-risk-api-1-0-openapi.json
-    type: OpenAPI
-  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
-    type: APIReference
-  - url: https://docs.tech.sofi.com/pro/
-    type: Documentation
-- aid: sofi-technologies:sofi-tech-solutions-public-config-api
-  name: SoFi Tech Solutions Public Config API
-  description: A single read operation that returns the full product configuration behind an account -
-    account and card features, authorization limits, BIN information, country blocks, embossing partners
-    and stock. It is the contract that lets an integrator discover why a Program API call behaved the
-    way it did, since almost every Program API behaviour is driven by product parameters rather than by
-    request fields.
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
-  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
-  baseURL: https://{corename}.config-api.{env}.gpsrv.com/config/1.0/
-  tags:
-  - Fintech
-  - Payments
-  - Banking
-  - Card Issuing
-  - Banking as a Service
-  - Configuration
-  - Product Config
-  properties:
-  - url: openapi/sofi-technologies-public-config-api-openapi.json
-    type: OpenAPI
-  - url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
-    type: APIReference
-  - url: https://docs.tech.sofi.com/pro/
-    type: Documentation
-- aid: sofi-technologies:sofi-tech-solutions-events-api
-  name: SoFi Tech Solutions Events API
-  description: 'The platform notification firehose, also called the Alerts API: four webhooks - AccountEvent,
-    Authorization, Settlement and Transaction - carrying at least 124 documented event types identified
-    by a type field. The client hosts the endpoints and SoFi Tech Solutions POSTs to them, which is why
-    the specification carries a placeholder server rather than a SoFi host.'
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
-  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
-  baseURL: https://client.domain.com
-  tags:
-  - Fintech
-  - Payments
-  - Banking
-  - Card Issuing
-  - Banking as a Service
-  - Webhooks
-  - Events
-  - Notifications
-  properties:
-  - url: openapi/sofi-technologies-events-api-openapi.json
-    type: OpenAPI
-  - url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
-    type: APIReference
-  - url: https://docs.tech.sofi.com/pro/
-    type: Documentation
-  - url: asyncapi/sofi-technologies-webhooks.yml
-    type: Webhooks
-- aid: sofi-technologies:sofi-tech-solutions-auth-api
-  name: SoFi Tech Solutions Auth API
-  description: The authorization controller webhook. SoFi Tech Solutions hands the client the in-flight
-    card authorization - populated from the ISO 8583 message the network sent, including CAVV and 3-D
-    Secure fields - along with the response_code it intends to return to the merchant, and the client
-    overrides that code in the HTTP response body to approve or deny. This is the platform surface where
-    the client, not the processor, makes the decision.
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
-  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
-  baseURL: https://example.client.domain.com
-  tags:
-  - Fintech
-  - Payments
-  - Banking
-  - Card Issuing
-  - Banking as a Service
-  - Webhooks
-  - Authorization
-  - ISO 8583
-  properties:
-  - url: openapi/sofi-technologies-auth-api-openapi.json
-    type: OpenAPI
-  - url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
-    type: APIReference
-  - url: https://docs.tech.sofi.com/pro/
-    type: Documentation
-- aid: sofi-technologies:sofi-tech-solutions-external-trans-api
-  name: SoFi Tech Solutions External Trans API
-  description: The decisioning webhook for incoming ACH debits and bill payments - the ACH and billpay
-    counterpart to the Auth API. The client answers with a response_code to approve or deny the transaction.
-    Two operations, both client-hosted.
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
-  humanURL: https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
-  baseURL: https://client.domain.com
-  tags:
-  - Fintech
-  - Payments
-  - Banking
-  - Card Issuing
-  - Banking as a Service
-  - Webhooks
-  - ACH
-  - Bill Pay
-  properties:
-  - url: openapi/sofi-technologies-external-trans-api-openapi.json
-    type: OpenAPI
-  - url: https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
-    type: APIReference
-  - url: https://docs.tech.sofi.com/pro/
-    type: Documentation
+  - type: OpenAPI
+    url: openapi/sofi-technologies-transfers-api-openapi.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+  - type: Documentation
+    url: https://docs.tech.sofi.com/pro/
+  - type: Postman
+    url: https://app.getpostman.com/run-collection/34743689-ba1d0d97-688c-43f9-9627-3edda0f24bcb
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-payment-hub-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-dispute-api-30
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-loan-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk2-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-risk-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-about-the-public-config-api
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-events-api-about-events-api
+  - type: Webhooks
+    url: asyncapi/sofi-technologies-webhooks.yml
+  - type: APIReference
+    url: https://docs.tech.sofi.com/pro/reference/api-reference-auth-api-about-auth-api
+  - type: APIReference
+    url: >-
+      https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
 common:
+- type: AgentSkill
+  url: skills/sofi-technologies-open-card-account.md
+- type: AgentSkill
+  url: skills/sofi-technologies-ach-money-movement.md
+- type: AgentSkill
+  url: skills/sofi-technologies-file-dispute-claim.md
 - type: AgenticAccess
   url: agentic-access/sofi-technologies-agentic-access.yml
 - type: Pricing
