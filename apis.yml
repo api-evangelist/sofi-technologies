@@ -1051,7 +1051,8 @@ apis:
   description: The Miscellaneous API from SoFi Technologies — 5 operation(s) for miscellaneous.
   humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
   baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
-  tags:
+  tags: []
+  tags_raw:
   - Miscellaneous
   properties:
   - type: OpenAPI
@@ -1238,6 +1239,8 @@ apis:
   humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
   baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
   tags:
+  - Task
+  tags_raw:
   - Tasks
   properties:
   - type: OpenAPI
@@ -1352,6 +1355,8 @@ apis:
   humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
   baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
   tags:
+  - Transaction
+  tags_raw:
   - Transactions
   properties:
   - type: OpenAPI
