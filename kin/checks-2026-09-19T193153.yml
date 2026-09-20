@@ -2,16 +2,16 @@
 kin_checks:
   slug: sofi-technologies
   schema_version: 0.22.0
-  scored_at: '2026-09-18'
-  run_ts: 2026-09-18T231945
+  scored_at: '2026-09-19'
+  run_ts: 2026-09-19T193153
   note: Actionable checks (missed + partial) in `checks`, plus the ids that did not
     apply in `na`. Everything else in rubric/scoring-0.22.0.yml was earned; counts
     below let you verify that.
   counts:
     total: 136
-    earned: 54
+    earned: 55
     partial: 13
-    missed: 47
+    missed: 46
     na: 22
   checks:
   - id: maintainer_present
@@ -66,9 +66,6 @@ kin_checks:
     status: missed
     detail: pointer liveness 0.0
   - id: documentation_present
-    status: missed
-    detail: pointer liveness 0.0
-  - id: api_reference_present
     status: missed
     detail: pointer liveness 0.0
   - id: getting_started_present
@@ -136,9 +133,9 @@ kin_checks:
     status: partial
     earned: 0.17
     detail: 2 of 36 openapi documents pass
-  - id: postman_present
+  - id: api_reference_present
     status: partial
-    earned: 1.0
+    earned: 1.5
     detail: pointer liveness 0.5
   - id: agent_skill_present
     status: partial
