@@ -1,0 +1,1729 @@
+openapi: 3.2.0
+info:
+  title: Program Instant Issue API
+  version: '4.0'
+servers:
+- url: api-{corename}.{env}.gpsrv.com/intserv/4.0/
+tags:
+- name: Instant Issue
+paths:
+  /voidCreateAccount:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      tags:
+      - Instant Issue
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                accountNo:
+                  type:
+                  - string
+                  - 'null'
+                  pattern: ^$|^([0-9]{12}|[0-9]{16})$
+                  description: 'The <<glossary:PRN>> or <<glossary:PAN>> of the account.
+
+                    Pattern: PRN or PAN
+
+                    Example: `"074103447228"`'
+                  example: 074103447228
+                type:
+                  type: string
+                  enum:
+                  - '1'
+                  - '2'
+                  - 1
+                  - 2
+                  description: 'Type of void being performed:
+
+                    * `"1"` &mdash; Cancel account
+
+                    * `"2"` &mdash; Reset account (for instant issue)
+
+
+                    Pattern: String
+
+                    Example: `"1"`'
+                  example: '1'
+                verifyOnly:
+                  type: boolean
+                  default: false
+                  description: 'Pass `1` to test the validity of the parameter data without committing the information to the system.
+
+                    Pattern: Integer
+
+                    Example: `0`'
+                  example: '0'
+              required:
+              - transactionId
+              - type
+              - apiLogin
+              - apiTransKey
+              - providerId
+      summary: Void Create Account
+      description: 'Use the Void Create Account endpoint to cancel an account (move the account into `status: B`, Voided account) that was created by Create Account. Pass either the `transactionId` of the original Create Account call or the optional `accountNo` parameter to identify and void the created account. The `accountNo` parameter can be the PRN that was returned by Create Account or a PAN that you can retrieve using Get Account Cards.
+
+
+        > 📘 Note
+
+        >
+
+        > Use Void Create Account only for instant-issue (prepaid) card accounts. To reverse an account creation for other account types, use the >.'
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    type: object
+                    properties: {}
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.0078,\n    \"response_data\": {},\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"OOSQCGXU0NUE6AIPQ3OA\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2025-07-13 10:42:56\"\n}\n"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <system_timestamp>2011-01-31 13:37:18</system_timestamp>\n  <response_data/>\n  <processing_time>1.755</processing_time>\n  <echo>\n    <transaction_id>12345a</transaction_id>\n    <provider_transaction_id>77bb</provider_transaction_id>\n    <provider_timestamp>2025-02-06 10:10:10</provider_timestamp>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n</response>"
+          description: ''
+      operationId: post_voidcreateaccount
+  /verifyInstantIssueCard:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      summary: Verify Instant-Issue Card
+      description: 'Use the Verify Instant-Issue Card endpoint to retrieve data related to the specified instant-issue card. Consult the Instant-Issue Cards guide for instructions on using this endpoint.
+
+
+        [block:callout]
+
+
+        {
+
+        "type": "info",
+
+        "title": "Note",
+
+        "body": "You can receive PCI-sensitive information only if your provider parameters permit it."
+
+        }
+
+        [/block]'
+      parameters: []
+      tags:
+      - Instant Issue
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                accountNo:
+                  type: string
+                  pattern: ^$|^([0-9]{12}|[0-9]{15}|[0-9]{16})$
+                  description: 'The <<glossary:PRN>> or <<glossary:PAN>> of the account.
+
+                    Pattern: PAN or PRN
+
+                    Example: `"074103447228"`'
+                  example: 074103447228
+                prodId:
+                  type:
+                  - integer
+                  - 'null'
+                  format: int32
+                  minimum: 0
+                  description: 'A unique product identifier from SoFi Tech Solutions.
+
+                    Pattern: Integer
+
+                    Example: `501`'
+                  example: 501
+                loadType:
+                  type:
+                  - string
+                  - 'null'
+                  pattern: ^[a-zA-Z0-9]{1,2}$
+                  description: 'Transaction type for the `loadAmount`. Use values from your list of load types from SoFi Tech Solutions. If no `loadType` is specified, the default type `RL` is used.
+
+                    Pattern: 2 characters
+
+                    Example: `"RL"`'
+                  example: RL
+              required:
+              - accountNo
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      status:
+                        type: string
+                        description: See <a href="ref:api-reference-instant-issue-card-statuses" target="_blank">Instant Issue Card Statuses</a> for valid values.
+                      pmt_ref_no:
+                        type: string
+                        description: System-generated account number. Also called the <<glossary:PRN>>.
+                      prod_id:
+                        type: string
+                        description: Identifier for the product associated with the card order
+                      max_load_amount:
+                        type: string
+                        description: The maximum amount that can be loaded on a card
+                      card_id:
+                        type: string
+                        description: System-generated card identifier (CAD). Use this ID instead of the <<glossary:PAN>> if not PCI-compliant. `None` means that no card was created.
+                      card_number:
+                        type: string
+                        description: The card number, also called the <<glossary:PAN>>. This value is masked unless you are PCI compliant and CINFI is set.
+                      expiry_date:
+                        type:
+                        - string
+                        - 'null'
+                        format: date
+                        description: Expiration date of the card
+                      card_security_code:
+                        type:
+                        - string
+                        - 'null'
+                        description: The card verification value (CVV2).
+                      batch_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: The ID of the batch number.
+                      case_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Physical cards are shipped in bundles, which are divided by boxes. A `case_id` is a tracking number on each box and bundle.
+                      box_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: A shipping tracking number on a box of shipped cards
+                      bundle_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: A shipping tracking number on the bundle of shipped cards
+                      galileo_location_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: A code for the location at which account was created, if applicable. Can be provided by client or SoFi Tech Solutions
+                      partner_location_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: A code for the partner location
+                    required:
+                    - batch_id
+                    - box_id
+                    - bundle_id
+                    - card_id
+                    - card_number
+                    - card_security_code
+                    - case_id
+                    - expiry_date
+                    - galileo_location_id
+                    - max_load_amount
+                    - partner_location_id
+                    - pmt_ref_no
+                    - prod_id
+                    - status
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.409,\n    \"response_data\": {\n        \"status\": \"P\",\n        \"pmt_ref_no\": \"005461567202\",\n        \"prod_id\": \"11982\",\n        \"max_load_amount\": \"1000000\",\n        \"card_id\": \"14861240\",\n        \"card_number\": \"527734XXXXXX8179\",\n        \"expiry_date\": null,\n        \"card_security_code\": null,\n        \"batch_id\": \"test_p2p_verify_inst\",\n        \"case_id\": 26,\n        \"box_id\": 65,\n        \"bundle_id\": 43,\n        \"galileo_location_id\": \"4400091\",\n        \"partner_location_id\": \"SHIPTOCODE\"\n    },\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"ef1c62e1-0af9-441f-a6f4-a7576e737080\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2025-07-15 15:10:14\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.024</processing_time>\n  <response_data>\n    <status>P</status>\n    <pmt_ref_no>005461567202</pmt_ref_no>\n    <prod_id>11982</prod_id>\n    <max_load_amount>1000000</max_load_amount>\n    <card_id>14861240</card_id>\n    <card_number>527734XXXXXX8179</card_number>\n    <expiry_date/>\n    <card_security_code/>\n    <batch_id>test_p2p_verify_inst</batch_id>\n    <case_id>26</case_id>\n    <box_id>65</box_id>\n    <bundle_id>43</bundle_id>\n    <galileo_location_id>4400091</galileo_location_id>\n    <partner_location_id>SHIPTOCODE</partner_location_id>\n  </response_data>\n  <echo>\n    <provider_transaction_id/>\n    <provider_timestamp/>\n    <transaction_id>6d6c3d39-f601-4c7e-87c4-1d0b4f2a5ef2</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-07-15 15:10:15</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_verifyinstantissuecard
+  /moveCard:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      summary: Move Card
+      description: Use the Move Card endpoint to move the specified instant-issue card to a different location.
+      parameters: []
+      tags:
+      - Instant Issue
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                accountNo:
+                  type: string
+                  pattern: ^.+$
+                  description: 'The <<glossary:PRN>>, <<glossary:PAN>> or <<glossary:CAD>> of the account. For card-specific endpoints such as this one, the CAD is preferred. Do not use the PRN if more than one card has ever been associated with this account.
+
+                    Pattern: PAN, PRN, or CAD
+
+                    Example: `"074103447228"`'
+                  example: 074103447228
+                moveToLocation:
+                  type: string
+                  pattern: ^[a-zA-Z0-9]{1,20}$
+                  description: 'Identifier for the new location (`location`) as returned by the <a href="ref:post_createlocation" target="_blank">Create Location</a> endpoint. This value is also returned by the <a href="ref:post_getlocations" target="_blank">Get Locations</a> endpoint depending on the value of `locationType` when the location was created:
+
+                    * `0` &mdash; Returned in the `location_id` field
+
+                    * `1` &mdash; Returned in the `provider_specified_id` field
+
+
+                    Pattern: Integer if `moveToLocationType: 0`; max 15 characters if `moveToLocationType: 1`
+
+                    Example: `"3"`'
+                  example: '3'
+                moveToLocationType:
+                  type: integer
+                  format: int32
+                  enum:
+                  - 0
+                  - 1
+                  description: 'Type of location in `moveToLocation`:
+
+                    * `0` &mdash; SoFi Tech Solutions location ID
+
+                    * `1` &mdash; Provider location ID
+
+
+                    Pattern: Integer
+
+                    Example: `0`'
+                  example: 0
+              required:
+              - accountNo
+              - moveToLocation
+              - moveToLocationType
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    type: object
+                    properties: {}
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.378,\n    \"response_data\": {},\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"0d79c13e-0057-415c-9402-c988b833183d\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2025-07-15 14:59:16\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.037</processing_time>\n  <response_data/>\n  <echo>\n    <provider_transaction_id/>\n    <provider_timestamp/>\n    <transaction_id>77f9da50-310f-41d4-837a-b25b187b9796</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-07-15 14:59:17</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_movecard
+  /getBulkCardOrder:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      summary: Get Bulk Card Order
+      description: Use Get Bulk Card Order to retrieve the details of an existing bulk card order that was created with the Create Bulk Card Order endpoint. Consult the Instant-Issue Cards guide for instructions on using this endpoint.
+      parameters: []
+      tags:
+      - Instant Issue
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                orderId:
+                  type: integer
+                  format: int32
+                  description: 'The order ID (`order_id`) as returned by the <a href="ref:post_createbulkcardorder" target="_blank">Create Bulk Card Order</a> endpoint.
+
+                    Pattern: Positive integer
+
+                    Example: `5068`'
+                  example: 5068
+                returnAllCards:
+                  type:
+                  - integer
+                  - 'null'
+                  format: int32
+                  enum:
+                  - 0
+                  - 1
+                  description: 'Specifies whether to return a list of all cards in the order, in the `cards` object:
+
+                    * `0` &mdash; Do not return cards
+
+                    * `1` &mdash; Return all cards
+
+
+                    Pattern: Integer
+
+                    Example: `0`'
+                  example: 0
+              required:
+              - orderId
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      status:
+                        type: string
+                        description: 'Status of the card order: `P` &mdash; Processed; `E` &mdash; Error'
+                      prod_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Identifier for the product associated with the card order
+                      order_id:
+                        type: string
+                        description: Identifier for the card order
+                      number_of_cards:
+                        type: integer
+                        format: int32
+                        description: Number of cards in the order
+                      emboss_with:
+                        type:
+                        - string
+                        - 'null'
+                        description: First line to be embossed on cards
+                      ship_to_name:
+                        type:
+                        - string
+                        - 'null'
+                        description: Shipping name the for card order
+                      ship_to_address:
+                        type:
+                        - string
+                        - 'null'
+                        description: Address for shipping card order
+                      ship_to_city:
+                        type:
+                        - string
+                        - 'null'
+                        description: City for shipping address
+                      ship_to_state_or_province:
+                        type:
+                        - string
+                        - 'null'
+                        description: State or province for the shipping address
+                      ship_to_postal_code:
+                        type:
+                        - string
+                        - 'null'
+                        description: Postal code for the shipping address
+                      location:
+                        type: string
+                        description: Location for cards
+                      location_name:
+                        type:
+                        - string
+                        - 'null'
+                        description: Location name for cards
+                      location_type:
+                        type: integer
+                        format: int32
+                        description: Location type for cards
+                      card_id_range_start:
+                        type: integer
+                        format: int32
+                        description: This field returns zeros only
+                      card_id_range_end:
+                        type: integer
+                        format: int32
+                        description: This field returns zeros only
+                      cards:
+                        type:
+                        - array
+                        - 'null'
+                        description: List of cards in the order
+                        items:
+                          type: object
+                          properties:
+                            card_id:
+                              type: string
+                              description: System-generated card identifier (CAD). Use this ID instead of the <<glossary:PAN>> if not PCI-compliant. `None` means that no card was created.
+                            pmt_ref_no:
+                              type: string
+                              description: System-generated account number. Also called the <<glossary:PRN>>.
+                            status:
+                              type: string
+                              description: See <a href="ref:api-reference-instant-issue-card-statuses" target="_blank">Instant Issue Card Statuses</a> for valid values.
+                            card_number:
+                              type:
+                              - string
+                              - 'null'
+                              description: The card number, also called the <<glossary:PAN>>. This value is masked unless you are PCI compliant and CINFI is set.
+                            expiry_date:
+                              type:
+                              - string
+                              - 'null'
+                              format: date-time
+                              description: Date when the card expires
+                          required:
+                          - card_id
+                          - card_number
+                          - expiry_date
+                          - pmt_ref_no
+                          - status
+                    required:
+                    - card_id_range_end
+                    - card_id_range_start
+                    - cards
+                    - emboss_with
+                    - location
+                    - location_name
+                    - location_type
+                    - number_of_cards
+                    - order_id
+                    - prod_id
+                    - ship_to_address
+                    - ship_to_city
+                    - ship_to_name
+                    - ship_to_postal_code
+                    - ship_to_state_or_province
+                    - status
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.405,\n    \"response_data\": {\n        \"status\": \"P\",\n        \"prod_id\": \"11938\",\n        \"order_id\": \"1\",\n        \"number_of_cards\": \"3\",\n        \"emboss_with\": \"test Emboss info\",\n        \"ship_to_name\": \"test case\",\n        \"ship_to_address\": \"128 E. Evens St\",\n        \"ship_to_city\": \"Colorado Springs\",\n        \"ship_to_state_or_province\": \"UT\",\n        \"ship_to_postal_code\": \"84123\",\n        \"location\": \"4400049\",\n        \"location_type\": 0,\n        \"location_name\": \"TEST_setup_pr_employer\",\n        \"card_id_range_start\": 0,\n        \"card_id_range_end\": 0,\n        \"cards\": [\n            {\n                \"card_id\": \"14861199\",\n                \"pmt_ref_no\": \"005461528202\",\n                \"status\": \"P\",\n                \"expiry_date\": null,\n                \"card_number\": \"545661XXXXXX6514\"\n            },\n            {\n                \"card_id\": \"14861200\",\n                \"pmt_ref_no\": \"005461528202\",\n                \"status\": \"P\",\n                \"expiry_date\": null,\n                \"card_number\": \"849831XXXXXX7765\"\n            },\n            {\n                \"card_id\": \"14861201\",\n                \"pmt_ref_no\": \"005461528202\",\n                \"status\": \"P\",\n                \"expiry_date\": null,\n                \"card_number\": \"929961XXXXXX5888\"\n            }\n        ]\n    },\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"a6087cde-e391-4490-97b4-524dbc138728\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2025-07-15 14:21:45\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.019</processing_time>\n  <response_data>\n    <status>P</status>\n    <prod_id>11938</prod_id>\n    <order_id>1</order_id>\n    <number_of_cards>3</number_of_cards>\n    <emboss_with>test Emboss info</emboss_with>\n    <ship_to_name>test case</ship_to_name>\n    <ship_to_address>128 E. Evens St</ship_to_address>\n    <ship_to_city>Colorado Springs</ship_to_city>\n    <ship_to_state_or_province>UT</ship_to_state_or_province>\n    <ship_to_postal_code>84123</ship_to_postal_code>\n    <location>4400049</location>\n    <location_type>0</location_type>\n    <location_name>TEST_setup_pr_employer</location_name>\n    <card_id_range_start>0</card_id_range_start>\n    <card_id_range_end>0</card_id_range_end>\n    <cards>\n      <card>\n        <card_id>14861199</card_id>\n        <pmt_ref_no>005461528202</pmt_ref_no>\n        <status>P</status>\n        <expiry_date/>\n        <card_number>545661XXXXXX6514</card_number>\n      </card>\n      <card>\n        <card_id>14861200</card_id>\n        <pmt_ref_no>005461528202</pmt_ref_no>\n        <status>P</status>\n        <expiry_date/>\n        <card_number>849831XXXXXX7765</card_number>\n      </card>\n      <card>\n        <card_id>14861201</card_id>\n        <pmt_ref_no>005461528202</pmt_ref_no>\n        <status>P</status>\n        <expiry_date/>\n        <card_number>929961XXXXXX5888</card_number>\n      </card>\n    </cards>\n  </response_data>\n  <echo>\n    <provider_transaction_id/>\n    <provider_timestamp/>\n    <transaction_id>432e66c0-57d4-4030-8d91-bc7d2257b657</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-07-15 14:21:46</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_getbulkcardorder
+  /createBulkCardOrder:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      summary: Create Bulk Card Order
+      description: Use the Create Bulk Card Order endpoint to initiate a request for a batch of instant-issue cards. Consult the Instant-Issue Cards guide for instructions on using this endpoint.
+      parameters: []
+      tags:
+      - Instant Issue
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                prodId:
+                  type: integer
+                  format: int32
+                  description: 'A unique product identifier from SoFi Tech Solutions.
+
+                    Pattern: Integer
+
+                    Example: `501`'
+                  example: 501
+                numberOfCards:
+                  type: integer
+                  format: int32
+                  description: 'Number of cards to be created.
+
+                    Pattern: Positive integer
+
+                    Example: `1000`'
+                  example: 1000
+                embossWith:
+                  type:
+                  - string
+                  - 'null'
+                  minLength: 1
+                  maxLength: 20
+                  pattern: ^[a-zA-Z0-9_\s]{1,20}$
+                  description: 'Optional string to be printed on the first emboss line of the cards.
+
+                    Pattern: Max 20 alphanumeric characters
+
+                    Example: `"Bob''s cards"`'
+                  example: Bob's cards
+                shipToName:
+                  type: string
+                  minimum: 1
+                  maximum: 40
+                  description: 'In-care-of name for the address where the bulk card order is to be shipped.
+
+                    Pattern: Max 40 alphanumeric characters
+
+                    Example: `"c"`'
+                  example: Bob's cards
+                shipToAddress:
+                  type: string
+                  description: 'Street address where the bulk order is to be shipped.
+
+                    Pattern: Max 40 alphanumeric characters
+
+                    Example: `"33 Maple Street"`'
+                  example: 33 Maple Street
+                shipToCity:
+                  type: string
+                  description: 'City where the bulk order is to be shipped.
+
+                    Pattern: Max 20 alphanumeric characters
+
+                    Example: `"Salt Lake City"`'
+                  example: Salt Lake City
+                shipToStateOrProvince:
+                  type: string
+                  description: 'State or province where the bulk order is to be shipped.
+
+                    Pattern: 2-character state or province code
+
+                    Example: `"UT"`'
+                  example: UT
+                shipToPostalCode:
+                  type: string
+                  minLength: 5
+                  maxLength: 10
+                  pattern: ^[a-zA-Z0-9\-\ ]*$
+                  description: 'Postal code where the bulk order is to be shipped
+
+                    Pattern: `12345`, `12345-6789`, or `K1A-1A1`
+
+                    Example: `"84121"`'
+                  example: '84121'
+                location:
+                  type: string
+                  minLength: 1
+                  maxLength: 15
+                  pattern: ^[a-zA-Z0-9]{1,15}$
+                  description: 'Location identifier as returned by <a href="ref:post_createlocation" target="_blank">Create Location</a> (`location`) or <a href="ref:post_getlocations" target="_blank">Get Locations</a> (`location_id` or `provider_specified_id`).
+
+                    Pattern: Integer if `location` or `location_id`; max 15 characters if `provider_specified_id`
+
+                    Example: `"a455-3483"`'
+                  example: a455-3483
+                locationType:
+                  type: integer
+                  format: int32
+                  default: 0
+                  enum:
+                  - 0
+                  - 1
+                  description: 'Type of ID in `location`:
+
+                    * `0` &mdash; SoFi Tech Solutions location ID
+
+                    * `1` &mdash; Partner location ID
+
+
+                    Pattern: Integer
+
+                    Example: `1`'
+                  example: 1
+              required:
+              - location
+              - numberOfCards
+              - prodId
+              - shipToAddress
+              - shipToCity
+              - shipToName
+              - shipToPostalCode
+              - shipToStateOrProvince
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      order_id:
+                        type: string
+                        description: The ID for the bulk card order
+                    required:
+                    - order_id
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.114,\n    \"response_data\": {\n        \"order_id\": \"1011\"\n    },\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"XQSUSC38QL58IS3IDFL7\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2025-07-13 10:43:26\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.053</processing_time>\n  <response_data>\n    <order_id>1018</order_id>\n  </response_data>\n  <echo>\n    <provider_transaction_id/>\n    <provider_timestamp/>\n    <transaction_id>3THXUAD4HBMS4PNGTOIQ</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-07-13 12:36:44</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_createbulkcardorder
+  /moveCardInventory:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      summary: Move Card Inventory
+      description: Use the Move Card Inventory endpoint to reallocate card inventory to other entities. Specify the type of move to make with the `type` parameter.
+      parameters: []
+      tags:
+      - Instant Issue
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                prodId:
+                  type:
+                  - integer
+                  - 'null'
+                  format: int32
+                  description: 'A unique product identifier from SoFi Tech Solutions.
+
+                    Pattern: Integer
+
+                    Example: `501`'
+                  example: 501
+                location:
+                  type: string
+                  pattern: ^[a-zA-Z0-9_]+$
+                  description: 'Identifier for the current location (`location`) as returned by the <a href="ref:post_createlocation" target="_blank">Create Location</a> endpoint. This value is also returned by the <a href="ref:post_getlocations" target="_blank">Get Locations</a> endpoint depending on the value of `locationType` when the location was created:
+
+                    * `0` &mdash; Returned in the `location_id` field
+
+                    * `1` &mdash; Returned in the `provider_specified_id` field
+
+
+                    Pattern: Integer if `locationType: 0`; max 15 characters if `locationType: 1
+
+                    Example: `"a455-3483"`'
+                  example: a455-3483
+                locationType:
+                  type: integer
+                  format: int32
+                  enum:
+                  - 0
+                  - 1
+                  description: 'Type of ID in `location`:
+
+                    * `0` &mdash; SoFi Tech Solutions location ID
+
+                    * `1` &mdash; Partner location ID
+
+
+                    Pattern: Integer
+
+                    Example: `1`'
+                  example: 1
+                moveToLocation:
+                  type: string
+                  pattern: ^[a-zA-Z0-9_]+$
+                  description: 'Identifier for the new location (`location`) as returned by the <a href="ref:post_createlocation" target="_blank">Create Location</a> endpoint. This value is also returned by the <a href="ref:post_getlocations" target="_blank">Get Locations</a> endpoint depending on the value of `locationType` when the location was created:
+
+                    * `0` &mdash; Returned in the `location_id` field
+
+                    * `1` &mdash; Returned in the `provider_specified_id` field
+
+
+                    Pattern: Integer if `moveToLocationType: 0`; max 15 characters if `moveToLocationType: 1`
+
+                    Example: `"3"`'
+                  example: '3'
+                moveToLocationType:
+                  type: integer
+                  format: int32
+                  enum:
+                  - 0
+                  - 1
+                  description: 'Type of location in `moveToLocation`:
+
+                    * `0` &mdash; SoFi Tech Solutions location ID
+
+                    * `1` &mdash; Provider location ID
+
+
+                    Pattern: Integer
+
+                    Example: `1`'
+                  example: 1
+                type:
+                  type: string
+                  enum:
+                  - PRN
+                  - C
+                  - B
+                  - O
+                  - PID
+                  - P
+                  description: 'The type of inventory move:
+
+                    - `P` &mdash; <<glossary:CAD>>
+
+                    - `B` &mdash; Bundle ID
+
+                    - `O` &mdash; Box ID
+
+                    - `C` &mdash; Case ID
+
+                    - `PID` &mdash; Product ID
+
+                    - `PRN` &mdash; Payment reference number
+
+                    Pattern: String
+
+                    Example: `"P"`'
+                  example: P
+                rangeStart:
+                  type: string
+                  pattern: ^[0-9]*$
+                  description: 'Start of the ID range or a single ID.
+
+                    Pattern: Positive integer
+
+                    Example: `"100"`'
+                  example: '100'
+                rangeEnd:
+                  type:
+                  - string
+                  - 'null'
+                  pattern: ^[0-9]*$
+                  description: 'End of ID range. Omit this parameter if there is no range.
+
+                    Pattern: Positive integer
+
+                    Example: `"200"`'
+                  example: '200'
+              required:
+              - location
+              - locationType
+              - moveToLocation
+              - moveToLocationType
+              - rangeStart
+              - transactionId
+              - type
+              - apiLogin
+              - apiTransKey
+              - providerId
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      moved_count:
+                        type:
+                        - integer
+                        - 'null'
+                        format: int32
+                        description: The number of cards moved
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.044,\n    \"response_data\": {\n        \"moved_count\": 4\n    },\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"0SQY9B6IHUG5AO3NRSFK\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2025-07-13 10:43:28\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.05</processing_time>\n  <response_data>\n    <moved_count>4</moved_count>\n  </response_data>\n  <echo>\n    <provider_transaction_id/>\n    <provider_timestamp/>\n    <transaction_id>CZBK79ESPEDXVPCNDBAR</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-07-13 12:36:44</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_movecardinventory
+  /getLoadLocations:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      summary: Get Load Locations
+      description: Use the Get Load Locations endpoint to retrieve a list of load locations that are nearest to the specified postal code.
+      parameters: []
+      tags:
+      - Instant Issue
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                programId:
+                  type: integer
+                  format: int32
+                  description: 'A unique program identifier from SoFi Tech Solutions.
+
+                    Pattern: Positive integer
+
+                    Example: `1032`'
+                  example: 1032
+                postalCode:
+                  type:
+                  - string
+                  - 'null'
+                  pattern: ^[a-zA-Z0-9\-\ ]{5,10}$
+                  description: 'Postal code for the locations to retrieve. The finder returns load locations in and near this postal code.
+
+                    Pattern: `12345`, `12345-6789` or `K1A-1A1`
+
+                    Example: `"84121"`'
+                  example: '84121'
+                resultCount:
+                  type: integer
+                  format: int32
+                  default: 5
+                  minimum: 1
+                  maximum: 99999
+                  description: 'The maximum number of records to return.
+
+                    Pattern:  Integer 1&ndash;9999
+
+                    Example: `100`'
+                  example: 100
+                latLong:
+                  type:
+                  - string
+                  - 'null'
+                  pattern: ^([-+]?[0-9]{1,2}[.][0-9]+),([-+]?[0-9]{1,3}[.]\d+)$
+                  description: 'The latitude and longitude of the requester''s location. The finder returns load locations near this geographical point.
+
+                    Pattern: Latitude/longitude pair separated by a comma and space; no limit on decimal places
+
+                    Example: `40.57297941556069, -111.89920138637734`'
+                  example: 40.57297941556069, -111.89920138637734
+                newVersion:
+                  type:
+                  - integer
+                  - 'null'
+                  format: int32
+                  enum:
+                  - 0
+                  - 1
+                  description: 'Specifies whether to use the new version of the load-location finder:
+
+                    * `0` &mdash; Do not use the new version
+
+                    * `1` &mdash; Use the new version
+
+
+                    Pattern: `0` or `1`
+
+                    Example: `1`
+
+                    '
+              required:
+              - programId
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      found:
+                        type: integer
+                        format: int32
+                        description: The number of location found
+                      locations:
+                        type: array
+                        description: List of location objects
+                        items:
+                          type: object
+                          properties:
+                            agt_type:
+                              type:
+                              - string
+                              - 'null'
+                              description: The type of agent that ran the transaction
+                            name:
+                              type:
+                              - string
+                              - 'null'
+                              description: The name of the location
+                            addr:
+                              type:
+                              - string
+                              - 'null'
+                              description: Street address of the location
+                            city:
+                              type:
+                              - string
+                              - 'null'
+                              description: City of the location
+                            state:
+                              type:
+                              - string
+                              - 'null'
+                              description: State of the location
+                            zip:
+                              type:
+                              - string
+                              - 'null'
+                              description: Postal code of the location
+                            phone:
+                              type:
+                              - string
+                              - 'null'
+                              description: The main phone number on the account
+                            latitude:
+                              type:
+                              - number
+                              - 'null'
+                              format: float
+                              description: Latitude coordinate of the location
+                            longitude:
+                              type:
+                              - number
+                              - 'null'
+                              format: float
+                              description: Longitude coordinate of the location
+                            load_agents_id:
+                              type:
+                              - integer
+                              - 'null'
+                              format: int32
+                              description: The code for the agent that ran the transaction
+                          required:
+                          - addr
+                          - agt_type
+                          - latitude
+                          - load_agents_id
+                          - longitude
+                          - name
+                          - phone
+                          - state
+                          - zip
+                    required:
+                    - found
+                    - locations
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.1,\n    \"response_data\": {\n        \"found\": 3,\n        \"locations\": [\n            {\n                \"agt_type\": \"Western Union\",\n                \"name\": \"HARMONS ORCHARDS\",\n                \"addr\": \"870 E 800 N \",\n                \"city\": \"OREM\",\n                \"state\": \"UT\",\n                \"zip\": \"84097\",\n                \"phone\": \"801-225-1770\",\n                \"latitude\": \"None\",\n                \"longitude\": \"None\",\n                \"load_agents_id\": \"1509069\"\n            },\n            {\n                \"agt_type\": \"Western Union\",\n                \"name\": \"QUICK LOAN INC\",\n                \"addr\": \"576 EAST 1300 SOUTH \",\n                \"city\": \"OREM\",\n                \"state\": \"UT\",\n                \"zip\": \"84097\",\n                \"phone\": \"801-221-1353\",\n                \"latitude\": \"None\",\n                \"longitude\": \"None\",\n                \"load_agents_id\": \"1509070\"\n            },\n            {\n                \"agt_type\": \"MONEYGRAM\",\n                \"name\": \"RANCHO MARKETS 4\",\n                \"addr\": \"1700 N STATE ST\",\n                \"city\": \"PROVO\",\n                \"state\": \"UT\",\n                \"zip\": \"84604\",\n                \"phone\": \"8016550700\",\n                \"latitude\": \"None\",\n                \"longitude\": \"None\",\n                \"load_agents_id\": \"1440578\"\n            }\n        ]\n    },\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"OBTASXZ7CISI9JG6YGY3\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2025-07-13 10:46:15\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.086</processing_time>\n  <response_data>\n    <found>3</found>\n    <locations>\n      <location>\n        <agt_type>Western Union</agt_type>\n        <name>HARMONS ORCHARDS</name>\n        <addr>870 E 800 N </addr>\n        <city>OREM</city>\n        <state>UT</state>\n        <zip>84097</zip>\n        <phone>801-225-1770</phone>\n        <latitude>None</latitude>\n        <longitude>None</longitude>\n        <load_agents_id>1509069</load_agents_id>\n      </location>\n      <location>\n        <agt_type>Western Union</agt_type>\n        <name>QUICK LOAN INC</name>\n        <addr>576 EAST 1300 SOUTH </addr>\n        <city>OREM</city>\n        <state>UT</state>\n        <zip>84097</zip>\n        <phone>801-221-1353</phone>\n        <latitude>None</latitude>\n        <longitude>None</longitude>\n        <load_agents_id>1509070</load_agents_id>\n      </location>\n      <location>\n        <agt_type>MONEYGRAM</agt_type>\n        <name>RANCHO MARKETS 4</name>\n        <addr>1700 N STATE ST</addr>\n        <city>PROVO</city>\n        <state>UT</state>\n        <zip>84604</zip>\n        <phone>8016550700</phone>\n        <latitude>None</latitude>\n        <longitude>None</longitude>\n        <load_agents_id>1440578</load_agents_id>\n      </location>\n    </locations>\n  </response_data>\n  <echo>\n    <provider_transaction_id/>\n    <provider_timestamp/>\n    <transaction_id>UW7DPBK946ZS0KKZ783F</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-07-13 12:40:20</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_getloadlocations
+components:
+  parameters:
+    ResponseContentTypeHeaderParam:
+      name: response-content-type
+      in: header
+      description: Use this header instead of the standard `accept` header to specify the response format.
+      schema:
+        type: string
+        enum:
+        - xml
+        - json
+        default: json
+x-readme:
+  samples-languages:
+  - curl
+  - python
+  - node
+  - java
+  - go
+  - ruby
+  - javascript
+  explorer-enabled: true
+  proxy-enabled: true

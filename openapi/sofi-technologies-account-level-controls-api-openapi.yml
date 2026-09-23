@@ -1,0 +1,1778 @@
+openapi: 3.2.0
+info:
+  title: Program Account-Level Controls API
+  version: '4.0'
+servers:
+- url: api-{corename}.{env}.gpsrv.com/intserv/4.0/
+tags:
+- name: Account-Level Controls
+paths:
+  /setAccountLevelAuthControl:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      description: 'Use the Set Account-Level Auth Control endpoint to create or modify an account-level velocity control. Prior to calling this endpoint, call Get Auth Control to get the `controlId` for the control to set or modify. See Set Velocity Controls for instructions on using this endpoint.
+
+
+        To update existing velocity ALCs, see Updating velocity ALCs.'
+      operationId: post_setaccountlevelauthcontrol
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                accountNo:
+                  description: 'The <<glossary:PRN>> for the account. Do not use the <<glossary:CAD>> or <<glossary:PAN>>.
+
+                    Pattern: 12-digit numeric string
+
+                    Example: `"344101254935"`'
+                  example: '344101254935'
+                  pattern: ^.+$
+                  type: string
+                amount:
+                  description: 'The amount of the new limit. If this parameter is not populated when creating a new control, then `transactionCount` is required
+
+                    Pattern: Decimal number (14, 2)
+
+                    Example: `500.00`'
+                  example: 500
+                  type:
+                  - number
+                  - 'null'
+                apiLogin:
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                  type: string
+                apiTransKey:
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                  type: string
+                controlId:
+                  description: 'The control ID of the velocity control to set or modify, as returned by <a href="ref:post_getauthcontrol" target="_blank">Get Auth Control</a>.
+
+                    Pattern: Integer, max  18 digits
+
+                    Example: 10492'
+                  example: 10492
+                  type: integer
+                endDate:
+                  description: "End date-time for the control. Must be later than `startDate`. Cannot be in the past. Default: `3000-01-01 00:00:00`. \nPattern: YYYY-MM-DD hh:mm:ss or YYYY-MM-DD\nExample: `\"2022-03-10 23:59:59\"`"
+                  example: '2024-03-10 23:59:59'
+                  format: date
+                  type:
+                  - string
+                  - 'null'
+                mccControls:
+                  description: 'A list of one or more MCC ranges, including standalone values, to apply the velocity control to. Format is `[''XXXX'', ''YYYY-ZZZZ'', ''AAAA-BBBB'']`. When updating a velocity control with an MCC range, specify the entire range: `[''YYYY-ZZZZ'']`. Max 100 ranges.
+
+                    Pattern: List of MCCs either alone or in a range.
+
+                    Example: `[''2000'', ''3000-3999'', ''4567'']`'
+                  example:
+                  - '2000'
+                  - 0900-3000
+                  - '4567'
+                  items:
+                    pattern: ^(?!(?:0000)$)\d{4}-(?!(?:0000)$)\d{4}|(?!(?:0000)$)\d{4}$
+                    type: string
+                  maxItems: 100
+                  minItems: 1
+                  type:
+                  - array
+                  - 'null'
+                startDate:
+                  description: "Start date-time for the control. Can be set up to six months in the future. Cannot be in the past. Must be earlier than `endDate`. Default: Current <a href=\"ref:system-time\" target=\"_blank\">system time</a> \nPattern: YYYY-MM-DD hh:mm:ss or YYYY-MM-DD\nExample: `\"2022-03-03 00:00:00\"`"
+                  example: '2024-03-03 00:00:00'
+                  format: date
+                  type:
+                  - string
+                  - 'null'
+                transactionCount:
+                  description: 'New number of transactions to permit. If this parameter is not populated when creating a new control, then `amount` is required.
+
+                    Pattern: Integer, maximum 18 digits
+
+                    Example: `5`'
+                  example: 5
+                  type:
+                  - integer
+                  - 'null'
+                transactionId:
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                  maxLength: 60
+                  minLength: 1
+                  type: string
+              required:
+              - accountNo
+              - controlId
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  echo:
+                    anyOf:
+                    - additionalProperties: false
+                      properties:
+                        provider_timestamp:
+                          description: Store a related timestamp for reporting and troubleshooting purposes
+                          format: date-time
+                          type:
+                          - string
+                          - 'null'
+                        provider_transaction_id:
+                          description: Secondary transaction identifier (generated by a provider)
+                          type:
+                          - string
+                          - 'null'
+                        transaction_id:
+                          description: An ID that represents an API transaction
+                          type:
+                          - string
+                          - 'null'
+                      required:
+                      - provider_timestamp
+                      - provider_transaction_id
+                      - transaction_id
+                      type: object
+                    - type:
+                      - object
+                      - 'null'
+                    description: A structure that contains transaction ID information
+                  errors:
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                    type: array
+                  processing_time:
+                    description: The time elapsed in processing the transaction
+                    type:
+                    - number
+                    - 'null'
+                  response_data:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    additionalProperties: false
+                    properties: {}
+                    type: object
+                  rtoken:
+                    description: A system-generated ID used for tracking
+                    type:
+                    - string
+                    - 'null'
+                  status:
+                    description: The condition of a process or response
+                    type:
+                    - string
+                    - 'null'
+                  status_code:
+                    description: The response status code. May return a string for some statuses.
+                    type:
+                    - integer
+                    - 'null'
+                  system_timestamp:
+                    description: A system generated timestamp
+                    format: date-time
+                    type:
+                    - string
+                    - 'null'
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+                type: object
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.111,\n    \"response_data\": [],\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"bbe1dd0a-9ae5-4a98-9626-66997d9e250f\"\n    },\n    \"system_timestamp\": \"2024-03-10 10:57:04\",\n    \"rtoken\": \"893003ca-7bc5-4fa6-84c5-0b533e376322\"\n}\n"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root>\n   <echo>\n      <provider_timestamp null=\"true\" />\n      <provider_transaction_id />\n      <transaction_id>bbe1dd0a-9ae5-4a98-9626-66997d9e250f</transaction_id>\n   </echo>\n   <processing_time>0.111</processing_time>\n   <response_data />\n   <rtoken>893003ca-7bc5-4fa6-84c5-0b533e376322</rtoken>\n   <status>Success</status>\n   <status_code>0</status_code>\n   <system_timestamp>2024-03-10 10:57:04</system_timestamp>\n</root>"
+          description: Successful response
+      summary: Set Account-Level Auth Control
+      tags:
+      - Account-Level Controls
+  /getAuthControl:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      description: 'Use the Get Auth Control endpoint to retrieve the velocity control details and their control IDs—at either the product level or account level, with or without MCC ranges.
+
+
+        See Retrieving velocity limits for instructions on using this endpoint.'
+      operationId: post_getauthcontrol
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                accountNo:
+                  description: 'The <<glossary:PRN>> for the account. Do not use the <<glossary:CAD>> or <<glossary:PAN>>. Pass this value to retrieve all of the account-level velocity controls for this account. If this parameter is not populated then `prodId` must be populated.
+
+                    Pattern: PRN (12-digit numeric string)
+
+                    Example: `"344101254935"`'
+                  example: '344101254935'
+                  pattern: ^.+$
+                  type:
+                  - string
+                  - 'null'
+                apiLogin:
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                  type: string
+                apiTransKey:
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                  type: string
+                beginningMcc:
+                  description: 'The start of the MCC range for the control. If this parameter is populated, then `endMcc` and `accountNo` must be populated.
+
+                    Pattern: 3–4 digit integer, no leading zero
+
+                    Example: 3000'
+                  example: 3000
+                  maximum: 1000000000000000000
+                  minimum: 1
+                  type:
+                  - integer
+                  - 'null'
+                controlId:
+                  description: 'The system-generated identifier for the auth-level velocity control. When this parameter is populated then either `prodId` or `accountNo` must also be populated.
+
+                    Pattern: Integer, max 18 digits
+
+                    Example: 102'
+                  example: 102
+                  type:
+                  - integer
+                  - 'null'
+                endMcc:
+                  description: 'The end of the MCC range for the control. If this parameter is populated, then `beginningMcc` and `accountNo` must be populated.
+
+                    Pattern: 3–4 digit integer, no leading zero
+
+                    Example: 3999'
+                  example: 3999
+                  maximum: 1000000000000000000
+                  minimum: 1
+                  type:
+                  - integer
+                  - 'null'
+                prodId:
+                  description: "The system-generated identifier for the product. Pass this value to retrieve all of the product-level velocity controls for this product. If this parameter is not populated then `accountNo` must be populated. \nPattern: Integer\nExample: `15293`"
+                  example: 15293
+                  type:
+                  - integer
+                  - 'null'
+                transactionId:
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                  maxLength: 60
+                  minLength: 1
+                  type: string
+              required:
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  echo:
+                    anyOf:
+                    - additionalProperties: false
+                      properties:
+                        provider_timestamp:
+                          description: Store a related timestamp for reporting and troubleshooting purposes
+                          format: date-time
+                          type:
+                          - string
+                          - 'null'
+                        provider_transaction_id:
+                          description: Secondary transaction identifier (generated by a provider)
+                          type:
+                          - string
+                          - 'null'
+                        transaction_id:
+                          description: An ID that represents an API transaction
+                          type:
+                          - string
+                          - 'null'
+                      required:
+                      - provider_timestamp
+                      - provider_transaction_id
+                      - transaction_id
+                      type: object
+                    - type:
+                      - object
+                      - 'null'
+                    description: A structure that contains transaction ID information
+                  errors:
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                    type: array
+                  processing_time:
+                    description: The time elapsed in processing the transaction
+                    type:
+                    - number
+                    - 'null'
+                  response_data:
+                    anyOf:
+                    - additionalProperties: false
+                      properties:
+                        auth_controls:
+                          description: List of auth controls
+                          items:
+                            additionalProperties: false
+                            properties:
+                              amount:
+                                description: Total transaction amount allowed per period.
+                                type: number
+                              amount_available:
+                                description: Transaction amount available in the current period.
+                                type: number
+                              amount_used:
+                                description: Transaction amount used in the current period.
+                                type: number
+                              beginning_mcc:
+                                description: The initial MCC value for the range of this control. This field is present only when MCCs are specified for the control.
+                                type: integer
+                              control_desc:
+                                description: Description of the velocity control.
+                                type: string
+                              control_id:
+                                description: The identifier for the specific velocity control.
+                                type: integer
+                              domestic_flag:
+                                description: Whether this velocity control applies to domestic transactions, international transactions or both. **Y**—Domestic only; **N**—International only; **A**—Both
+                                type: string
+                              end_date:
+                                description: Ending date-time of the account-level velocity control. Not populated for product-level controls.
+                                format: date-time
+                                type: string
+                              end_mcc:
+                                description: The final MCC value for the range of this control. This field is present only when MCCs are specified for the control.
+                                type: integer
+                              has_pin:
+                                description: Whether the limit applies to PIN transactions, signature transactions or both. **Y**—PIN only; **N**—Signature only; **A**—Both
+                                type: string
+                              period:
+                                description: Timespan for the velocity control. xD (x days), xM (x months), 1T (one transaction).
+                                type: string
+                              start_date:
+                                description: Starting date-time of the account-level velocity control. Not populated for product-level controls.
+                                format: date-time
+                                type: string
+                              trans_type:
+                                description: 'Type of transaction affected by the control: ATM, CAD, CBA, POS, VFT.'
+                                type: string
+                              transaction_count:
+                                description: Number of allowed transactions per period.
+                                type: integer
+                              transaction_count_available:
+                                description: Number of transactions available in the current period.
+                                type: integer
+                              transaction_count_used:
+                                description: Number of transactions used in the current period.
+                                type: integer
+                            type: object
+                          type: array
+                        pmt_ref_no:
+                          description: PRN. This field is populated when returning account-level velocity controls.
+                          type: string
+                        prod_id:
+                          description: This field is populated when returning product-level velocity controls.
+                          type: string
+                      required:
+                      - auth_controls
+                      type: object
+                    - type:
+                      - object
+                      - 'null'
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                  rtoken:
+                    description: A system-generated ID used for tracking
+                    type:
+                    - string
+                    - 'null'
+                  status:
+                    description: The condition of a process or response
+                    type:
+                    - string
+                    - 'null'
+                  status_code:
+                    description: The response status code. May return a string for some statuses.
+                    type:
+                    - integer
+                    - 'null'
+                  system_timestamp:
+                    description: A system generated timestamp
+                    format: date-time
+                    type:
+                    - string
+                    - 'null'
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+                type: object
+              examples:
+                response:
+                  value: "{\n  \"status_code\": 0,\n  \"status\": \"Success\",\n  \"processing_time\": 0.119,\n  \"response_data\": {\n      \"auth_controls\": [\n          {\n              \"control_id\": 1, \n              \"amount\": 1000, \n              \"transaction_count\": 6, \n              \"start_date\": \"2024-03-10 13:00:00\", \n              \"end_date\": \"3000-01-01 00:00:00\", \n              \"trans_type\": \"ATM\", \n              \"period\": \"1D\", \n              \"domestic_flag\": \"Y\", \n              \"has_pin\": \"A\",\n              \"control_desc\": \"ATM Daily Limit, Domestic\",\n              \"amount_used\": 500,\n              \"amount_available\": 500,\n              \"transaction_count_used\": null,\n              \"transaction_count_available\": null\n          }, \n          {\n              \"control_id\": 2, \n              \"amount\": 600, \n              \"transaction_count\": 24, \n              \"start_date\": \"2024-03-17 00:00:00\", \n              \"end_date\": \"2024-03-24 23:59:59\", \n              \"trans_type\": \"ATM\", \n              \"period\": \"1D\", \n              \"domestic_flag\": \"N\", \n              \"has_pin\": \"A\",\n              \"control_desc\": \"ATM Daily Limit, International\",\n              \"amount_used\": 200,\n              \"amount_available\": 400,\n              \"transaction_count_used\": null,\n              \"transaction_count_available\": null\n          }, \n          {\n              \"control_id\": 3, \n              \"amount\": 500, \n              \"transaction_count\": 3, \n              \"start_date\": \"2024-03-10 13:00:00\", \n              \"end_date\": \"2024-03-10 14:00:00\", \n              \"trans_type\": \"ATM\", \n              \"period\": \"1T\", \n              \"domestic_flag\": \"A\", \n              \"has_pin\": \"A\",\n              \"control_desc\": \"Per-transaction ATM Limit\",\n              \"amount_used\": 100,\n              \"amount_available\": 0,\n              \"transaction_count_used\": null,\n              \"transaction_count_available\": null\n          },\n          {\n              \"control_id\": 4, \n              \"amount\": 2000, \n              \"transaction_count\": 24, \n              \"start_date\": \"2024-03-10 13:00:00\", \n              \"end_date\": \"3000-01-01 00:00:00\", \n              \"trans_type\": \"POS\", \n              \"period\": \"7D\", \n              \"domestic_flag\": \"A\", \n              \"has_pin\": \"A\",\n              \"control_desc\": \"Weekly POS Limit\",\n              \"amount_used\": 500,\n              \"amount_available\": 1500,\n              \"transaction_count_used\": null,\n              \"transaction_count_available\": 24\n          },\n          {\n              \"control_id\": 4, \n              \"beginning_mcc\": 5541,\n              \"end_mcc\": 5542,\n              \"amount\": 300, \n              \"transaction_count\": 10, \n              \"start_date\": \"2024-03-10 13:00:00\", \n              \"end_date\": \"3000-01-01 00:00:00\", \n              \"trans_type\": \"POS\", \n              \"period\": \"7D\", \n              \"domestic_flag\": \"A\", \n              \"has_pin\": \"A\",\n              \"control_desc\": \"Weekly POS Limit\",\n              \"amount_used\": 100,\n              \"amount_available\": 200,\n              \"transaction_count_used\": 0,\n              \"transaction_count_available\": 10\n          },\n         {\n              \"control_id\": 4, \n              \"beginning_mcc\": 3000,\n              \"end_mcc\": 3299,\n              \"amount\": 1500, \n              \"transaction_count\": 1, \n              \"start_date\": \"2024-03-10 13:00:00\", \n              \"end_date\": \"3000-01-01 00:00:00\", \n              \"trans_type\": \"POS\", \n              \"period\": \"7D\", \n              \"domestic_flag\": \"A\", \n              \"has_pin\": \"A\",\n              \"control_desc\": \"Weekly POS Limit\",\n              \"amount_used\": 600,\n              \"amount_available\": 900,\n              \"transaction_count_used\": 1,\n              \"transaction_count_available\": 0\n          },\n          {\n              \"control_id\": 5, \n              \"amount\": 10000, \n              \"transaction_count\": 40, \n              \"start_date\": \"2024-03-10 13:00:00\", \n              \"end_date\": \"2024-03-31 23:59:59\", \n              \"trans_type\": \"POS, ATM, CAD, CBD\", \n              \"period\": \"1M\", \n              \"domestic_flag\": \"A\", \n              \"has_pin\": \"A\",\n              \"control_desc\": \"Monthly Combined Limit\",\n              \"amount_used\": 700,\n              \"amount_available\": 1300,\n              \"transaction_count_used\": 14,\n              \"transaction_count_available\": 26\n          },\n          {\n              \"control_id\": 5, \n              \"beginning_mcc\": 5812,\n              \"end_mcc\": 5814,\n              \"amount\": 1000, \n              \"transaction_count\": \"None\", \n              \"start_date\": \"2024-03-10 13:00:00\", \n              \"end_date\": \"3000-01-01 00:00:00\", \n              \"trans_type\": \"POS, ATM, CAD, CBD\", \n              \"period\": \"1M\", \n              \"domestic_flag\": \"A\", \n              \"has_pin\": \"A\",\n              \"control_desc\": \"Monthly Combined Limit\",\n              \"amount_used\": 300,\n              \"amount_available\": 700,\n              \"transaction_count_used\": null,\n              \"transaction_count_available\": null\n          },\n      ], \n  \"pmt_ref_no\": \"777777777777\"\n  }, \n  \"echo\": {\n  \"provider_transaction_id\": \"\", \n  \"provider_timestamp\": \"None\", \n  \"transaction_id\": \"JXVANPHRZ1S726826FC5\"\n  }\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root>\n   <echo>\n      <provider_timestamp>None</provider_timestamp>\n      <provider_transaction_id />\n      <transaction_id>JXVANPHRZ1S726826FC5</transaction_id>\n   </echo>\n   <processing_time>0.119</processing_time>\n   <response_data>\n      <auth_controls>\n         <element>\n            <amount>1000</amount>\n            <amount_available>500</amount_available>\n            <amount_used>500</amount_used>\n            <control_desc>ATM Daily Limit, Domestic</control_desc>\n            <control_id>1</control_id>\n            <domestic_flag>Y</domestic_flag>\n            <end_date>3000-01-01 00:00:00</end_date>\n            <has_pin>A</has_pin>\n            <period>1D</period>\n            <start_date>2024-03-10 13:00:00</start_date>\n            <trans_type>ATM</trans_type>\n            <transaction_count>6</transaction_count>\n            <transaction_count_available null=\"true\" />\n            <transaction_count_used null=\"true\" />\n         </element>\n         <element>\n            <amount>600</amount>\n            <amount_available>400</amount_available>\n            <amount_used>200</amount_used>\n            <control_desc>ATM Daily Limit, International</control_desc>\n            <control_id>2</control_id>\n            <domestic_flag>N</domestic_flag>\n            <end_date>2024-03-24 23:59:59</end_date>\n            <has_pin>A</has_pin>\n            <period>1D</period>\n            <start_date>2024-03-17 00:00:00</start_date>\n            <trans_type>ATM</trans_type>\n            <transaction_count>24</transaction_count>\n            <transaction_count_available null=\"true\" />\n            <transaction_count_used null=\"true\" />\n         </element>\n         <element>\n            <amount>500</amount>\n            <amount_available>0</amount_available>\n            <amount_used>100</amount_used>\n            <control_desc>Per-transaction ATM Limit</control_desc>\n            <control_id>3</control_id>\n            <domestic_flag>A</domestic_flag>\n            <end_date>2024-03-10 14:00:00</end_date>\n            <has_pin>A</has_pin>\n            <period>1T</period>\n            <start_date>2024-03-10 13:00:00</start_date>\n            <trans_type>ATM</trans_type>\n            <transaction_count>3</transaction_count>\n            <transaction_count_available null=\"true\" />\n            <transaction_count_used null=\"true\" />\n         </element>\n         <element>\n            <amount>2000</amount>\n            <amount_available>1500</amount_available>\n            <amount_used>500</amount_used>\n            <control_desc>Weekly POS Limit</control_desc>\n            <control_id>4</control_id>\n            <domestic_flag>A</domestic_flag>\n            <end_date>3000-01-01 00:00:00</end_date>\n            <has_pin>A</has_pin>\n            <period>7D</period>\n            <start_date>2024-03-10 13:00:00</start_date>\n            <trans_type>POS</trans_type>\n            <transaction_count>24</transaction_count>\n            <transaction_count_available>24</transaction_count_available>\n            <transaction_count_used null=\"true\" />\n         </element>\n         <element>\n            <amount>300</amount>\n            <amount_available>200</amount_available>\n            <amount_used>100</amount_used>\n            <beginning_mcc>5541</beginning_mcc>\n            <control_desc>Weekly POS Limit</control_desc>\n            <control_id>4</control_id>\n            <domestic_flag>A</domestic_flag>\n            <end_date>3000-01-01 00:00:00</end_date>\n            <end_mcc>5542</end_mcc>\n            <has_pin>A</has_pin>\n            <period>7D</period>\n            <start_date>2024-03-10 13:00:00</start_date>\n            <trans_type>POS</trans_type>\n            <transaction_count>10</transaction_count>\n            <transaction_count_available>10</transaction_count_available>\n            <transaction_count_used>0</transaction_count_used>\n         </element>\n         <element>\n            <amount>1500</amount>\n            <amount_available>900</amount_available>\n            <amount_used>600</amount_used>\n            <beginning_mcc>3000</beginning_mcc>\n            <control_desc>Weekly POS Limit</control_desc>\n            <control_id>4</control_id>\n            <domestic_flag>A</domestic_flag>\n            <end_date>3000-01-01 00:00:00</end_date>\n            <end_mcc>3299</end_mcc>\n            <has_pin>A</has_pin>\n            <period>7D</period>\n            <start_date>2024-03-10 13:00:00</start_date>\n            <trans_type>POS</trans_type>\n            <transaction_count>1</transaction_count>\n            <transaction_count_available>0</transaction_count_available>\n            <transaction_count_used>1</transaction_count_used>\n         </element>\n         <element>\n            <amount>10000</amount>\n            <amount_available>1300</amount_available>\n            <amount_used>700</amount_used>\n            <control_desc>Monthly Combined Limit</control_desc>\n            <control_id>5</control_id>\n            <domestic_flag>A</domestic_flag>\n            <end_date>2024-03-31 23:59:59</end_date>\n            <has_pin>A</has_pin>\n            <period>1M</period>\n            <start_date>2024-03-10 13:00:00</start_date>\n            <trans_type>POS, ATM, CAD, CBD</trans_type>\n            <transaction_count>40</transaction_count>\n            <transaction_count_available>26</transaction_count_available>\n            <transaction_count_used>14</transaction_count_used>\n         </element>\n         <element>\n            <amount>1000</amount>\n            <amount_available>700</amount_available>\n            <amount_used>300</amount_used>\n            <beginning_mcc>5812</beginning_mcc>\n            <control_desc>Monthly Combined Limit</control_desc>\n            <control_id>5</control_id>\n            <domestic_flag>A</domestic_flag>\n            <end_date>3000-01-01 00:00:00</end_date>\n            <end_mcc>5814</end_mcc>\n            <has_pin>A</has_pin>\n            <period>1M</period>\n            <start_date>2024-03-10 13:00:00</start_date>\n            <trans_type>POS, ATM, CAD, CBD</trans_type>\n            <transaction_count>None</transaction_count>\n            <transaction_count_available null=\"true\" />\n            <transaction_count_used null=\"true\" />\n         </element>\n      </auth_controls>\n      <pmt_ref_no>777777777777</pmt_ref_no>\n   </response_data>\n   <status>Success</status>\n   <status_code>0</status_code>\n</root>"
+          description: Successful response
+      summary: Get Auth Control
+      tags:
+      - Account-Level Controls
+  /getMccControls:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      description: Use the Get MCC Controls endpoint to retrieve the > controls for either a product ID or an account (PRN). See Set MCC Controls for instructions on using this endpoint.
+      operationId: post_getmcccontrols
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                accountNo:
+                  description: 'The <<glossary:PRN>> for the account. Do not use the <<glossary:CAD>> or <<glossary:PAN>>.  Pass this value to retrieve all of the account-level MCC controls for this account. If this parameter is not populated then `prodId` must be populated.
+
+                    Pattern: PRN (12-digit numeric string)
+
+                    Example: `"074103447228"`'
+                  example: 074103447228
+                  pattern: ^$|^([0-9]{12})$
+                  type:
+                  - string
+                  - 'null'
+                apiLogin:
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                  type: string
+                apiTransKey:
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                  type: string
+                prodId:
+                  description: "The system-generated identifier for the product. Pass this value to retrieve all of the product-level MCC controls for this product. If this parameter is not populated then `accountNo` must be populated. \nPattern: Integer\nExample: `15293`"
+                  example: 15293
+                  type:
+                  - integer
+                  - 'null'
+                transactionId:
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                  maxLength: 60
+                  minLength: 1
+                  type: string
+              required:
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  echo:
+                    anyOf:
+                    - additionalProperties: false
+                      properties:
+                        provider_timestamp:
+                          description: Store a related timestamp for reporting and troubleshooting purposes
+                          format: date-time
+                          type:
+                          - string
+                          - 'null'
+                        provider_transaction_id:
+                          description: Secondary transaction identifier (generated by a provider)
+                          type:
+                          - string
+                          - 'null'
+                        transaction_id:
+                          description: An ID that represents an API transaction
+                          type:
+                          - string
+                          - 'null'
+                      required:
+                      - provider_timestamp
+                      - provider_transaction_id
+                      - transaction_id
+                      type: object
+                    - type:
+                      - object
+                      - 'null'
+                    description: A structure that contains transaction ID information
+                  errors:
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                    type: array
+                  processing_time:
+                    description: The time elapsed in processing the transaction
+                    type:
+                    - number
+                    - 'null'
+                  response_data:
+                    anyOf:
+                    - additionalProperties: false
+                      properties:
+                        mcc_controls:
+                          description: List of MCC controls
+                          items:
+                            additionalProperties: false
+                            properties:
+                              beginning_mcc:
+                                description: The first MCC in the range.
+                                type: integer
+                              deny_allow_flag:
+                                description: Whether the control is DENY (`d`) or ALLOW (`a`).
+                                type: string
+                              end_date:
+                                description: Ending date-time of the account-level control. Not populated for product-level controls.
+                                type: string
+                              end_mcc:
+                                description: The last MCC in the range. If the control contains only one MCC, this field is either blank or the same value as `begMcc`.
+                                type: integer
+                              online_only:
+                                description: Whether the control applies to online (card not present) transactions only. **Y**—Online only; **N**—All transactions
+                                type: string
+                              start_date:
+                                description: Starting date-time of the account-level control. Not populated for product-level controls.
+                                type: string
+                            required:
+                            - beginning_mcc
+                            - deny_allow_flag
+                            - end_mcc
+                            - online_only
+                            type: object
+                          type: array
+                        pmt_ref_no:
+                          description: The PRN of the account. Returned only when `accountNo` was passed in the original call.
+                          type: string
+                        product_id:
+                          description: The product ID. Returned only when `prodId` was passed in the original call.
+                          type: integer
+                      required:
+                      - mcc_controls
+                      type: object
+                    - type:
+                      - object
+                      - 'null'
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                  rtoken:
+                    description: A system-generated ID used for tracking
+                    type:
+                    - string
+                    - 'null'
+                  status:
+                    description: The condition of a process or response
+                    type:
+                    - string
+                    - 'null'
+                  status_code:
+                    description: The response status code. May return a string for some statuses.
+                    type:
+                    - integer
+                    - 'null'
+                  system_timestamp:
+                    description: A system generated timestamp
+                    format: date-time
+                    type:
+                    - string
+                    - 'null'
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+                type: object
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.049,\n    \"response_data\": {\n        \"mcc_controls\": [\n            {\n                \"beginning_mcc\": 9754,\n                \"end_mcc\": 9754,\n                \"deny_allow_flag\": \"d\",\n                \"online_only\": \"N\"\n            },\n            {\n                \"beginning_mcc\": 9100,\n                \"end_mcc\": 9200,\n                \"deny_allow_flag\": \"d\",\n                \"online_only\": \"N\"\n            },\n            {\n                \"beginning_mcc\": 7995,\n                \"end_mcc\": 7995,\n                \"deny_allow_flag\": \"d\",\n                \"online_only\": \"Y\"\n            },\n            {\n                \"beginning_mcc\": 7800,\n                \"end_mcc\": 7802,\n                \"deny_allow_flag\": \"d\",\n                \"online_only\": \"N\"\n            },\n            {\n                \"beginning_mcc\": 7297,\n                \"end_mcc\": 7297,\n                \"deny_allow_flag\": \"d\",\n                \"online_only\": \"Y\"\n            },\n            {\n                \"beginning_mcc\": 7273,\n                \"end_mcc\": 7273,\n                \"deny_allow_flag\": \"d\",\n                \"online_only\": \"N\"\n            },\n            {\n                \"beginning_mcc\": 6540,\n                \"end_mcc\": 6540,\n                \"deny_allow_flag\": \"d\",\n                \"online_only\": \"N\"\n            },\n            {\n                \"beginning_mcc\": 6536,\n                \"end_mcc\": 6538,\n                \"deny_allow_flag\": \"d\",\n                \"online_only\": \"N\"\n            },\n            {\n                \"beginning_mcc\": 6529,\n                \"end_mcc\": 6535,\n                \"deny_allow_flag\": \"d\",\n                \"online_only\": \"N\"\n            }\n        ],\n        \"product_id\": 4444\n    },\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"94cf4daa-f6cc-4c02-ad59-3f5f80198969\"\n    },\n    \"system_timestamp\": \"2024-03-14 14:08:24\",\n    \"rtoken\": \"2a2a0a4d-f423-4f22-bab2-e4e4b19d6412\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root>\n   <echo>\n      <provider_timestamp null=\"true\" />\n      <provider_transaction_id />\n      <transaction_id>94cf4daa-f6cc-4c02-ad59-3f5f80198969</transaction_id>\n   </echo>\n   <processing_time>0.049</processing_time>\n   <response_data>\n      <mcc_controls>\n         <element>\n            <beginning_mcc>9754</beginning_mcc>\n            <deny_allow_flag>d</deny_allow_flag>\n            <end_mcc>9754</end_mcc>\n            <online_only>N</online_only>\n         </element>\n         <element>\n            <beginning_mcc>9100</beginning_mcc>\n            <deny_allow_flag>d</deny_allow_flag>\n            <end_mcc>9200</end_mcc>\n            <online_only>N</online_only>\n         </element>\n         <element>\n            <beginning_mcc>7995</beginning_mcc>\n            <deny_allow_flag>d</deny_allow_flag>\n            <end_mcc>7995</end_mcc>\n            <online_only>Y</online_only>\n         </element>\n         <element>\n            <beginning_mcc>7800</beginning_mcc>\n            <deny_allow_flag>d</deny_allow_flag>\n            <end_mcc>7802</end_mcc>\n            <online_only>N</online_only>\n         </element>\n         <element>\n            <beginning_mcc>7297</beginning_mcc>\n            <deny_allow_flag>d</deny_allow_flag>\n            <end_mcc>7297</end_mcc>\n            <online_only>Y</online_only>\n         </element>\n         <element>\n            <beginning_mcc>7273</beginning_mcc>\n            <deny_allow_flag>d</deny_allow_flag>\n            <end_mcc>7273</end_mcc>\n            <online_only>N</online_only>\n         </element>\n         <element>\n            <beginning_mcc>6540</beginning_mcc>\n            <deny_allow_flag>d</deny_allow_flag>\n            <end_mcc>6540</end_mcc>\n            <online_only>N</online_only>\n         </element>\n         <element>\n            <beginning_mcc>6536</beginning_mcc>\n            <deny_allow_flag>d</deny_allow_flag>\n            <end_mcc>6538</end_mcc>\n            <online_only>N</online_only>\n         </element>\n         <element>\n            <beginning_mcc>6529</beginning_mcc>\n            <deny_allow_flag>d</deny_allow_flag>\n            <end_mcc>6535</end_mcc>\n            <online_only>N</online_only>\n         </element>\n      </mcc_controls>\n      <product_id>4444</product_id>\n   </response_data>\n   <rtoken>2a2a0a4d-f423-4f22-bab2-e4e4b19d6412</rtoken>\n   <status>Success</status>\n   <status_code>0</status_code>\n   <system_timestamp>2024-03-14 14:08:24</system_timestamp>\n</root>"
+          description: Successful response
+      summary: Get MCC Controls
+      tags:
+      - Account-Level Controls
+  /getMerchantControls:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      description: Use the Get Merchant Controls endpoint to retrieve merchant ID (MID) controls for either the product ID or the specified account. See Set Merchant ID Controls for instructions on using this endpoint.
+      operationId: post_getmerchantcontrols
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                accountNo:
+                  description: 'The <<glossary:PRN>> for the account. Do not use the <<glossary:CAD>> or <<glossary:PAN>>. Pass this value to retrieve all of the account-level <<glossary:MID>> controls for this account. If this parameter is not populated then `prodId` must be populated.
+
+                    Pattern: PRN (12-digit numeric string)
+
+                    Example: `"074103447228"`'
+                  example: 074103447228
+                  pattern: ^$|^([0-9]{12})$
+                  type:
+                  - string
+                  - 'null'
+                apiLogin:
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                  type: string
+                apiTransKey:
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                  type: string
+                prodId:
+                  description: 'The system-generated identifier for the product. Pass this value to retrieve all of the product-level MID controls for this product. If this parameter is not populated then `accountNo` must be populated.
+
+                    Pattern: Integer
+
+                    Example: `15293`'
+                  example: 15293
+                  type:
+                  - integer
+                  - 'null'
+                transactionId:
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                  maxLength: 60
+                  minLength: 1
+                  type: string
+              required:
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  echo:
+                    anyOf:
+                    - additionalProperties: false
+                      properties:
+                        provider_timestamp:
+                          description: Store a related timestamp for reporting and troubleshooting purposes
+                          format: date-time
+                          type:
+                          - string
+                          - 'null'
+                        provider_transaction_id:
+                          description: Secondary transaction identifier (generated by a provider)
+                          type:
+                          - string
+                          - 'null'
+                        transaction_id:
+                          description: An ID that represents an API transaction
+                          type:
+                          - string
+                          - 'null'
+                      required:
+                      - provider_timestamp
+                      - provider_transaction_id
+                      - transaction_id
+                      type: object
+                    - type:
+                      - object
+                      - 'null'
+                    description: A structure that contains transaction ID information
+                  errors:
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                    type: array
+                  processing_time:
+                    description: The time elapsed in processing the transaction
+                    type:
+                    - number
+                    - 'null'
+                  response_data:
+                    anyOf:
+                    - additionalProperties: false
+                      properties:
+                        merchant_controls:
+                          description: List of merchant controls
+                          items:
+                            additionalProperties: false
+                            properties:
+                              deny_allow_flag:
+                                description: Whether the control is DENY (`d`) or ALLOW (`a`).
+                                type: string
+                              end_date:
+                                description: Ending date-time of the account-level control. Not populated for product-level controls.
+                                format: date-time
+                                type: string
+                              merchant_id:
+                                description: Merchant ID. If the value passed has fewer than 15 characters, the system adds spaces at the end until it has 15 characters.
+                                type: string
+                              start_date:
+                                description: Starting date-time of the account-level control. Not populated for product-level controls.
+                                format: date-time
+                                type: string
+                            required:
+                            - deny_allow_flag
+                            - merchant_id
+                            type: object
+                          type: array
+                        pmt_ref_no:
+                          description: The PRN of the account. Returned only when `accountNo` was passed in the original call.
+                          type: string
+                        product_id:
+                          description: The product ID. Returned only when `prodId` was passed in the original call.
+                          type: integer
+                      required:
+                      - merchant_controls
+                      type: object
+                    - type:
+                      - object
+                      - 'null'
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                  rtoken:
+                    description: A system-generated ID used for tracking
+                    type:
+                    - string
+                    - 'null'
+                  status:
+                    description: The condition of a process or response
+                    type:
+                    - string
+                    - 'null'
+                  status_code:
+                    description: The response status code. May return a string for some statuses.
+                    type:
+                    - integer
+                    - 'null'
+                  system_timestamp:
+                    description: A system generated timestamp
+                    format: date-time
+                    type:
+                    - string
+                    - 'null'
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+                type: object
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.036,\n    \"response_data\": {\n        \"merchant_controls\": [\n            {\n                \"merchant_id\": \"N344572049563  \",\n                \"start_date\": \"2024-03-14 14:06:15\",\n                \"end_date\": \"3000-01-01 00:00:00\",\n                \"deny_allow_flag\": \"a\"\n            },\n            {\n                \"merchant_id\": \"342243575458673\",\n                \"start_date\": \"2024-03-14 14:05:57\",\n                \"end_date\": \"3000-01-01 00:00:00\",\n                \"deny_allow_flag\": \"a\"\n            }\n        ],\n        \"pmt_ref_no\": \"777777777777\"\n    },\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"a6f1914f-ecbf-4baa-83cf-1f72ecea77f4\"\n    },\n    \"system_timestamp\": \"2024-03-14 14:06:27\",\n    \"rtoken\": \"88c78804-b22d-4cd0-854c-00fed242accd\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root>\n   <echo>\n      <provider_timestamp null=\"true\" />\n      <provider_transaction_id />\n      <transaction_id>a6f1914f-ecbf-4baa-83cf-1f72ecea77f4</transaction_id>\n   </echo>\n   <processing_time>0.036</processing_time>\n   <response_data>\n      <merchant_controls>\n         <element>\n            <deny_allow_flag>a</deny_allow_flag>\n            <end_date>3000-01-01 00:00:00</end_date>\n            <merchant_id>N344572049563  </merchant_id>\n            <start_date>2024-03-14 14:06:15</start_date>\n         </element>\n         <element>\n            <deny_allow_flag>a</deny_allow_flag>\n            <end_date>3000-01-01 00:00:00</end_date>\n            <merchant_id>342243575458673</merchant_id>\n            <start_date>2024-03-14 14:05:57</start_date>\n         </element>\n      </merchant_controls>\n      <pmt_ref_no>777777777777</pmt_ref_no>\n   </response_data>\n   <rtoken>88c78804-b22d-4cd0-854c-00fed242accd</rtoken>\n   <status>Success</status>\n   <status_code>0</status_code>\n   <system_timestamp>2024-03-14 14:06:27</system_timestamp>\n</root>"
+          description: Successful response
+      summary: Get Merchant Controls
+      tags:
+      - Account-Level Controls
+  /setAccountLevelMccControls:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      description: Use the Set Account-Level MCC Controls endpoint to create or modify account-level > controls. See Set MCC Controls for instructions on using this endpoint.
+      operationId: post_setaccountlevelmcccontrols
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                accountNo:
+                  description: 'The PRN for the account. Do not use the CAD or PAN.
+
+                    Pattern: PRN (12-digit numeric string)
+
+                    Example: `"344101254935"`'
+                  example: '344101254935'
+                  pattern: ^.+$
+                  type: string
+                allowDeny:
+                  description: 'Whether the MCC range is ALLOW (`a`) or DENY (`d`). This parameter is required for new controls but for updates it should be blank.
+
+                    Pattern: `a` or `d`
+
+                    Example: `"d"`'
+                  enum:
+                  - a
+                  - d
+                  example: d
+                  type:
+                  - string
+                  - 'null'
+                apiLogin:
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                  type: string
+                apiTransKey:
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                  type: string
+                endDate:
+                  description: "End date-time for the control. Must be later than `startDate`. Cannot be in the past. Default: `3000-01-01 00:00:00`. \nPattern: YYYY-MM-DD hh:mm:ss or YYYY-MM-DD\nExample: `\"2024-03-10 23:59:59\"`"
+                  example: '2024-03-10 23:59:59'
+                  format: date
+                  type:
+                  - string
+                  - 'null'
+                mccControls:
+                  description: 'A list of one or more MCC ranges, including standalone values. Format is `[''XXXX'', ''YYYY-ZZZZ'', ''AAAA-BBBB'']`. When updating an MCC control, specify the entire range: `[''YYYY-ZZZZ'']`. Max 100 ranges.
+
+                    Pattern: List of 4-digit numbers either alone or in a range.
+
+                    Example: `[''2000'', ''3000-4000'', ''4567'']`'
+                  example:
+                  - '2000'
+                  - 0900-3000
+                  - 4000-5000
+                  items:
+                    pattern: ^(?!(?:0000)$)\d{4}-(?!(?:0000)$)\d{4}|(?!(?:0000)$)\d{4}$
+                    type: string
+                  maxItems: 100
+                  minItems: 1
+                  type: array
+                onlineOnly:
+                  description: 'Whether the control applies only to online (card not present) transactions. Default: `N`.
+
+                    Pattern: `Y` or `N`
+
+                    Example: `"Y"`'
+                  enum:
+                  - Y
+                  - N
+                  example: Y
+                  type:
+                  - string
+                  - 'null'
+                startDate:
+                  description: 'Start date-time for the control. Can be set up to six months in the future. Cannot be in the past. Must be earlier than `endDate`. Default: Current <a href="ref:system-time" target="_blank"> system time</a>
+
+                    Pattern: YYYY-MM-DD hh:mm:ss or YYYY-MM-DD
+
+                    Example: `"2024-03-03 00:00:00"`'
+                  example: '2024-03-03 00:00:00'
+                  format: date
+                  type:
+                  - string
+                  - 'null'
+                transactionId:
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                  maxLength: 60
+                  minLength: 1
+                  type: string
+              required:
+              - accountNo
+              - mccControls
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  echo:
+                    anyOf:
+                    - additionalProperties: false
+                      properties:
+                        provider_timestamp:
+                          description: Store a related timestamp for reporting and troubleshooting purposes
+                          format: date-time
+                          type:
+                          - string
+                          - 'null'
+                        provider_transaction_id:
+                          description: Secondary transaction identifier (generated by a provider)
+                          type:
+                          - string
+                          - 'null'
+                        transaction_id:
+                          description: An ID that represents an API transaction
+                          type:
+                          - string
+                          - 'null'
+                      required:
+                      - provider_timestamp
+                      - provider_transaction_id
+                      - transaction_id
+                      type: object
+                    - type:
+                      - object
+                      - 'null'
+                    description: A structure that contains transaction ID information
+                  errors:
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                    type: array
+                  processing_time:
+                    description: The time elapsed in processing the transaction
+                    type:
+                    - number
+                    - 'null'
+                  response_data:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    additionalProperties: false
+                    properties: {}
+                    type: object
+                  rtoken:
+                    description: A system-generated ID used for tracking
+                    type:
+                    - string
+                    - 'null'
+                  status:
+                    description: The condition of a process or response
+                    type:
+                    - string
+                    - 'null'
+                  status_code:
+                    description: The response status code. May return a string for some statuses.
+                    type:
+                    - integer
+                    - 'null'
+                  system_timestamp:
+                    description: A system generated timestamp
+                    format: date-time
+                    type:
+                    - string
+                    - 'null'
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+                type: object
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.111,\n    \"response_data\": [],\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"bbe1dd0a-9ae5-4a98-9626-66997d9e250f\"\n    },\n    \"system_timestamp\": \"2024-03-10 10:57:04\",\n    \"rtoken\": \"893003ca-7bc5-4fa6-84c5-0b533e376322\"\n}\n"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root>\n   <echo>\n      <provider_timestamp null=\"true\" />\n      <provider_transaction_id />\n      <transaction_id>bbe1dd0a-9ae5-4a98-9626-66997d9e250f</transaction_id>\n   </echo>\n   <processing_time>0.111</processing_time>\n   <response_data />\n   <rtoken>893003ca-7bc5-4fa6-84c5-0b533e376322</rtoken>\n   <status>Success</status>\n   <status_code>0</status_code>\n   <system_timestamp>2024-03-10 10:57:04</system_timestamp>\n</root>"
+          description: Successful response
+      summary: Set Account-Level MCC Controls
+      tags:
+      - Account-Level Controls
+  /setAccountLevelMerchantControl:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      description: Use the Set Account-Level Merchant Control endpoint to create or modify an account-level merchant ID (MID) control. See Set Merchant ID Controls for instructions on using this endpoint.
+      operationId: post_setaccountlevelmerchantcontrol
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                accountNo:
+                  description: 'The <<glossary:PRN>> for the account. Do not use the <<glossary:CAD>> or <<glossary:PAN>>.
+
+                    Pattern: PRN (12-digit numeric string)
+
+                    Example: `"344101254935"`'
+                  example: '344101254935'
+                  pattern: ^.+$
+                  type: string
+                allowDeny:
+                  description: 'Whether the merchant ID is ALLOW (`a`) or DENY (`d`). This parameter is required for new controls but optional for updates.
+
+                    Pattern: `a` or `d`
+
+                    Example: `"d"`'
+                  enum:
+                  - a
+                  - d
+                  example: d
+                  type:
+                  - string
+                  - 'null'
+                apiLogin:
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                  type: string
+                apiTransKey:
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                  type: string
+                endDate:
+                  description: "End date-time for the control. Must be later than `startDate`. Cannot be in the past. Default: `3000-01-01 00:00:00`. \nPattern: YYYY-MM-DD hh:mm:ss or YYYY-MM-DD\nExample: `\"2024-03-10 23:59:59\"`"
+                  example: '2024-03-10 23:59:59'
+                  format: date
+                  type:
+                  - string
+                  - 'null'
+                merchantId:
+                  description: 'The merchant ID. Not case-sensitive.
+
+                    Pattern: Max 15 alphanumeric characters
+
+                    Example: `"000534LECR08003"`'
+                  example: 000534LECR08003
+                  pattern: ^[A-Za-z0-9]{1,15}$
+                  type: string
+                startDate:
+                  description: "Start date-time for the control. Can be set up to six months in the future. Cannot be in the past. Must be earlier than `endDate`. Default: Current <a href=\"ref:system-time\" target=\"_blank\">system time</a> \nPattern: YYYY-MM-DD hh:mm:ss or YYYY-MM-DD\nExample: `\"2024-03-03 00:00:00\"`"
+                  example: '2024-03-03 00:00:00'
+                  format: date
+                  type:
+                  - string
+                  - 'null'
+                transactionId:
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                  maxLength: 60
+                  minLength: 1
+                  type: string
+              required:
+              - accountNo
+              - merchantId
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  echo:
+                    anyOf:
+                    - additionalProperties: false
+                      properties:
+                        provider_timestamp:
+                          description: Store a related timestamp for reporting and troubleshooting purposes
+                          format: date-time
+                          type:
+                          - string
+                          - 'null'
+                        provider_transaction_id:
+                          description: Secondary transaction identifier (generated by a provider)
+                          type:
+                          - string
+                          - 'null'
+                        transaction_id:
+                          description: An ID that represents an API transaction
+                          type:
+                          - string
+                          - 'null'
+                      required:
+                      - provider_timestamp
+                      - provider_transaction_id
+                      - transaction_id
+                      type: object
+                    - type:
+                      - object
+                      - 'null'
+                    description: A structure that contains transaction ID information
+                  errors:
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                    type: array
+                  processing_time:
+                    description: The time elapsed in processing the transaction
+                    type:
+                    - number
+                    - 'null'
+                  response_data:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    additionalProperties: false
+                    properties: {}
+                    type: object
+                  rtoken:
+                    description: A system-generated ID used for tracking
+                    type:
+                    - string
+                    - 'null'
+                  status:
+                    description: The condition of a process or response
+                    type:
+                    - string
+                    - 'null'
+                  status_code:
+                    description: The response status code. May return a string for some statuses.
+                    type:
+                    - integer
+                    - 'null'
+                  system_timestamp:
+                    description: A system generated timestamp
+                    format: date-time
+                    type:
+                    - string
+                    - 'null'
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+                type: object
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.111,\n    \"response_data\": [],\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"bbe1dd0a-9ae5-4a98-9626-66997d9e250f\"\n    },\n    \"system_timestamp\": \"2024-03-10 10:57:04\",\n    \"rtoken\": \"893003ca-7bc5-4fa6-84c5-0b533e376322\"\n}\n"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root>\n   <echo>\n      <provider_timestamp null=\"true\" />\n      <provider_transaction_id />\n      <transaction_id>bbe1dd0a-9ae5-4a98-9626-66997d9e250f</transaction_id>\n   </echo>\n   <processing_time>0.111</processing_time>\n   <response_data />\n   <rtoken>893003ca-7bc5-4fa6-84c5-0b533e376322</rtoken>\n   <status>Success</status>\n   <status_code>0</status_code>\n   <system_timestamp>2024-03-10 10:57:04</system_timestamp>\n</root>"
+          description: Successful response
+      summary: Set Account-Level Merchant Control
+      tags:
+      - Account-Level Controls
+  /deleteAccountLevelAuthControl:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      description: Use the Delete Account-Level Auth Control endpoint to delete one velocity >. To delete a velocity control with MCCs, you must specify the full range in `beginningMcc` and `endMcc`.
+      operationId: post_deleteaccountlevelauthcontrol
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                accountNo:
+                  description: 'The <<glossary:PRN>> for the account. Do not use the <<glossary:CAD>> or <<glossary:PAN>>.
+
+                    Pattern: 12-digit numeric string
+
+                    Example: `"344101254935"`'
+                  example: '344101254935'
+                  pattern: ^.+$
+                  type: string
+                apiLogin:
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                  type: string
+                apiTransKey:
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                  type: string
+                beginningMcc:
+                  description: 'The start of the MCC range for the control to delete.
+
+                    Pattern: 3–4 digit integer, no leading zero
+
+                    Example: 3000'
+                  example: 3000
+                  maximum: 9999
+                  minimum: 1
+                  type:
+                  - integer
+                  - 'null'
+                controlId:
+                  description: 'The control ID of the velocity control to delete, as returned by <a href="ref:post_getauthcontrol" target="_blank">Get Auth Control</a>.
+
+                    Pattern: Integer, max 18 digits
+
+                    Example: `10492`'
+                  example: 10492
+                  type: integer
+                endMcc:
+                  description: 'The end of the MCC range for the control to delete.
+
+                    Pattern: 3–4 digit integer, no leading zero
+
+                    Example: 3999'
+                  example: 3999
+                  maximum: 9999
+                  minimum: 1
+                  type:
+                  - integer
+                  - 'null'
+                transactionId:
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                  maxLength: 60
+                  minLength: 1
+                  type: string
+              required:
+              - accountNo
+              - controlId
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  echo:
+                    anyOf:
+                    - additionalProperties: false
+                      properties:
+                        provider_timestamp:
+                          description: Store a related timestamp for reporting and troubleshooting purposes
+                          format: date-time
+                          type:
+                          - string
+                          - 'null'
+                        provider_transaction_id:
+                          description: Secondary transaction identifier (generated by a provider)
+                          type:
+                          - string
+                          - 'null'
+                        transaction_id:
+                          description: An ID that represents an API transaction
+                          type:
+                          - string
+                          - 'null'
+                      required:
+                      - provider_timestamp
+                      - provider_transaction_id
+                      - transaction_id
+                      type: object
+                    - type:
+                      - object
+                      - 'null'
+                    description: A structure that contains transaction ID information
+                  errors:
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                    type: array
+                  processing_time:
+                    description: The time elapsed in processing the transaction
+                    type:
+                    - number
+                    - 'null'
+                  response_data:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    additionalProperties: false
+                    properties: {}
+                    type: object
+                  rtoken:
+                    description: A system-generated ID used for tracking
+                    type:
+                    - string
+                    - 'null'
+                  status:
+                    description: The condition of a process or response
+                    type:
+                    - string
+                    - 'null'
+                  status_code:
+                    description: The response status code. May return a string for some statuses.
+                    type:
+                    - integer
+                    - 'null'
+                  system_timestamp:
+                    description: A system generated timestamp
+                    format: date-time
+                    type:
+                    - string
+                    - 'null'
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+                type: object
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.153,\n    \"response_data\": {},\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"07ad9c4b-d652-4473-b730-67e4c8507e97\"\n    },\n    \"system_timestamp\": \"2024-03-13 15:27:01\",\n    \"rtoken\": \"caff25ca-80a0-4dea-b0b5-3851c599276c\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root>\n   <echo>\n      <provider_timestamp null=\"true\" />\n      <provider_transaction_id />\n      <transaction_id>07ad9c4b-d652-4473-b730-67e4c8507e97</transaction_id>\n   </echo>\n   <processing_time>0.153</processing_time>\n   <response_data />\n   <rtoken>caff25ca-80a0-4dea-b0b5-3851c599276c</rtoken>\n   <status>Success</status>\n   <status_code>0</status_code>\n   <system_timestamp>2024-03-13 15:27:01</system_timestamp>\n</root>"
+          description: Successful response
+      summary: Delete Account-Level Auth Control
+      tags:
+      - Account-Level Controls
+  /deleteAccountLevelMccControl:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      description: Use the Delete Account-Level MCC Control endpoint to delete one MCC >. You must specify the entire MCC range for the control in `mccControlStart` and `mccControlEnd`.
+      operationId: post_deleteaccountlevelmcccontrol
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                accountNo:
+                  description: 'The <<glossary:PRN>> for the account. Do not use the <<glossary:CAD>> or <<glossary:PAN>>.
+
+                    Pattern: 12-digit numeric string
+
+                    Example: `"344101254935"`'
+                  example: '344101254935'
+                  pattern: ^.+$
+                  type: string
+                apiLogin:
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                  type: string
+                apiTransKey:
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                  type: string
+                mccControlEnd:
+                  description: 'The end of the MCC range for the control to delete.
+
+                    Pattern: 3–4 digit integer, no leading zero
+
+                    Example: 3999'
+                  example: 3999
+                  type: integer
+                mccControlStart:
+                  description: 'The start of the MCC range for the control to delete.
+
+                    Pattern: 3–4 digit integer, no leading zero
+
+                    Example: 3000'
+                  example: 3000
+                  type: integer
+                transactionId:
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                  maxLength: 60
+                  minLength: 1
+                  type: string
+              required:
+              - accountNo
+              - mccControlEnd
+              - mccControlStart
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  echo:
+                    anyOf:
+                    - additionalProperties: false
+                      properties:
+                        provider_timestamp:
+                          description: Store a related timestamp for reporting and troubleshooting purposes
+                          format: date-time
+                          type:
+                          - string
+                          - 'null'
+                        provider_transaction_id:
+                          description: Secondary transaction identifier (generated by a provider)
+                          type:
+                          - string
+                          - 'null'
+                        transaction_id:
+                          description: An ID that represents an API transaction
+                          type:
+                          - string
+                          - 'null'
+                      required:
+                      - provider_timestamp
+                      - provider_transaction_id
+                      - transaction_id
+                      type: object
+                    - type:
+                      - object
+                      - 'null'
+                    description: A structure that contains transaction ID information
+                  errors:
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                    type: array
+                  processing_time:
+                    description: The time elapsed in processing the transaction
+                    type:
+                    - number
+                    - 'null'
+                  response_data:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    additionalProperties: false
+                    properties: {}
+                    type: object
+                  rtoken:
+                    description: A system-generated ID used for tracking
+                    type:
+                    - string
+                    - 'null'
+                  status:
+                    description: The condition of a process or response
+                    type:
+                    - string
+                    - 'null'
+                  status_code:
+                    description: The response status code. May return a string for some statuses.
+                    type:
+                    - integer
+                    - 'null'
+                  system_timestamp:
+                    description: A system generated timestamp
+                    format: date-time
+                    type:
+                    - string
+                    - 'null'
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+                type: object
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.153,\n    \"response_data\": {},\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"07ad9c4b-d652-4473-b730-67e4c8507e97\"\n    },\n    \"system_timestamp\": \"2024-03-13 15:27:01\",\n    \"rtoken\": \"caff25ca-80a0-4dea-b0b5-3851c599276c\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root>\n   <echo>\n      <provider_timestamp null=\"true\" />\n      <provider_transaction_id />\n      <transaction_id>07ad9c4b-d652-4473-b730-67e4c8507e97</transaction_id>\n   </echo>\n   <processing_time>0.153</processing_time>\n   <response_data />\n   <rtoken>caff25ca-80a0-4dea-b0b5-3851c599276c</rtoken>\n   <status>Success</status>\n   <status_code>0</status_code>\n   <system_timestamp>2024-03-13 15:27:01</system_timestamp>\n</root>"
+          description: Successful response
+      summary: Delete Account-Level MCC Control
+      tags:
+      - Account-Level Controls
+  /deleteAccountLevelMerchantControl:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      description: Use the Delete Account-Leve Merchant Control endpoint to delete one merchant ID >.
+      operationId: post_deleteaccountlevelmerchantcontrol
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                accountNo:
+                  description: 'The <<glossary:PRN>> for the account. Do not use the <<glossary:CAD>> or <<glossary:PAN>>.
+
+                    Pattern: 12-digit numeric string
+
+                    Example: `"344101254935"`'
+                  example: '344101254935'
+                  pattern: ^.+$
+                  type: string
+                apiLogin:
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                  type: string
+                apiTransKey:
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                  type: string
+                merchantId:
+                  description: 'The merchant ID. Not case-sensitive.
+
+                    Pattern: Max 15 alphanumeric characters
+
+                    Example: `"000534LECR08003"`'
+                  example: 000534LECR08003
+                  pattern: ^[A-Za-z0-9]{1,15}$
+                  type: string
+                transactionId:
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                  maxLength: 60
+                  minLength: 1
+                  type: string
+              required:
+              - accountNo
+              - merchantId
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  echo:
+                    anyOf:
+                    - additionalProperties: false
+                      properties:
+                        provider_timestamp:
+                          description: Store a related timestamp for reporting and troubleshooting purposes
+                          format: date-time
+                          type:
+                          - string
+                          - 'null'
+                        provider_transaction_id:
+                          description: Secondary transaction identifier (generated by a provider)
+                          type:
+                          - string
+                          - 'null'
+                        transaction_id:
+                          description: An ID that represents an API transaction
+                          type:
+                          - string
+                          - 'null'
+                      required:
+                      - provider_timestamp
+                      - provider_transaction_id
+                      - transaction_id
+                      type: object
+                    - type:
+                      - object
+                      - 'null'
+                    description: A structure that contains transaction ID information
+                  errors:
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                    type: array
+                  processing_time:
+                    description: The time elapsed in processing the transaction
+                    type:
+                    - number
+                    - 'null'
+                  response_data:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    additionalProperties: false
+                    properties: {}
+                    type: object
+                  rtoken:
+                    description: A system-generated ID used for tracking
+                    type:
+                    - string
+                    - 'null'
+                  status:
+                    description: The condition of a process or response
+                    type:
+                    - string
+                    - 'null'
+                  status_code:
+                    description: The response status code. May return a string for some statuses.
+                    type:
+                    - integer
+                    - 'null'
+                  system_timestamp:
+                    description: A system generated timestamp
+                    format: date-time
+                    type:
+                    - string
+                    - 'null'
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+                type: object
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.153,\n    \"response_data\": {},\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"07ad9c4b-d652-4473-b730-67e4c8507e97\"\n    },\n    \"system_timestamp\": \"2024-03-13 15:27:01\",\n    \"rtoken\": \"caff25ca-80a0-4dea-b0b5-3851c599276c\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root>\n   <echo>\n      <provider_timestamp null=\"true\" />\n      <provider_transaction_id />\n      <transaction_id>07ad9c4b-d652-4473-b730-67e4c8507e97</transaction_id>\n   </echo>\n   <processing_time>0.153</processing_time>\n   <response_data />\n   <rtoken>caff25ca-80a0-4dea-b0b5-3851c599276c</rtoken>\n   <status>Success</status>\n   <status_code>0</status_code>\n   <system_timestamp>2024-03-13 15:27:01</system_timestamp>\n</root>"
+          description: Successful response
+      summary: Delete Account-Level Merchant Control
+      tags:
+      - Account-Level Controls
+components:
+  parameters:
+    ResponseContentTypeHeaderParam:
+      name: response-content-type
+      in: header
+      description: Use this header instead of the standard `accept` header to specify the response format.
+      schema:
+        type: string
+        enum:
+        - xml
+        - json
+        default: json
+x-readme:
+  samples-languages:
+  - curl
+  - python
+  - node
+  - java
+  - go
+  - ruby
+  - javascript
+  explorer-enabled: true
+  proxy-enabled: true

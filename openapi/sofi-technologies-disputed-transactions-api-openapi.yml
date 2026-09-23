@@ -1,0 +1,322 @@
+openapi: 3.2.0
+info:
+  version: '25.02'
+  title: Dispute API 3.0 Disputed Transactions API
+  description: The following documents the Intake API and Interaction APIs.
+  termsOfService: ''
+  contact: {}
+  license:
+    name: ''
+servers:
+- url: '{corename}.gft-dispute-api.{env}.gpsrv.com/gft-dispute-api/1.0/'
+tags:
+- name: Disputed Transactions
+paths:
+  /claim/transactions/list:
+    parameters:
+    - $ref: '#/components/parameters/AuthorizationHeaderParam'
+    - $ref: '#/components/parameters/ProfileTypeHeaderParam'
+    post:
+      summary: /claim/transactions/list
+      operationId: postTransactionsList
+      description: Use this endpoint to retrieve a list of transactions for a given existing claim
+      parameters: []
+      responses:
+        '200':
+          description: Successful transaction list request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  TransactionList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        TransactionAmount:
+                          type: number
+                          description: Transaction amount
+                        CardLastFourDigits:
+                          type: string
+                          description: Last 4 digits of the card used
+                        DisputedAmount:
+                          type: number
+                          description: Disputed amount
+                        DisputeId:
+                          type: string
+                          description: Unique ID for the dispute associated with this transaction
+                          examples:
+                          - 2307190009D
+                        Description:
+                          type: string
+                          description: Transaction description
+                        PostingDate:
+                          type: string
+                          format: Date
+                          description: Transaction posting date<br><br> Format:yyyyMMdd
+                        PostingDateTime:
+                          type: string
+                          format: Date-Time
+                          description: Transaction posting date as a Date-Time
+                        CurrentStage:
+                          type: string
+                          description: Transaction status, corresponds with stages in case workflow - <a href="ref:api-reference-status-values-3" target="_blank">Status Values</a>
+                          enum:
+                          - Enhance
+                          - Analyze
+                          - Execute
+                          - Resolve
+                        LastCommitDate:
+                          type: string
+                          format: Date-Time
+                          description: Commit Date
+                        TransactionId:
+                          type: string
+                          description: Unique Transaction ID
+                        DisputeStatus:
+                          type: string
+                          description: Work status of the dispute, see <a href="ref:api-reference-status-values-3" target="_blank">Status Values</a>
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                successExample:
+                  value:
+                    TransactionList:
+                    - TransactionAmount: '100.000000000'
+                      CardLastFourDigits: '8557'
+                      DisputedAmount: '100.000000000'
+                      DisputeId: 2307190009D
+                      Description: 'SoFi Tech Solutions Bank BRANCH #2145'
+                      PostingDate: '20270727'
+                      PostingDateTime: 202707272T020235.184 GMT
+                      CurrentStage: Analyze
+                      LastCommitDate: 20270728T020235.184 GMT
+                      TransactionId: '2'
+                      DisputeStatus: Open-Disposition
+                    StatusList:
+                    - Type: Success
+                      Message: Success
+                      Code: '200'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '200'
+        '400':
+          description: Error transaction list request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                transactionListError:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: 'Error Retrieving Transactions List: {message}'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample failed list transaction error Response
+                error4Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: The requested Claim ID is not valid.
+                      Code: '4'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 4 response
+                error5Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: 'Invalid Request: {message}'
+                      Code: '5'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 5 response
+                error14Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Invalid request message
+                      Code: '14'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 14 response
+                error19Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Unable to Process request. The ClaimID has not been submitted..
+                      Code: '19'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 19 response
+        '500':
+          description: Error transaction list request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                errorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Could not obtain a lock on the claim
+                      Code: '500'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '500'
+                  summary: A sample Error 500 response
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ClaimId
+              - transactionId
+              - providerId
+              properties:
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  maxLength: 60
+                  minLength: 1
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction").
+
+                    Pattern: Max 60 characters
+
+                    Example: `"984513-395483653-4483483478"`'
+                  example: 984513-395483653-4483483478
+                ClaimId:
+                  type: string
+                  description: Unique claim ID
+                  example: 2501240026C
+      tags:
+      - Disputed Transactions
+components:
+  parameters:
+    ProfileTypeHeaderParam:
+      name: profile-type
+      in: header
+      description: Optional param to call Dispute API as a customer-service agent or a cardholder
+      schema:
+        type: string
+        enum:
+        - agent
+        - cardholder
+        default: agent
+    AuthorizationHeaderParam:
+      name: Authorization
+      in: header
+      description: For `{token}` insert base64-encoded `apiLogin:apiTransKey`
+      schema:
+        type: string
+        default: Basic {token}
+externalDocs:
+  url: ''
+  description: ''
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

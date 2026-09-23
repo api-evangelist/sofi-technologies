@@ -1,0 +1,239 @@
+openapi: 3.2.0
+info:
+  title: Settlement Events Webhook API
+  description: 'Events API (also known as Alerts API) is a collection of webhooks that clients
+
+    can use to get events from Galileo.'
+  version: 1.0.0
+tags:
+- name: Settlement Events Webhook
+paths:
+  /Settlement:
+    post:
+      summary: Settlement Events Webhook
+      description: 'Galileo `POST`s to `/Settlement` to send Settlement Events to the client. A Settlement Event is triggered when a card financial transaction is settled or force posted.
+
+
+        ### Requests
+
+
+        The event data (described in the index pages that follow) will be in the body of the request, as JSON or form data.
+
+
+        #### JSON example (`application/json`)
+
+        ```json
+
+        {
+
+        "type": "setl",
+
+        "act_type": "VI",
+
+        "amount": "10.75",
+
+        "auth_id": "254568",
+
+        "balance_id": "2011",
+
+        "cad": "12534",
+
+        "mcc": "5712",
+
+        "merchant_location": "NEW YORK, NY",
+
+        "merchant_name": "Widgets Incorporated",
+
+        "merchant_number": "L4DIV6D5LM4X7LF",
+
+        "network": "V",
+
+        "open_to_buy": "500.00",
+
+        "otype": "10",
+
+        "pmt_ref_no": "155200002022",
+
+        "prod_id": "1701",
+
+        "prog_id": "305",
+
+        "timestamp": "2019-10-09 11:20:33 MST"
+
+        }
+
+        ```
+
+
+        #### Form example (`application/x-www-form-urlencoded`)
+
+        ```
+
+        type=setl&act_type=VI&amount=10.75&auth_id=254568&balance_id=2011&cad=12534&mcc=5712&merchant_location=NEW+YORK%2C+NY&merchant_name=Widgets+Incorporated&merchant_number=L4DIV6D5LM4X7LF&network=V&open_to_buy=500&otype=10&pmt_ref_no=155200002022&prod_id=1701&prog_id=305×tamp=2019-10-09+11%3A20%3A33+MST
+
+        ```
+
+
+        ### Responses
+
+
+        | Value | Description | Retransmit |
+
+        | :---: | --- | :---: |
+
+        | 0 | Success | No |
+
+        | 1 | Parameters do not pass validation (parsing error) | No |
+
+        | 2 | Cardholder account not in system | No |
+
+        | 3 | General system failure | No |
+
+        | 4 | Authentication failed | No |
+
+        | 5 | Not ready to accept messages | Yes |
+
+
+        #### JSON example
+
+        ```json
+
+        {
+
+        "success_code": "0"
+
+        }
+
+        ```
+
+
+        XML responses should use the webhook name (`Settlement`) as the envelope.
+
+        #### XML example
+
+        ```xml
+
+        0
+
+        ```'
+      operationId: webhook_settlement_event_post
+      tags:
+      - Settlement Events Webhook
+      parameters:
+      - name: X-Request-ID
+        in: header
+        description: A unique identifier for the HTTP request.
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: Encryption-Type
+        in: header
+        description: Signature algorithm. For now, always `"HMAC-SHA256"`.
+        schema:
+          type: string
+          enum:
+          - HMAC-SHA256
+          default: HMAC-SHA256
+        required: true
+      - name: User-ID
+        in: header
+        description: Identifies request as coming from Galileo. Hard-coded to `"galileo"`.
+        schema:
+          type: string
+          enum:
+          - galileo
+          default: galileo
+        required: true
+      - name: Date
+        in: header
+        description: 'UTC timestamp when request is sent. Format: `"<timestamp><timezone>"` where `timestamp = YYYYMMDD:HHMMSS` and `timezone = UTC`. Example: `20170504:141752UTC`.'
+        schema:
+          type: string
+        required: true
+      - name: Signature
+        in: header
+        description: Signature of request. See overview for more details.
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          description: Response from client.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success_code:
+                    type: string
+                    description: 'Response ("success") codes. Possible values:
+
+
+                      * `0` - Success
+
+                      * `1` - Parameters do not pass validation
+
+                      * `2` - Cardholder account not in system
+
+                      * `3` - General system failure
+
+                      * `4` - Authentication failed
+
+                      * `5` - Not ready to accept messages. Event will be retransmitted.
+
+
+                      For all but `5`, the event will not be retransmitted.
+
+                      '
+                    enum:
+                    - '0'
+                    - '1'
+                    - '2'
+                    - '3'
+                    - '4'
+                    - '5'
+              examples:
+                response:
+                  value: "{\n  \"success_code\": \"0\"\n}\n"
+            application/xml:
+              schema:
+                type: object
+                properties:
+                  success_code:
+                    type: string
+                    description: 'Response ("success") codes. Possible values:
+
+
+                      * `0` - Success
+
+                      * `1` - Parameters do not pass validation
+
+                      * `2` - Cardholder account not in system
+
+                      * `3` - General system failure
+
+                      * `4` - Authentication failed
+
+                      * `5` - Not ready to accept messages. Event will be retransmitted.
+
+
+                      For all but `5`, the event will not be retransmitted.
+
+                      '
+                    enum:
+                    - '0'
+                    - '1'
+                    - '2'
+                    - '3'
+                    - '4'
+                    - '5'
+                xml:
+                  name: Settlement
+              examples:
+                response:
+                  value: "<Settlement>\n  <success_code>0</success_code>\n</Settlement>\n"
+x-explorer-enabled: false
+x-samples-enabled: false
+x-readme:
+  proxy-enabled: true

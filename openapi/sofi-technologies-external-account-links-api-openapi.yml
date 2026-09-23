@@ -1,0 +1,4544 @@
+openapi: 3.2.0
+info:
+  title: Payment Hub Api 2.0 External Account Links API
+  version: '1.0'
+servers:
+- url: '{corename}.payment-hub.{env}.gpsrv.com/payment-hub/1.0/'
+tags:
+- name: External Account Links
+paths:
+  /createExternalAccountLink:
+    post:
+      tags:
+      - External Account Links
+      summary: Create External Account Link
+      description: '> 👍 Availability
+
+        >
+
+        >Some of the field descriptions for this endpoint reference FedNow or Fedwire, which are future capabilities not yet available for clients. Right now, this endpoint supports only Mastercard Data Connect: Account Linking and Mastercard Data Connect: Balance Check.
+
+
+        Use the Create External Account Link endpoint to create a link from an account at an external bank to the caller account when a user manually inputs their external account information. This account will be usable for transfers over FedWire or credit rails, depending on your configuration.'
+      operationId: paymenthub_post_createexternalaccountlink
+      parameters:
+      - name: x-gft-idempotency-key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid4
+          title: X-Gft-Idempotency-Key
+      - name: Authorization
+        in: header
+        required: true
+        description: Basic authentication token (base64-encoded {apilogin}:{apitranskey} credentials provided by SoFi Tech Solutions)
+        schema:
+          type: string
+          pattern: ^Basic [A-Za-z0-9+/]+=*$
+          example: Basic eW91cl9hcGlsb2dpbjp5b3VyX2FwaXRyYW5za2V5
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                accountNo:
+                  type: string
+                  title: Accountno
+                  description: "The <<glossary:PRN>> of the account.\nPattern: PRN \nExample: `\"074103447228\"`"
+                  examples:
+                  - 074103447228
+                nickname:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Nickname
+                  description: 'Display name for the remote account. Not considered to be sensitive data.
+
+                    Pattern: 1–34 characters with at least one non-whitespace character.
+
+                    Example: `"Celia College Fund"`'
+                  examples:
+                  - Celia College Fund
+                  - dest name 1
+                owner:
+                  description: Owner information for the external account.
+                  properties:
+                    type:
+                      description: 'Type of entity that owns the external account.
+
+                        Example: `"CONSUMER"`'
+                      enum:
+                      - CORPORATE
+                      - CONSUMER
+                      - GALILEO
+                      title: OwnerEntityType
+                      type: string
+                    ownershipType:
+                      default: FIRST_PARTY
+                      description: 'Relationship of the account owner to the program account.
+
+                        Example: `"FIRST_PARTY"`'
+                      type: string
+                      enum:
+                      - FIRST_PARTY
+                      - THIRD_PARTY
+                      title: OwnershipType
+                    address:
+                      anyOf:
+                      - properties:
+                          line1:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                            title: Line1
+                            description: 'First line of the address.
+
+                              Pattern:
+
+                              - Default: 1-105 characters with at least one non-whitespace character
+
+                              - FEDWIRE: 1-105 characters, limited to alphanumeric and special characters'
+                            examples:
+                            - 123 sesame street
+                          line2:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                            title: Line2
+                            description: 'Second line of the address (apartment, suite, etc.).
+
+                              Pattern:
+
+                              - Default: 1-35 characters with at least one non-whitespace character
+
+                              - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                            examples:
+                            - apt 4321
+                          city:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                            title: City
+                            description: 'City name.
+
+                              Pattern:
+
+                              - Default: 1-35 characters with at least one non-whitespace character
+
+                              - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                            examples:
+                            - Brooklyn
+                          state:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                            title: State
+                            description: 'State or province code.
+
+                              Pattern:
+
+                              - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+
+                              - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
+                            examples:
+                            - NY
+                          zipCode:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                            title: Zipcode
+                            description: 'Postal code or ZIP code.
+
+                              Pattern:
+
+                              - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+
+                              - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
+                            examples:
+                            - '11201'
+                          country:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                            title: Country
+                            description: 'Country code following ISO 3166-1 alpha-2 format.
+
+                              Pattern: Exactly 2 uppercase letters.
+
+                              Examples: ''US'' (United States), ''MX'' (Mexico)'
+                            examples:
+                            - US
+                            - MX
+                        type: object
+                        title: RequestAddress
+                      - type: 'null'
+                      description: Primary address for the account owner.
+                  required:
+                  - type
+                  title: AccountOwnerBase
+                  type: object
+                  discriminator:
+                    propertyName: type
+                    mapping:
+                      CONSUMER: '#/components/schemas/ConsumerAccountOwner'
+                      CORPORATE: '#/components/schemas/CorporateAccountOwner'
+                      GALILEO: '#/components/schemas/GalileoAccountOwner'
+                details:
+                  description: Card or bank details for the external account.
+                  properties:
+                    type:
+                      description: Type of external account being linked.
+                      enum:
+                      - BANK
+                      - CARD
+                      title: AccountDetailsType
+                      type: string
+                  required:
+                  - type
+                  title: AccountDetailsBaseRequest
+                  type: object
+                  discriminator:
+                    propertyName: type
+                    mapping:
+                      BANK: '#/components/schemas/BankAccountDetails'
+                      CARD: '#/components/schemas/CardAccountDetails'
+                validation:
+                  description: Details for validating the external account link.
+                  properties:
+                    type:
+                      description: 'Specifies the validation method required for the external account link.
+
+                        Pattern: enum
+
+                        Example: `"CLIENT"`'
+                      default: CLIENT
+                      type: string
+                      enum:
+                      - CLIENT
+                      - LEGACY
+                      - CARD
+                      - FINICITY
+                      - NONE
+                      - MICRO_ENTRY
+                      title: ValidationType
+                    status:
+                      description: 'Indicates the current status of the validation process.
+
+                        Pattern: enum
+
+                        Example: `"PENDING"`'
+                      default: PENDING
+                      type: string
+                      enum:
+                      - PENDING
+                      - FAILED
+                      - PASSED
+                      - NO_VALIDATION
+                      title: ValidationStatus
+                    status_reason:
+                      anyOf:
+                      - type: string
+                      - type: 'null'
+                      title: Status Reason
+                      description: 'Provides additional context or a reason for the current validation status.
+
+                        Pattern: Alphanumeric string
+
+                        Example: `"Validated successfully"`'
+                  type: object
+                  title: ExternalAccountLinkValidation
+              type: object
+              required:
+              - accountNo
+              - owner
+              - details
+              - validation
+              - apiLogin
+              - apiTransKey
+              - providerId
+              title: CreateExternalAccountLinkRequest
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  externalAccountLinkId:
+                    type: string
+                    title: Externalaccountlinkid
+                    description: Unique identifier that identifies the external account link in the system.
+                type: object
+                required:
+                - externalAccountLinkId
+                title: CreateExternalAccountLinkResponse
+              examples:
+                response:
+                  value: "{\n    \"externalAccountLinkId\": \"123e4567-e89b-12d3-a456-4266100532\"\n}"
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+          description: Bad Request
+        '401':
+          description: No valid API credentials provided.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '403':
+          description: The provided API credential does not allow this operation.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '404':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+          description: Conflict
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  detail:
+                    items:
+                      properties:
+                        loc:
+                          items:
+                            anyOf:
+                            - type: string
+                            - type: integer
+                          type: array
+                          title: Location
+                        msg:
+                          type: string
+                          title: Message
+                        type:
+                          type: string
+                          title: Error Type
+                      type: object
+                      required:
+                      - loc
+                      - msg
+                      - type
+                      title: ValidationError
+                    type: array
+                    title: Detail
+                type: object
+                title: HTTPValidationError
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '500':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+          description: Internal Server Error
+        '502':
+          description: Bad Gateway.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '503':
+          description: Service Unavailable.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+  /loadExternalAccountLinks:
+    post:
+      tags:
+      - External Account Links
+      summary: Load External Account Links
+      description: Use the Load External Account Links endpoint to initiate a link between external account(s) and the caller account when a user inputs their external account credentials during a secure session in your application. The external account will be usable for transfers over FedWire or credit rails, depending on your configuration.
+      operationId: paymenthub_post_loadexternalaccountlinks
+      parameters:
+      - name: x-gft-idempotency-key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid4
+          title: X-Gft-Idempotency-Key
+      - name: Authorization
+        in: header
+        required: true
+        description: Basic authentication token (base64-encoded {apilogin}:{apitranskey} credentials provided by SoFi Tech Solutions)
+        schema:
+          type: string
+          pattern: ^Basic [A-Za-z0-9+/]+=*$
+          example: Basic eW91cl9hcGlsb2dpbjp5b3VyX2FwaXRyYW5za2V5
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                accountNo:
+                  type: string
+                  title: Accountno
+                  description: 'The <<glossary:PRN>> to which the new external account will be linked.
+
+                    Pattern: PRN
+
+                    Example: `"074103447228"`'
+                  examples:
+                  - 074103447228
+                integration:
+                  description: Contains the account and customer identifiers from the specified third-party provider.
+                  properties:
+                    type:
+                      description: 'Third-party provider used to link the account.
+
+                        Example: FINICITY'
+                      type: string
+                      enum:
+                      - FINICITY
+                      title: IntegrationType
+                    customerId:
+                      anyOf:
+                      - type: string
+                      - type: 'null'
+                      title: Customerid
+                      description: 'Unique customer identifier provided by the integration partner.
+
+                        Pattern: Alphanumeric string
+
+                        Example: `"1005061234"`'
+                      examples:
+                      - '1005061234'
+                    accountId:
+                      anyOf:
+                      - type: string
+                      - type: 'null'
+                      title: Accountid
+                      description: 'Unique account identifier provided by the integration partner.
+
+                        Pattern: Alphanumeric string
+
+                        Example: `"5011648377"`'
+                      examples:
+                      - '5011648377'
+                  type: object
+                  required:
+                  - type
+                  title: FinicityIntegration
+                validation:
+                  anyOf:
+                  - properties:
+                      type:
+                        description: 'Specifies the validation method required for the external account link.
+
+                          Pattern: enum
+
+                          Example: `"CLIENT"`'
+                        default: CLIENT
+                        type: string
+                        enum:
+                        - CLIENT
+                        - LEGACY
+                        - CARD
+                        - FINICITY
+                        - NONE
+                        - MICRO_ENTRY
+                        title: ValidationType
+                      status:
+                        description: 'Indicates the current status of the validation process.
+
+                          Pattern: enum
+
+                          Example: `"PENDING"`'
+                        default: PENDING
+                        type: string
+                        enum:
+                        - PENDING
+                        - FAILED
+                        - PASSED
+                        - NO_VALIDATION
+                        title: ValidationStatus
+                      status_reason:
+                        anyOf:
+                        - type: string
+                        - type: 'null'
+                        title: Status Reason
+                        description: 'Provides additional context or a reason for the current validation status.
+
+                          Pattern: Alphanumeric string
+
+                          Example: `"Validated successfully"`'
+                    type: object
+                    title: ExternalAccountLinkValidation
+                  - type: 'null'
+              type: object
+              required:
+              - accountNo
+              - integration
+              - apiLogin
+              - apiTransKey
+              - providerId
+              title: LoadExternalAccountLinksRequest
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    externalAccountLinkId:
+                      type: string
+                      title: Externalaccountlinkid
+                      description: Unique identifier that identifies the external account link in the system.
+                    status:
+                      type: string
+                      title: Status
+                      description: Status of the external account link.
+                      default: PENDING
+                    integration:
+                      description: Contains information about the third-party provider.
+                      properties:
+                        type:
+                          description: Third-party provider such as FINICITY, PLAID, etc
+                          type: string
+                          enum:
+                          - FINICITY
+                          title: IntegrationType
+                        customerId:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                          title: Customerid
+                          description: The customer ID of the account.
+                          examples:
+                          - '1005061234'
+                        accountId:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                          title: Accountid
+                          description: The account ID of the account.
+                          examples:
+                          - '5011648377'
+                        institutionId:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                          title: Institutionid
+                          description: The institution ID of the account.
+                          examples:
+                          - '102105'
+                      type: object
+                      required:
+                      - type
+                      title: LoadApiIntegration
+                  type: object
+                  required:
+                  - externalAccountLinkId
+                  - integration
+                  title: LoadExternalAccountLinksResponse
+                title: Response 200 Load External Account Links Call Loadexternalaccountlinks Post
+              examples:
+                response:
+                  value: "[\n    {\n      \"externalAccountLinkId\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"status\": \"PENDING\",\n      \"integration\": {\n        \"type\": \"FINICITY\",\n        \"customerId\": \"1005061234\",\n        \"accountId\": \"5011648377\",\n        \"institutionId\": \"102105\"\n      }\n    }\n]"
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+          description: Bad Request
+        '401':
+          description: No valid API credentials provided.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '403':
+          description: The provided API credential does not allow this operation.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '404':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+          description: Conflict
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  detail:
+                    items:
+                      properties:
+                        loc:
+                          items:
+                            anyOf:
+                            - type: string
+                            - type: integer
+                          type: array
+                          title: Location
+                        msg:
+                          type: string
+                          title: Message
+                        type:
+                          type: string
+                          title: Error Type
+                      type: object
+                      required:
+                      - loc
+                      - msg
+                      - type
+                      title: ValidationError
+                    type: array
+                    title: Detail
+                type: object
+                title: HTTPValidationError
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '500':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+          description: Internal Server Error
+        '502':
+          description: Bad Gateway.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '503':
+          description: Service Unavailable.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+  /modifyExternalAccountLink:
+    post:
+      tags:
+      - External Account Links
+      summary: Modify External Account Link
+      description: 'Use the Modify External Account Link endpoint to update an existing external bank account that sends and receives transactions.
+
+
+        Specify only the parameter(s) you wish to modify. Do not pass parameters with `null` or empty values.'
+      operationId: paymenthub_post_modifyexternalaccountlink
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                accountNo:
+                  type: string
+                  title: Accountno
+                  description: 'The <<glossary:PRN>> to which the external account is linked.
+
+                    Pattern: PRN
+
+                    Example: `"074103447228"`'
+                  examples:
+                  - 074103447228
+                externalAccountLinkId:
+                  type: string
+                  title: Externalaccountlinkid
+                  description: 'Unique identifier for the specific external account link to modify.
+
+                    Pattern: 1–40 digits
+
+                    Example: `"0359320859384728394827182394832834"`'
+                  examples:
+                  - 0359320859384728394827182394832834
+                nickname:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Nickname
+                  description: 'Display name for the remote account. Not considered to be sensitive data.
+
+                    Pattern: 1–34 characters
+
+                    Example: `"My Savings Account"`'
+                  examples:
+                  - Celia College Fund
+                  - dest name 1
+                owner:
+                  anyOf:
+                  - properties:
+                      address:
+                        anyOf:
+                        - properties:
+                            line1:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Line1
+                              description: 'First line of the address.
+
+                                Pattern:
+
+                                - Default: 1-105 characters with at least one non-whitespace character
+
+                                - FEDWIRE: 1-105 characters, limited to alphanumeric and special characters'
+                              examples:
+                              - 123 sesame street
+                            line2:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Line2
+                              description: 'Second line of the address (apartment, suite, etc.).
+
+                                Pattern:
+
+                                - Default: 1-35 characters with at least one non-whitespace character
+
+                                - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                              examples:
+                              - apt 4321
+                            city:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: City
+                              description: 'City name.
+
+                                Pattern:
+
+                                - Default: 1-35 characters with at least one non-whitespace character
+
+                                - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                              examples:
+                              - Brooklyn
+                            state:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: State
+                              description: 'State or province code.
+
+                                Pattern:
+
+                                - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+
+                                - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
+                              examples:
+                              - NY
+                            zipCode:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Zipcode
+                              description: 'Postal code or ZIP code.
+
+                                Pattern:
+
+                                - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+
+                                - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
+                              examples:
+                              - '11201'
+                            country:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Country
+                              description: 'Country code following ISO 3166-1 alpha-2 format.
+
+                                Pattern: Exactly 2 uppercase letters.
+
+                                Examples: ''US'' (United States), ''MX'' (Mexico)'
+                              examples:
+                              - US
+                              - MX
+                          type: object
+                          title: RequestAddress
+                        - type: 'null'
+                        description: Primary address for the account owner.
+                      consumerFirstName:
+                        anyOf:
+                        - type: string
+                        - type: 'null'
+                        title: Consumerfirstname
+                        description: 'First name of the individual who owns the account.
+
+                          Pattern: 1-40 characters
+
+                          Example: `"Jane"`'
+                        examples:
+                        - John
+                      consumerLastName:
+                        anyOf:
+                        - type: string
+                        - type: 'null'
+                        title: Consumerlastname
+                        description: 'Last name of the individual who owns the account.
+
+                          Pattern: 1-40 characters
+
+                          Example: `"Doe"`'
+                        examples:
+                        - Smith
+                      businessName:
+                        anyOf:
+                        - type: string
+                        - type: 'null'
+                        title: Businessname
+                        description: 'Legal name of the business that owns the account.
+
+                          Pattern: 1-40 characters
+
+                          Example: `"ABC Corporation"`'
+                        examples:
+                        - ABC Corp
+                    type: object
+                    title: ModifiableExternalAccountOwner
+                  - type: 'null'
+                  description: Specifies the owner-related fields to update.
+                  default: {}
+                details:
+                  anyOf:
+                  - description: Base class for modifiable account details
+                    properties:
+                      type:
+                        description: Type of external account being linked.
+                        enum:
+                        - BANK
+                        - CARD
+                        title: AccountDetailsType
+                        type: string
+                    required:
+                    - type
+                    title: ModifiableAccountDetailsBase
+                    type: object
+                    discriminator:
+                      propertyName: type
+                      mapping:
+                        BANK: '#/components/schemas/ModifiableExternalBankAccountDetails'
+                        CARD: '#/components/schemas/ModifiableExternalCardAccountDetails'
+                  - type: 'null'
+                  title: Details
+                  description: Specifies the account or card details to update.
+                validation:
+                  anyOf:
+                  - properties:
+                      type:
+                        anyOf:
+                        - type: string
+                          enum:
+                          - CLIENT
+                          - LEGACY
+                          - CARD
+                          - FINICITY
+                          - NONE
+                          - MICRO_ENTRY
+                          title: ValidationType
+                        - type: 'null'
+                        description: 'Validation method for the external account.
+
+                          Example: CLIENT'
+                      status:
+                        anyOf:
+                        - type: string
+                          enum:
+                          - PENDING
+                          - FAILED
+                          - PASSED
+                          - NO_VALIDATION
+                          title: ValidationStatus
+                        - type: 'null'
+                        description: 'Validation status of the external account.
+
+                          Example: VERIFIED'
+                    type: object
+                    title: ModifiableExternalAccountLinkValidation
+                  - type: 'null'
+                  description: Specifies the validation information to update.
+                  default: {}
+              type: object
+              required:
+              - accountNo
+              - externalAccountLinkId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              title: ModifyExternalAccountLinkRequest
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  externalAccountLinkId:
+                    type: string
+                    title: Externalaccountlinkid
+                    description: Unique identifier that identifies the external account link in the system.
+                type: object
+                required:
+                - externalAccountLinkId
+                title: ModifyExternalAccountLinkResponse
+              examples:
+                response:
+                  value: "{\n    \"externalAccountLinkId\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '401':
+          description: No valid API credentials provided.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '403':
+          description: The provided API credential does not allow this operation.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  detail:
+                    items:
+                      properties:
+                        loc:
+                          items:
+                            anyOf:
+                            - type: string
+                            - type: integer
+                          type: array
+                          title: Location
+                        msg:
+                          type: string
+                          title: Message
+                        type:
+                          type: string
+                          title: Error Type
+                      type: object
+                      required:
+                      - loc
+                      - msg
+                      - type
+                      title: ValidationError
+                    type: array
+                    title: Detail
+                type: object
+                title: HTTPValidationError
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '502':
+          description: Bad Gateway.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '503':
+          description: Service Unavailable.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Basic authentication token (base64-encoded {apilogin}:{apitranskey} credentials provided by SoFi Tech Solutions)
+        schema:
+          type: string
+          pattern: ^Basic [A-Za-z0-9+/]+=*$
+          example: Basic eW91cl9hcGlsb2dpbjp5b3VyX2FwaXRyYW5za2V5
+  /getExternalAccountLink:
+    post:
+      tags:
+      - External Account Links
+      summary: Get External Account Link
+      description: '> 👍 Availability
+
+        >
+
+        >Some of the field descriptions for this endpoint reference FedNow or Fedwire, which are future capabilities not yet available for clients. Right now, this endpoint supports only Mastercard Data Connect: Account Linking and Mastercard Data Connect: Balance Check.
+
+
+        Use the Get External Account Link endpoint to retrieve a remote account that was created by Create External Account Link for the specified `accountNo`.'
+      operationId: paymenthub_post_getexternalaccountlink
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                accountNo:
+                  type: string
+                  title: Accountno
+                  description: 'The <<glossary:PRN>> to which the external account is linked.
+
+                    Pattern: PRN
+
+                    Example: `"074103447228"`'
+                  examples:
+                  - 074103447228
+                externalAccountLinkId:
+                  type: string
+                  title: Externalaccountlinkid
+                  description: 'Unique identifier for the specific external account link to retrieve.
+
+                    Example: `"0359320859384728394827182394832834"`'
+                  examples:
+                  - 0359320859384728394827182394832834
+                includeBalance:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Includebalance
+                  description: 'Specifies whether to include the external account''s live balance in the response.
+
+                    Example: `true`'
+                  default: false
+                  examples:
+                  - true
+              type: object
+              required:
+              - accountNo
+              - externalAccountLinkId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              title: GetExternalAccountLinkRequest
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  externalAccountLinkId:
+                    type: string
+                    title: Externalaccountlinkid
+                    description: Unique identifier that identifies the external account link in the system.
+                  status:
+                    anyOf:
+                    - type: string
+                      enum:
+                      - ACTIVE
+                      - DELETED
+                      - PENDING
+                      - FAILED
+                      title: ExternalAccountLinkStatus
+                    - type: 'null'
+                    description: Status of the external account link.
+                  nickname:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                    title: Nickname
+                    description: "Display name for the remote account. Not considered to be sensitive data. \nPattern: Max 34 alphanumeric, punctuation\nExample: `\"Celia College Fund\"`"
+                    examples:
+                    - Celia College Fund
+                    - dest name 1
+                  owner:
+                    description: Owner information for the linked external account.
+                    properties:
+                      type:
+                        description: 'Type of account owner:'
+                        enum:
+                        - CORPORATE
+                        - CONSUMER
+                        - GALILEO
+                        title: OwnerEntityType
+                        type: string
+                      ownershipType:
+                        description: Relationship of the account owner to the program account.
+                        type: string
+                        enum:
+                        - FIRST_PARTY
+                        - THIRD_PARTY
+                        title: OwnershipType
+                      address:
+                        anyOf:
+                        - properties:
+                            line1:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Line1
+                              description: 'First line of the address.
+
+                                Pattern:
+
+                                - Default: 1-105 characters with at least one non-whitespace character
+
+                                - FEDWIRE: 1-105 characters, limited to alphanumeric and special characters'
+                              examples:
+                              - 123 sesame street
+                            line2:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Line2
+                              description: 'Second line of the address (apartment, suite, etc.).
+
+                                Pattern:
+
+                                - Default: 1-35 characters with at least one non-whitespace character
+
+                                - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                              examples:
+                              - apt 4321
+                            city:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: City
+                              description: 'City name.
+
+                                Pattern:
+
+                                - Default: 1-35 characters with at least one non-whitespace character
+
+                                - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                              examples:
+                              - Brooklyn
+                            state:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: State
+                              description: 'State or province code.
+
+                                Pattern:
+
+                                - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+
+                                - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
+                              examples:
+                              - NY
+                            zipCode:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Zipcode
+                              description: 'Postal code or ZIP code.
+
+                                Pattern:
+
+                                - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+
+                                - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
+                              examples:
+                              - '11201'
+                            country:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Country
+                              description: 'Country code following ISO 3166-1 alpha-2 format.
+
+                                Pattern: Exactly 2 uppercase letters.
+
+                                Examples: ''US'' (United States), ''MX'' (Mexico)'
+                              examples:
+                              - US
+                              - MX
+                          type: object
+                          title: ResponseAddress
+                        - type: 'null'
+                        description: Primary address for the account owner.
+                    required:
+                    - type
+                    - ownershipType
+                    title: AccountOwnerResponseBase
+                    type: object
+                    discriminator:
+                      propertyName: type
+                      mapping:
+                        CONSUMER: '#/components/schemas/ConsumerAccountOwnerResponse'
+                        CORPORATE: '#/components/schemas/CorporateAccountOwnerResponse'
+                        GALILEO: '#/components/schemas/GalileoAccountOwnerResponse'
+                  details:
+                    description: Card or bank details for the linked external account.
+                    properties:
+                      type:
+                        description: Type of external account being linked.
+                        enum:
+                        - BANK
+                        - CARD
+                        title: AccountDetailsType
+                        type: string
+                    required:
+                    - type
+                    title: AccountDetailsBaseResponse
+                    type: object
+                    discriminator:
+                      propertyName: type
+                      mapping:
+                        BANK: '#/components/schemas/BankAccountDetailsResponse'
+                        CARD: '#/components/schemas/CardAccountDetailsResponse'
+                  validation:
+                    description: Validation details for the linked external account.
+                    properties:
+                      type:
+                        description: 'Type of validation:'
+                        type: string
+                        enum:
+                        - CLIENT
+                        - LEGACY
+                        - CARD
+                        - FINICITY
+                        - NONE
+                        - MICRO_ENTRY
+                        title: ValidationType
+                      status:
+                        description: 'Status of the validation:'
+                        type: string
+                        enum:
+                        - PENDING
+                        - FAILED
+                        - PASSED
+                        - NO_VALIDATION
+                        title: ValidationStatus
+                      status_reason:
+                        anyOf:
+                        - type: string
+                        - type: 'null'
+                        description: Reason for the validation status.
+                        title: Status Reason
+                    required:
+                    - type
+                    - status
+                    title: ValidationResponseBase
+                    type: object
+                    discriminator:
+                      propertyName: type
+                      mapping:
+                        CARD: '#/components/schemas/ExternalAccountLinkCardValidationResponse'
+                        FINICITY: '#/components/schemas/ExternalAccountLinkFinicityValidationResponse'
+                        CLIENT: '#/components/schemas/ExternalAccountLinkClientValidationResponse'
+                        LEGACY: '#/components/schemas/ExternalAccountLinkLegacyValidationResponse'
+                        MICRO_ENTRY: '#/components/schemas/ExternalAccountLinkMicroEntryValidationResponse'
+                        NONE: '#/components/schemas/ExternalAccountLinkNoValidationResponse'
+                type: object
+                required:
+                - externalAccountLinkId
+                - owner
+                - details
+                - validation
+                title: GetExternalAccountLinkResponse
+              examples:
+                response:
+                  value: "{\n    \"externalAccountLinkId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"status\": \"ACTIVE\",\n    \"nickname\": \"Celia College Fund\",\n    \"owner\": {\n      \"type\": \"CORPORATE\",\n      \"ownershipType\": \"FIRST_PARTY\",\n      \"address\": null\n    },\n    \"details\": {\n      \"type\": \"BANK\"\n    },\n    \"validation\": {\n      \"type\": \"CLIENT\",\n      \"status\": \"PENDING\",\n      \"status_reason\": null\n    }\n}"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '401':
+          description: No valid API credentials provided.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '403':
+          description: The provided API credential does not allow this operation.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  detail:
+                    items:
+                      properties:
+                        loc:
+                          items:
+                            anyOf:
+                            - type: string
+                            - type: integer
+                          type: array
+                          title: Location
+                        msg:
+                          type: string
+                          title: Message
+                        type:
+                          type: string
+                          title: Error Type
+                      type: object
+                      required:
+                      - loc
+                      - msg
+                      - type
+                      title: ValidationError
+                    type: array
+                    title: Detail
+                type: object
+                title: HTTPValidationError
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '502':
+          description: Bad Gateway.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '503':
+          description: Service Unavailable.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Basic authentication token (base64-encoded {apilogin}:{apitranskey} credentials provided by SoFi Tech Solutions)
+        schema:
+          type: string
+          pattern: ^Basic [A-Za-z0-9+/]+=*$
+          example: Basic eW91cl9hcGlsb2dpbjp5b3VyX2FwaXRyYW5za2V5
+  /listExternalAccountLinks:
+    post:
+      tags:
+      - External Account Links
+      summary: List External Account Links
+      description: Use the List External Account Links endpoint to retrieve a list of remote accounts that were created by Create External Account Link for the specified `accountNo`.
+      operationId: paymenthub_post_listexternalaccountlinks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                accountNo:
+                  type: string
+                  title: Accountno
+                  description: 'All external account links associated with this <<glossary:PRN>>.
+
+                    Pattern: PRN
+
+                    Example: `"074103447228"`'
+                  examples:
+                  - 074103447228
+                limit:
+                  type: integer
+                  title: Limit
+                  description: 'Maximum number of account links to return in the response.
+
+                    Pattern: Integer, max 15
+
+                    Example: `15`'
+                  examples:
+                  - 1
+                  - 12
+                  - 15
+                page:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Page
+                  description: 'Pass the `nextPage` token from a previous response to fetch the subsequent page.
+
+                    Pattern: Alphanumeric token
+
+                    Example: `"NO34BNT04TV234N6V274692376G32NNFNNF7988247923865017061N"`'
+                  examples:
+                  - NO34BNT04TV234N6V274692376G32NNFNNF7988247923865017061N
+              type: object
+              required:
+              - accountNo
+              - apiLogin
+              - apiTransKey
+              - providerId
+              title: ListExternalAccountLinksRequest
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  externalAccountLinks:
+                    anyOf:
+                    - items:
+                        properties:
+                          externalAccountLinkId:
+                            type: string
+                            title: Externalaccountlinkid
+                            description: Unique identifier that identifies the external account link in the system.
+                          status:
+                            anyOf:
+                            - type: string
+                              enum:
+                              - ACTIVE
+                              - DELETED
+                              - PENDING
+                              - FAILED
+                              title: ExternalAccountLinkStatus
+                            - type: 'null'
+                            description: Status of the external account link.
+                          nickname:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                            title: Nickname
+                            description: "Display name for the remote account. Not considered to be sensitive data. \nPattern: Max 34 alphanumeric, punctuation\nExample: `\"Celia College Fund\"`"
+                            examples:
+                            - Celia College Fund
+                            - dest name 1
+                          owner:
+                            description: Owner information for the linked external account.
+                            properties:
+                              type:
+                                description: 'Type of account owner:'
+                                enum:
+                                - CORPORATE
+                                - CONSUMER
+                                - GALILEO
+                                title: OwnerEntityType
+                                type: string
+                              ownershipType:
+                                description: Relationship of the account owner to the program account.
+                                type: string
+                                enum:
+                                - FIRST_PARTY
+                                - THIRD_PARTY
+                                title: OwnershipType
+                              address:
+                                anyOf:
+                                - properties:
+                                    line1:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Line1
+                                      description: 'First line of the address.
+
+                                        Pattern:
+
+                                        - Default: 1-105 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-105 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - 123 sesame street
+                                    line2:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Line2
+                                      description: 'Second line of the address (apartment, suite, etc.).
+
+                                        Pattern:
+
+                                        - Default: 1-35 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - apt 4321
+                                    city:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: City
+                                      description: 'City name.
+
+                                        Pattern:
+
+                                        - Default: 1-35 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - Brooklyn
+                                    state:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: State
+                                      description: 'State or province code.
+
+                                        Pattern:
+
+                                        - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+
+                                        - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - NY
+                                    zipCode:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Zipcode
+                                      description: 'Postal code or ZIP code.
+
+                                        Pattern:
+
+                                        - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+
+                                        - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - '11201'
+                                    country:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Country
+                                      description: 'Country code following ISO 3166-1 alpha-2 format.
+
+                                        Pattern: Exactly 2 uppercase letters.
+
+                                        Examples: ''US'' (United States), ''MX'' (Mexico)'
+                                      examples:
+                                      - US
+                                      - MX
+                                  type: object
+                                  title: ResponseAddress
+                                - type: 'null'
+                                description: Primary address for the account owner.
+                            required:
+                            - type
+                            - ownershipType
+                            title: AccountOwnerResponseBase
+                            type: object
+                            discriminator:
+                              propertyName: type
+                              mapping:
+                                CONSUMER: '#/components/schemas/ConsumerAccountOwnerResponse'
+                                CORPORATE: '#/components/schemas/CorporateAccountOwnerResponse'
+                                GALILEO: '#/components/schemas/GalileoAccountOwnerResponse'
+                          details:
+                            description: Card or bank details for the linked external account.
+                            properties:
+                              type:
+                                description: Type of external account being linked.
+                                enum:
+                                - BANK
+                                - CARD
+                                title: AccountDetailsType
+                                type: string
+                            required:
+                            - type
+                            title: AccountDetailsBaseResponse
+                            type: object
+                            discriminator:
+                              propertyName: type
+                              mapping:
+                                BANK: '#/components/schemas/BankAccountDetailsResponse'
+                                CARD: '#/components/schemas/CardAccountDetailsResponse'
+                          validation:
+                            description: Validation details for the linked external account.
+                            properties:
+                              type:
+                                description: 'Type of validation:'
+                                type: string
+                                enum:
+                                - CLIENT
+                                - LEGACY
+                                - CARD
+                                - FINICITY
+                                - NONE
+                                - MICRO_ENTRY
+                                title: ValidationType
+                              status:
+                                description: 'Status of the validation:'
+                                type: string
+                                enum:
+                                - PENDING
+                                - FAILED
+                                - PASSED
+                                - NO_VALIDATION
+                                title: ValidationStatus
+                              status_reason:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                description: Reason for the validation status.
+                                title: Status Reason
+                            required:
+                            - type
+                            - status
+                            title: ValidationResponseBase
+                            type: object
+                            discriminator:
+                              propertyName: type
+                              mapping:
+                                CARD: '#/components/schemas/ExternalAccountLinkCardValidationResponse'
+                                FINICITY: '#/components/schemas/ExternalAccountLinkFinicityValidationResponse'
+                                CLIENT: '#/components/schemas/ExternalAccountLinkClientValidationResponse'
+                                LEGACY: '#/components/schemas/ExternalAccountLinkLegacyValidationResponse'
+                                MICRO_ENTRY: '#/components/schemas/ExternalAccountLinkMicroEntryValidationResponse'
+                                NONE: '#/components/schemas/ExternalAccountLinkNoValidationResponse'
+                        type: object
+                        required:
+                        - externalAccountLinkId
+                        - owner
+                        - details
+                        - validation
+                        title: GetExternalAccountLinkResponse
+                      type: array
+                    - type: 'null'
+                    title: Externalaccountlinks
+                    description: List of External Account Links.
+                  nextPage:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                    title: Nextpage
+                    description: Token to use to retrieve the next page. If this field is missing, there are no more pages to return.
+                type: object
+                required:
+                - externalAccountLinks
+                title: ListExternalAccountLinksResponse
+              examples:
+                response:
+                  value: "{\n    \"externalAccountLinks\": [\n      {\n        \"externalAccountLinkId\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"status\": \"ACTIVE\",\n        \"nickname\": \"Celia College Fund\",\n        \"owner\": {\n          \"type\": \"CORPORATE\",\n          \"ownershipType\": \"FIRST_PARTY\",\n          \"address\": null\n        },\n        \"details\": {\n          \"type\": \"BANK\"\n        },\n        \"validation\": {\n          \"type\": \"CLIENT\",\n          \"status\": \"PENDING\",\n          \"status_reason\": null\n        }\n      }\n    ],\n    \"nextPage\": \"123e4567-e89b-12d3-a456-4266100532\"\n}"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '401':
+          description: No valid API credentials provided.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '403':
+          description: The provided API credential does not allow this operation.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  detail:
+                    items:
+                      properties:
+                        loc:
+                          items:
+                            anyOf:
+                            - type: string
+                            - type: integer
+                          type: array
+                          title: Location
+                        msg:
+                          type: string
+                          title: Message
+                        type:
+                          type: string
+                          title: Error Type
+                      type: object
+                      required:
+                      - loc
+                      - msg
+                      - type
+                      title: ValidationError
+                    type: array
+                    title: Detail
+                type: object
+                title: HTTPValidationError
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '502':
+          description: Bad Gateway.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '503':
+          description: Service Unavailable.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Basic authentication token (base64-encoded {apilogin}:{apitranskey} credentials provided by SoFi Tech Solutions)
+        schema:
+          type: string
+          pattern: ^Basic [A-Za-z0-9+/]+=*$
+          example: Basic eW91cl9hcGlsb2dpbjp5b3VyX2FwaXRyYW5za2V5
+  /removeExternalAccountLink:
+    post:
+      tags:
+      - External Account Links
+      summary: Remove External Account Links
+      description: Use the Remove External Account Link endpoint to remove a link to an account created by Create External Account Link.
+      operationId: paymenthub_post_removeexternalaccountlink
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                accountNo:
+                  type: string
+                  title: Accountno
+                  description: 'The <<glossary:PRN>> from which to remove the external account link.
+
+                    Pattern: PRN
+
+                    Example: `"074103447228"`'
+                  examples:
+                  - 074103447228
+                externalAccountLinkId:
+                  type: string
+                  title: Externalaccountlinkid
+                  description: 'Unique identifier for the specific external account link to remove.
+
+                    Pattern: 1–40 digits
+
+                    Example: `"0359320859384728394827182394832834"`'
+                  examples:
+                  - 0359320859384728394827182394832834
+              type: object
+              required:
+              - accountNo
+              - externalAccountLinkId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              title: RemoveExternalAccountLinkRequest
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  externalAccountLinkId:
+                    type: string
+                    title: Externalaccountlinkid
+                    description: Unique identifier that identifies the external account link in the system.
+                type: object
+                required:
+                - externalAccountLinkId
+                title: RemoveExternalAccountLinkResponse
+              examples:
+                response:
+                  value: "{\n    \"externalAccountLinkId\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '401':
+          description: No valid API credentials provided.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '403':
+          description: The provided API credential does not allow this operation.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  detail:
+                    items:
+                      properties:
+                        loc:
+                          items:
+                            anyOf:
+                            - type: string
+                            - type: integer
+                          type: array
+                          title: Location
+                        msg:
+                          type: string
+                          title: Message
+                        type:
+                          type: string
+                          title: Error Type
+                      type: object
+                      required:
+                      - loc
+                      - msg
+                      - type
+                      title: ValidationError
+                    type: array
+                    title: Detail
+                type: object
+                title: HTTPValidationError
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '502':
+          description: Bad Gateway.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '503':
+          description: Service Unavailable.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Basic authentication token (base64-encoded {apilogin}:{apitranskey} credentials provided by SoFi Tech Solutions)
+        schema:
+          type: string
+          pattern: ^Basic [A-Za-z0-9+/]+=*$
+          example: Basic eW91cl9hcGlsb2dpbjp5b3VyX2FwaXRyYW5za2V5
+  /getExternalAccountLinkAccess:
+    post:
+      tags:
+      - External Account Links
+      summary: Get External Account Link Access
+      description: Use the Get External Account Link Access endpoint to initiate a secure, user-facing session for linking an external account. This endpoint generates a temporary link for the user to securely provide their credentials to a third-party partner like Finicity.
+      operationId: paymenthub_post_getexternalaccountlinkaccess
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                accountNo:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Accountno
+                  description: 'The <<glossary:PRN>> for which to generate the secure linking session.
+
+                    Required for GALILEO_CARD_CAPTURE integration.
+
+                    Pattern: PRN
+
+                    Example: 074103447228'
+                  examples:
+                  - 074103447228
+                integration:
+                  description: 'Third-party partner to use for the secure account-linking session.
+
+                    Example: FINICITY'
+                  type: string
+                  enum:
+                  - FINICITY
+                  - GALILEO_CARD_CAPTURE
+                  title: AccessIntegration
+              type: object
+              required:
+              - integration
+              - apiLogin
+              - apiTransKey
+              - providerId
+              title: GetExternalAccountLinkAccessRequest
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  token:
+                    properties:
+                      type:
+                        description: 'Type of token returned.
+
+                          Example: JWT'
+                        examples:
+                        - JWT
+                        - FINICITY_TOKEN
+                        type: string
+                        enum:
+                        - JWT
+                        - FINICITY_TOKEN
+                        title: AccessTokenType
+                      value:
+                        type: string
+                        title: Value
+                        description: 'Token used to authenticate the secure session.
+
+                          For JWT: JSON Web Token for GALILEO_CARD_CAPTURE integration.
+
+                          For FINICITY_TOKEN: Finicity application token for API authentication.
+
+                          Pattern: Token string
+
+                          Example: fqnu103294.g4234g234f.42g2345gteg'
+                        examples:
+                        - fqnu103294.g4234g234f.42g2345gteg
+                      appKey:
+                        anyOf:
+                        - type: string
+                        - type: 'null'
+                        title: Appkey
+                        description: 'Application key for API authentication.
+
+                          Only provided for FINICITY integration.
+
+                          Pattern: Alphanumeric string
+
+                          Example: abc123def456'
+                        examples:
+                        - abc123def456
+                    type: object
+                    required:
+                    - type
+                    - value
+                    title: TokenDetails
+                  expirationTimestamp:
+                    type: string
+                    title: Expirationtimestamp
+                    description: 'ISO 8601 timestamp when the access token expires.
+
+                      Pattern: ISO 8601 format
+
+                      Example: `"2025-06-11T09:49:20.055367-06:00"`'
+                    examples:
+                    - '2025-06-11T09:49:20.055367-06:00'
+                  expirationDate:
+                    type: string
+                    title: Expirationdate
+                    description: 'Deprecated: Use expirationTimestamp instead. ISO 8601 timestamp when the access token expires.
+
+                      Pattern: ISO 8601 format
+
+                      Example: `"2025-06-11T09:49:20.055367-06:00"`'
+                    deprecated: true
+                    examples:
+                    - '2025-06-11T09:49:20.055367-06:00'
+                type: object
+                required:
+                - token
+                - expirationTimestamp
+                - expirationDate
+                title: GetExternalAccountLinkAccessResponse
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '401':
+          description: No valid API credentials provided.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '403':
+          description: The provided API credential does not allow this operation.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  detail:
+                    items:
+                      properties:
+                        loc:
+                          items:
+                            anyOf:
+                            - type: string
+                            - type: integer
+                          type: array
+                          title: Location
+                        msg:
+                          type: string
+                          title: Message
+                        type:
+                          type: string
+                          title: Error Type
+                      type: object
+                      required:
+                      - loc
+                      - msg
+                      - type
+                      title: ValidationError
+                    type: array
+                    title: Detail
+                type: object
+                title: HTTPValidationError
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '502':
+          description: Bad Gateway.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '503':
+          description: Service Unavailable.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Basic authentication token (base64-encoded {apilogin}:{apitranskey} credentials provided by SoFi Tech Solutions)
+        schema:
+          type: string
+          pattern: ^Basic [A-Za-z0-9+/]+=*$
+          example: Basic eW91cl9hcGlsb2dpbjp5b3VyX2FwaXRyYW5za2V5
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

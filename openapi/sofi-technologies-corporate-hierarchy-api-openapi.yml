@@ -1,0 +1,2063 @@
+openapi: 3.2.0
+info:
+  title: Program Corporate Hierarchy API
+  version: '4.0'
+servers:
+- url: api-{corename}.{env}.gpsrv.com/intserv/4.0/
+tags:
+- name: Corporate Hierarchy
+paths:
+  /createGroup:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      tags:
+      - Corporate Hierarchy
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                groupName:
+                  type: string
+                  minLength: 1
+                  maxLength: 40
+                  description: "Name of the group. \nPattern: 1–40 alphanumeric characters, including spaces, hyphens, and single quotes\nExample: `\"CDE Corp\"`"
+                  example: CDE Corp
+                parentGroupId:
+                  type: string
+                  minLength: 1
+                  maxLength: 10
+                  pattern: ^[\d]+$
+                  description: 'The identifier of the next group up in the hierarchy. **Required** when creating a non-root group; not valid when `maxLevel` is populated. This value cannot be changed after it is set
+
+                    .Pattern: Max 10 numeric characters
+
+                    Example: `"456"`'
+                  example: '456'
+                maxLevel:
+                  type:
+                  - integer
+                  - 'null'
+                  format: int32
+                  minimum: 1
+                  maximum: 5
+                  description: 'Maximum number of subgroup levels that can be created below this root group. **Required** when creating a root group. Not valid when `parentGroupId` is populated. This value cannot be changed to a smaller number after it is set.
+
+                    Pattern: Numerals 0–5
+
+                    Example: `3`'
+                  example: '5'
+                externalId:
+                  type:
+                  - string
+                  - 'null'
+                  maxLength: 30
+                  pattern: ^[\w\s]+$
+                  description: "Provider-specified identifier for the group. \nPattern: Max 30 alphanumeric characters\nExample: `\"L0000\"`"
+                  example: L0000
+                doingBusinessAs:
+                  type:
+                  - string
+                  - 'null'
+                  minLength: 2
+                  maxLength: 150
+                  description: 'Operating name of the company, if different from `businessLegalName`.
+
+                    Pattern: 2–150 alphanumeric characters, as shown in <a href="ref:api-reference-special-characters#businessname-parameter" target="_blank">`businessName` parameter</a>
+
+                    Example: `"SportsBall Enterprises"`'
+                  example: SportsBall Enterprises
+                businessLegalName:
+                  type:
+                  - string
+                  - 'null'
+                  minLength: 2
+                  maxLength: 150
+                  description: 'Legal name of the business.
+
+                    Pattern: 2–150 alphanumeric characters, as shown in <a href="ref:api-reference-special-characters#businessname-parameter" target="_blank">`businessName` parameter</a>
+
+                    Example: `"CDE Corporation, Inc."`'
+                  example: CDE Corporation, Inc.
+                phoneCountryCode:
+                  type:
+                  - string
+                  - 'null'
+                  minimum: 2
+                  maximum: 4
+                  pattern: ^\+[0-9]*$
+                  description: 'Country code prefix for `phone`. If this parameter is populated, then `phone` is **required**.
+
+                    Pattern: Plus sign (`+`) with 1–3 digits
+
+                    Example: `"+011"`'
+                  example: '+011'
+                phone:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'Phone number for the `primaryContactName`. If this parameter is populated, then `phoneCountryCode` is **required**.
+
+                    Pattern: Phone number for the `primaryContactName`.
+
+                    Example: `"18015551456"`'
+                  example: '18015551456'
+                primaryContactName:
+                  type:
+                  - string
+                  - 'null'
+                  minLength: 2
+                  maxLength: 150
+                  description: "The name of the primary point of contact at `businessLegalName`.\n Pattern: 2–150 Latin-9 characters\nExample: `\"Maxina Seward\"`"
+                  example: Maxina Seward
+                primaryContactEmail:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'Email address of `primaryContactName`.
+
+                    Pattern: Email address, 3–63 characters
+
+                    Example: `"mseward@cde-corp.com"`'
+                  example: mseward@cde-corp.com
+                smartdata:
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - Y
+                  - N
+                  description: "Specifies whether the root group is to be enrolled in <a href=\"doc:business-banking-enhancements#mastercard-smart-data\" target=\"_blank\">Mastercard Smart Data</a>.\nPattern: String \nExample: `\"Y\"`"
+                  example: Y
+                employerId:
+                  type:
+                  - string
+                  - 'null'
+                  pattern: ^\d{2}-?\d{7}$
+                  description: 'The employer identification number (EIN) from the IRS.
+
+                    Pattern: 99-9999999.
+
+                    Example: `"12-3456789"`'
+                  example: 12-3456789
+              required:
+              - groupName
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      summary: Create Group
+      description: 'Use the Create Group endpoint to create a root group or a non-root group. When creating a root group, populate these parameters to create the business profile:
+
+        - `businessLegalName`
+
+        - `doingBusinessAs`
+
+        - `phoneCountryCode`
+
+        - `phone`
+
+        - `primaryContactEmail`
+
+        - `primaryContactName`
+
+
+        When creating a non-root group, you can populate the business-profile parameters as desired. All of the name parameters support the Latin-9 (ISO-8859-15) character set. See Creating a Corporate Hierarchy for instructions on using this endpoint.'
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      group_id:
+                        type: string
+                        description: Identifier for the group
+                      group_name:
+                        type: string
+                        description: Name of the group
+                      parent_group_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Identifier for the parent group
+                      max_level:
+                        type:
+                        - integer
+                        - 'null'
+                        format: int32
+                        description: Maximum number of levels allowed below the root group
+                      external_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: User-provided ID
+                      doing_business_as:
+                        type:
+                        - string
+                        - 'null'
+                        description: Operating name of the business, if different from `business_legal_name`
+                      business_legal_name:
+                        type:
+                        - string
+                        - 'null'
+                        description: Legal name of the business
+                      phone:
+                        type:
+                        - string
+                        - 'null'
+                        description: Business phone number
+                      primary_contact_name:
+                        type:
+                        - string
+                        - 'null'
+                        description: Name of the primary contact
+                      primary_contact_email:
+                        type:
+                        - string
+                        - 'null'
+                        description: Email of the primary contact at the business
+                      smartdata:
+                        type:
+                        - string
+                        - 'null'
+                        description: Whether the root group supports <a href="doc:business-banking-enhancements#mastercard-smart-data" target="_blank">Mastercard Smart Data</a>.
+                      change_ts:
+                        type:
+                        - string
+                        - 'null'
+                        description: Timestamp for the last update to the group.
+                      phone_country_code:
+                        type:
+                        - string
+                        - 'null'
+                        description: Country code for the phone numbers.
+                      employer_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Employer identification number (EIN)
+                    required:
+                    - business_legal_name
+                    - change_ts
+                    - doing_business_as
+                    - external_id
+                    - group_id
+                    - group_name
+                    - max_level
+                    - parent_group_id
+                    - phone
+                    - phone_country_code
+                    - primary_contact_email
+                    - primary_contact_name
+                    - smartdata
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.746,\n    \"response_data\":\n    {\n      \"group_id\": \"0\",\n      \"parent_group_id\": null,\n      \"group_name\": \"CDE Corp\",\n      \"external_id\": \"L0000\",\n      \"max_level\": 3,\n      \"business_legal_name\": \"CDE Corporation, Inc.\",\n      \"doing_business_as\": \"SportsBall Enterprises\",\n      \"phone_country_code\": \"+011\",\n      \"phone\": \"18015551456\",\n      \"primary_contact_email\": \"mseward@cde-corp.com\",\n      \"primary_contact_name\": \"Maxina Seward\",\n      \"smartdata\": \"Y\"\n   },\n\"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n\"system_timestamp\": \"2025-08-13 10:36:54\"\n}\n"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.746</processing_time>\n  <response_data>\n    <group_id>0</group_id>\n    <parent_group_id/>\n    <group_name>CDE Corp</group_name>\n    <external_id>L0000</external_id>\n    <max_level>3</max_level>\n    <business_legal_name>CDE Corporation, Inc.</business_legal_name>\n    <doing_business_as>SportsBall Enterprises</doing_business_as>\n    <phone_country_code>+011</phone_country_code>\n    <phone>18015551456</phone>\n    <primary_contact_email>mseward@cde-corp.com</primary_contact_email>\n    <primary_contact_name>Maxina Seward</primary_contact_name>\n    <smartdata>Y</smartdata>\n  </response_data>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-08-13 10:36:54</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_creategroup
+  /updateGroup:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      tags:
+      - Corporate Hierarchy
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                groupId:
+                  type: string
+                  minLength: 1
+                  maxLength: 10
+                  pattern: ^[\d]+$
+                  description: 'Identifier of the group (`group_id`) as returned by the <a href="ref:post_creategroup" target="_blank">Create Group</a> endpoint.
+
+                    Pattern: Max 10 numeric characters
+
+                    Example: `"4522"`'
+                  example: '123'
+                groupName:
+                  type: string
+                  minLength: 1
+                  maxLength: 40
+                  description: "Name of the group. \nPattern: 1–40 alphanumeric characters, including spaces, hyphens, and single quotes\nExample: `\"CDE Corp\"`"
+                  example: CDE Corp
+                maxLevel:
+                  type:
+                  - integer
+                  - 'null'
+                  format: int32
+                  minimum: 1
+                  maximum: 5
+                  description: 'Maximum number of subgroup levels that can be created below this root group. **Required** when creating a root group. Not valid when `parentGroupId` is populated. This value cannot be changed to a smaller number after it is set.
+
+                    Pattern: Numerals 0–5
+
+                    Example: `3`'
+                  example: '5'
+                externalId:
+                  type:
+                  - string
+                  - 'null'
+                  maxLength: 30
+                  pattern: ^[\w\s]+$
+                  description: "Provider-specified identifier for the group. \nPattern: Max 30 alphanumeric characters\nExample: `\"L0000\"`"
+                  example: L0000
+                doingBusinessAs:
+                  type:
+                  - string
+                  - 'null'
+                  minLength: 2
+                  maxLength: 150
+                  description: 'Operating name of the company, if different from `businessLegalName`.
+
+                    Pattern: 2–150 alphanumeric characters, as shown in <a href="ref:api-reference-special-characters#businessname-parameter" target="_blank">`businessName` parameter</a>
+
+                    Example: `"SportsBall Enterprises"`'
+                  example: SportsBall Enterprises
+                businessLegalName:
+                  type:
+                  - string
+                  - 'null'
+                  minLength: 2
+                  maxLength: 150
+                  description: 'Legal name of the business.
+
+                    Pattern: 2–150 alphanumeric characters, as shown in <a href="ref:api-reference-special-characters#businessname-parameter" target="_blank">`businessName` parameter</a>
+
+                    Example: `"CDE Corporation, Inc."`'
+                  example: CDE Corporation, Inc.
+                phoneCountryCode:
+                  type:
+                  - string
+                  - 'null'
+                  minimum: 2
+                  maximum: 4
+                  pattern: ^\+[0-9]*$
+                  description: 'Country code prefix for `phone`. If this parameter is populated, then `phone` is **required**.
+
+                    Pattern: Plus sign (`+`) with 1–3 digits
+
+                    Example: `"+011"`'
+                  example: '+011'
+                phone:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'Phone number for the `primaryContactName`. If this parameter is populated, then `phoneCountryCode` is **required**.
+
+                    Pattern: Phone number for the `primaryContactName`.
+
+                    Example: `"18015551456"`'
+                  example: '18015551456'
+                primaryContactName:
+                  type:
+                  - string
+                  - 'null'
+                  minLength: 2
+                  maxLength: 150
+                  description: "The name of the primary point of contact at `businessLegalName`.\n Pattern: 2–150 Latin-9 characters\nExample: `\"Maxina Seward\"`"
+                  example: Maxina Seward
+                primaryContactEmail:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'Email address of `primaryContactName`.
+
+                    Pattern: Email address, 3–63 characters
+
+                    Example: `"mseward@cde-corp.com"`'
+                  example: mseward@cde-corp.com
+                smartdata:
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - Y
+                  - N
+                  description: "Specifies whether the root group is to be enrolled in <a href=\"doc:business-banking-enhancements#mastercard-smart-data\" target=\"_blank\">Mastercard Smart Data</a>.\nPattern: String \nExample: `\"Y\"`"
+                  example: Y
+                employerId:
+                  type:
+                  - string
+                  - 'null'
+                  pattern: ^\d{2}-?\d{7}$
+                  description: 'The employer identification number (EIN) from the IRS.
+
+                    Pattern: 99-9999999.
+
+                    Example: `"12-3456789"`'
+                  example: 12-3456789
+              required:
+              - groupId
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      summary: Update Group
+      description: Use the Update Group endpoint to update an existing group, either a root group or a non-root group. Pass only the parameter(s) to update. All of the name parameters support the Latin-9 (ISO-8859-15) character set. You cannot change the parent ID of a group. See Creating a Corporate Hierarchy for instructions on using this endpoint.
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    type: object
+                    properties: {}
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.746,\n    \"response_data\": {},\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n   \"system_timestamp\": \"2025-08-13 10:36:54\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.746</processing_time>\n  <response_data/>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-08-13 10:36:54</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_updategroup
+  /getRootGroups:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      tags:
+      - Corporate Hierarchy
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                page:
+                  type:
+                  - integer
+                  - 'null'
+                  format: int32
+                  minimum: 1
+                  maximum: 999999
+                  description: 'The number of the page to retrieve.
+
+                    Pattern: Integer value of `1` or greater
+
+                    Example: `3`'
+                  example: 3
+                recordCnt:
+                  type: integer
+                  format: int32
+                  minimum: 1
+                  maximum: 99999
+                  description: 'The maximum number of records per page to be returned.
+
+                    Pattern: Positive integer `1-99999`
+
+                    Example: `100`'
+                  example: 100
+              required:
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      summary: Get Root Groups
+      description: Use the Get Root Groups endpoint to retrieve all of the root groups within a core. See Creating a Corporate Hierarchy for instructions on using this endpoint.
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      root_groups:
+                        type:
+                        - array
+                        - 'null'
+                        description: List of root groups
+                        items:
+                          type: object
+                          properties:
+                            group_id:
+                              type: string
+                              description: Identifier for the group
+                            parent_group_id:
+                              type:
+                              - string
+                              - 'null'
+                              description: Identifier for the parent group
+                            business_legal_name:
+                              type:
+                              - string
+                              - 'null'
+                              description: Legal name of the business
+                            doing_business_as:
+                              type:
+                              - string
+                              - 'null'
+                              description: Operating name of the business, if different from `business_legal_name`.
+                            external_id:
+                              type:
+                              - string
+                              - 'null'
+                              description: User-provided ID
+                            group_name:
+                              type:
+                              - string
+                              - 'null'
+                              description: Name of the group
+                            smartdata:
+                              type:
+                              - string
+                              - 'null'
+                              description: Whether the root group supports Mastercard Smart Data.
+                            max_level:
+                              type:
+                              - integer
+                              - 'null'
+                              format: int32
+                              description: Maximum number of levels allowed below the root group
+                            phone:
+                              type:
+                              - string
+                              - 'null'
+                              description: Business phone number
+                            primary_contact_email:
+                              type:
+                              - string
+                              - 'null'
+                              description: Email of the primary contact at the business.
+                            primary_contact_name:
+                              type:
+                              - string
+                              - 'null'
+                              description: Name of the primary contact.
+                            change_ts:
+                              type:
+                              - string
+                              - 'null'
+                              description: Time when the last change was made.
+                            phone_country_code:
+                              type:
+                              - string
+                              - 'null'
+                              description: Country code for `phone`.
+                            employer_id:
+                              type:
+                              - string
+                              - 'null'
+                              description: Employer identification number (EIN).
+                          required:
+                          - business_legal_name
+                          - change_ts
+                          - doing_business_as
+                          - external_id
+                          - group_id
+                          - group_name
+                          - max_level
+                          - parent_group_id
+                          - phone
+                          - phone_country_code
+                          - primary_contact_email
+                          - primary_contact_name
+                          - smartdata
+                      page:
+                        type:
+                        - integer
+                        - 'null'
+                        format: int32
+                        description: Page number
+                      number_of_pages:
+                        type:
+                        - integer
+                        - 'null'
+                        format: int32
+                        description: Total number of pages
+                      total_record_count:
+                        type:
+                        - integer
+                        - 'null'
+                        format: int32
+                        description: Record count
+                    required:
+                    - root_groups
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.746,\n    \"response_data\": {\n    \"group_info\": [\n      {\n        \"business_legal_name\": \"CDE Corp\",\n        \"doing_business_as\": \"SportsBall Enterprises\",\n        \"external_id\": null,\n        \"group_id\": \"0\",\n        \"group_name\": \"Root Group\",\n        \"max_level\": 3,\n        \"parent_group_id\": null,\n        \"phone_country_code\": \"+011\",\n        \"phone\": \"18015551456\",\n        \"primary_contact_email\": \"mseward@cde-corp.com\",\n        \"primary_contact_name\": \"Maxina Seward\",\n        \"smartdata\": \"Y\"\n      }\n    \t]\n  },\n  \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n  \"system_timestamp\": \"2025-08-13 10:36:54\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.746</processing_time>\n  <response_data>\n    <group_info>\n      <business_legal_name>CDE Corp</business_legal_name>\n      <doing_business_as>SportsBall Enterprises</doing_business_as>\n      <external_id/>\n      <group_id>0</group_id>\n      <group_name>Root Group</group_name>\n      <max_level>3</max_level>\n      <parent_group_id/>\n      <phone_country_code>+011</phone_country_code>\n      <phone>18015551456</phone>\n      <primary_contact_email>mseward@cde-corp.com</primary_contact_email>\n      <primary_contact_name>Maxina Seward</primary_contact_name>\n      <smartdata>Y</smartdata>\n    </group_info>\n  </response_data>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-08-13 10:36:54</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_getrootgroups
+  /getGroupsInfo:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      tags:
+      - Corporate Hierarchy
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                groupIds:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  description: 'A list of group identifiers to get information for. To input a JSON list as the value, you must set the `Content-Type` in the header to `application/json`. If the `Content-Type` is not `json`, then pass one parameter/value pair for each value. See <a href="doc:creating-a-corporate-hierarchy#inputting-multiple-values" target="_blank">Inputting multiple values</a> for examples.
+
+                    Pattern: List of identifiers
+
+                    Example: `["2222", "3333", "4444"]` or `["5555"]`'
+                  example: '["0", "4"]'
+                  items:
+                    type: string
+                    minLength: 1
+                    maxLength: 10
+                    pattern: ^[\d]+$
+                    description: 'The identifier of the next group up in the hierarchy. **Required** when creating a non-root group; not valid when `maxLevel` is populated. This value cannot be changed after it is set
+
+                      .Pattern: Max 10 numeric characters
+
+                      Example: `"456"`'
+                    example: '456'
+              required:
+              - groupIds
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      summary: Get Groups Info
+      description: Use the Get Groups Info endpoint to retrieve information about one or more groups. See Creating a Corporate Hierarchy for instructions on using this endpoint.
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      group_info:
+                        type:
+                        - array
+                        - 'null'
+                        description: List of groups
+                        items:
+                          type: object
+                          properties:
+                            group_id:
+                              type: string
+                              description: Identifier for the group
+                            parent_group_id:
+                              type:
+                              - string
+                              - 'null'
+                              description: Identifier for the parent group
+                            business_legal_name:
+                              type:
+                              - string
+                              - 'null'
+                              description: Legal name of the business
+                            doing_business_as:
+                              type:
+                              - string
+                              - 'null'
+                              description: Operating name of the business, if different from `business_legal_name`.
+                            external_id:
+                              type:
+                              - string
+                              - 'null'
+                              description: User-provided ID
+                            group_name:
+                              type:
+                              - string
+                              - 'null'
+                              description: Name of the group
+                            smartdata:
+                              type:
+                              - string
+                              - 'null'
+                              description: Whether the root group supports Mastercard Smart Data.
+                            max_level:
+                              type:
+                              - integer
+                              - 'null'
+                              format: int32
+                              description: Maximum number of levels allowed below the root group
+                            phone:
+                              type:
+                              - string
+                              - 'null'
+                              description: Business phone number
+                            primary_contact_email:
+                              type:
+                              - string
+                              - 'null'
+                              description: Email of the primary contact at the business.
+                            primary_contact_name:
+                              type:
+                              - string
+                              - 'null'
+                              description: Name of the primary contact.
+                            change_ts:
+                              type:
+                              - string
+                              - 'null'
+                              description: Time when the last change was made.
+                            phone_country_code:
+                              type:
+                              - string
+                              - 'null'
+                              description: Country code for `phone`.
+                            employer_id:
+                              type:
+                              - string
+                              - 'null'
+                              description: Employer identification number (EIN).
+                          required:
+                          - business_legal_name
+                          - change_ts
+                          - doing_business_as
+                          - external_id
+                          - group_id
+                          - group_name
+                          - max_level
+                          - parent_group_id
+                          - phone
+                          - phone_country_code
+                          - primary_contact_email
+                          - primary_contact_name
+                          - smartdata
+                    required:
+                    - group_info
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.746,\n    \"response_data\": [\n    {\n      \"group_id\": \"0\",\n      \"parent_group_id\": null,\n      \"group_name\": \"Root Group\",\n      \"external_id\": \"L0-000\",\n      \"max_level\": 3,\n      \"phone_country_code\": \"+011\",\n      \"phone\": \"8015551456\",\n      \"business_legal_name\": \"CDE Corp\",\n      \"doing_business_as\": \"SportsBall Enterprises\",\n      \"primary_contact_email\": \"mseward@cde-corp.com\",\n      \"primary_contact_name\": \"Maxina Seward\",\n      \"smartdata\": \"Y\"\n    },\n    {\n      \"group_id\": \"4\",\n      \"parent_group_id\": \"3\",\n      \"max_level\": null,\n      \"group_name\": \"Group D\",\n      \"external_id\": \"L3-001\",\n      \"business_legal_name\": \"\",\n      \"doing_business_as\": \"\",\n      \"phone_country_code\": \"\",\n      \"phone\": \"\",\n      \"primary_contact_email\": \"\",\n      \"primary_contact_name\": \"\",\n      \"smartdata\": \"\"\n\t}\n  ],\n  \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n  \"system_timestamp\": \"2025-08-13 10:36:54\"\n}\n"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.746</processing_time>\n  <response_data>\n    <group_info>\n      <group_id>0</group_id>\n      <parent_group_id/>\n      <group_name>Root Group</group_name>\n      <external_id>L0000</external_id>\n      <max_level>3</max_level>\n      <phone_country_code>+011</phone_country_code>\n      <phone>8015551456</phone>\n      <business_legal_name>CDE Corp</business_legal_name>\n      <doing_business_as>SportsBall Enterprises</doing_business_as>\n      <primary_contact_email>mseward@cde-corp.com</primary_contact_email>\n      <primary_contact_name>Maxina Seward</primary_contact_name>\n      <smartdata>Y</smartdata>\n    </group_info>\n    <group_info>\n      <group_id>4</group_id>\n      <parent_group_id>3</parent_group_id>\n      <max_level/>\n      <group_name>Group D</group_name>\n      <external_id>L3001</external_id>\n      <business_legal_name></business_legal_name>\n      <doing_business_as></doing_business_as>\n      <phone_country_code></phone_country_code>\n      <phone></phone>\n      <primary_contact_email></primary_contact_email>\n      <primary_contact_name></primary_contact_name>\n      <smartdata></smartdata>\n    </group_info>\n  </response_data>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-08-13 10:36:54</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_getgroupsinfo
+  /setAccountGroupRelationships:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      tags:
+      - Corporate Hierarchy
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                accountNos:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  description: '<<glossary:PRN>> of the account or a list of PRNs to link to the `groupId`. Up to 100 PRNs can be listed in this parameter.
+
+                    To input a JSON list as the value, you must set the `Content-Type` in the header to `application/json`. If the `Content-Type` is not `json`, then pass one parameter/value pair for each value. See <a href="doc:creating-a-corporate-hierarchy#inputting-multiple-values" target="_blank">Inputting multiple values</a> for examples.Pattern: PRN or list of PRNs
+
+                    Example: `["222222222222", "333333333333"]` or `["444444444444"]`'
+                  example: '["222222222222", "333333333333"]'
+                  items:
+                    type:
+                    - string
+                    - 'null'
+                    pattern: ^$|^([0-9]{12})$
+                    description: "The <<glossary:PRN>> of the account.\nPattern: PRN \nExample: `\"074103447228\"`"
+                    example: 074103447228
+                groupId:
+                  type: string
+                  minLength: 1
+                  maxLength: 10
+                  pattern: ^[\d]+$
+                  description: 'Parent Group Id. Unique SoFi Tech Solutions-defined identifier for the parent group
+
+                    Example: `"123"`'
+                  example: '123'
+              required:
+              - accountNos
+              - groupId
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      summary: Set Account Group Relationships
+      description: Use the Set Account Group Relationships endpoint to associate one or more accounts with a group. This endpoint can update up to 100 accounts in one request. You can also use this endpoint to reassign an account to a different group without first deleting the existing relationship. See Creating a Corporate Hierarchy for instructions on using this endpoint.
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    type: object
+                    properties: {}
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n  \"status_code\": 0,\n  \"status\": \"Success\",\n  \"processing_time\": 0.298,\n  \"response_data\": [\n    {\n      \"group_id\": \"4\",\n      \"pmt_ref_no\": \"222222222222\",\n    },\n    {\n      \"group_id\": \"4\",\n      \"pmt_ref_no\": \"333333333333\",\n    },\n    {\n      \"group_id\": \"4\",\n      \"pmt_ref_no\": \"444444444444\",\n    },\n  ],\n  \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n  \"system_timestamp\": \"2025-08-13 10:36:54\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.298</processing_time>\n  <response_data>\n    <group_id>4</group_id>\n    <pmt_ref_no>222222222222</pmt_ref_no>\n  </response_data>\n  <response_data>\n    <group_id>4</group_id>\n    <pmt_ref_no>333333333333</pmt_ref_no>\n  </response_data>\n  <response_data>\n    <group_id>4</group_id>\n    <pmt_ref_no>444444444444</pmt_ref_no>\n  </response_data>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-08-13 10:36:54</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_setaccountgrouprelationships
+  /removeAccountGroupRelationship:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      tags:
+      - Corporate Hierarchy
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                accountNos:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  description: "<<glossary:PRN>> of the account or a list of PRNs to link to the `groupId`. Up to 100 PRNs can be listed in this parameter. To input a JSON list as the value, you must set the `Content-Type` in the header to `application/json`. If the `Content-Type` is not `json`, then pass one parameter/value pair for each value. See <a href=\"doc:creating-a-corporate-hierarchy#inputting-multiple-values\" target=\"_blank\">Inputting multiple values</a> for examples.\nPattern: PRN or list of PRNs \nExample: `[\"222222222222\", \"333333333333\"]` or `[\"444444444444\"]`"
+                  example: '["222222222222", "333333333333"]'
+                  items:
+                    type:
+                    - string
+                    - 'null'
+                    pattern: ^$|^([0-9]{12})$
+                    description: "The <<glossary:PRN>> of the account.\nPattern: PRN \nExample: `\"074103447228\"`"
+                    example: 074103447228
+              required:
+              - accountNos
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      summary: Remove Account Group Relationship
+      description: Use the Remove Account Group Relationships endpoint to remove an account or accounts from a group. See Creating a Corporate Hierarchy for instructions on using this endpoint.
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    type: object
+                    properties: {}
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n  \"status_code\": 0,\n  \"status\": \"Success\",\n  \"processing_time\": 0.298,\n  \"response_data\": {},\n  \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n  \"system_timestamp\": \"2025-08-13 10:36:54\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.298</processing_time>\n  <response_data/>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-08-13 10:36:54</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_removeaccountgrouprelationship
+  /getGroupHierarchy:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      tags:
+      - Corporate Hierarchy
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                groupId:
+                  type: string
+                  minLength: 1
+                  maxLength: 10
+                  pattern: ^[\d]+$
+                  description: 'Identifier of the group (`group_id`) as returned by the <a href="ref:post_creategroup" target="_blank">Create Group</a> endpoint.
+
+                    Pattern: Max 10 numeric characters
+
+                    Example: `"4522"`'
+                  example: '4522'
+                subGroupLevel:
+                  type:
+                  - integer
+                  - 'null'
+                  format: int32
+                  default: 0
+                  minimum: 1
+                  maximum: 5
+                  description: "Level of hierarchy a root group/sub group can have \nExample: `'3'`"
+                  example: '3'
+              required:
+              - groupId
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      summary: Get Group Hierarchy
+      description: Use the Get Group Hierarchy endpoint to retrieve a group's hierarchy, either a root group or a non-root group. This endpoint returns only the groups, not the associated accounts. By default, the endpoint returns all of the subgroups that are downstream of the specified group. Pass a value for `subGroupLevel` to specify how many subgroup levels to retrieve. See Creating a Corporate Hierarchy for instructions on using this endpoint.
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      group_id:
+                        type: string
+                        description: Identifier for the group
+                      group_name:
+                        type:
+                        - string
+                        - 'null'
+                        description: Name of the group
+                      children:
+                        type: array
+                        description: Object containing the next level down in the hierarchy
+                        items:
+                          description: Child group object
+                          type: object
+                          properties: {}
+                    required:
+                    - children
+                    - group_id
+                    - group_name
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n  \"status_code\": 0,\n  \"status\": \"Success\",\n  \"processing_time\": 0.298,\n  \"response_data\": {\n\t\"group_id\": \"2\",\n\t\"group_name\": \"Group B\",\n\t\"children\": [\n\t\t{\n\t\t\"group_id\": \"3\",\n\t\t\"group_name\": \"Group C\",\n\t\t\"children\": [\n\t\t\t{\n\t\t\t\t\"group_id\": \"4\",\n\t\t\t\t\"group_name\": \"Group D\",\n\t\t\t\t\"children\": []\n\t\t\t}\n\t\t  ]\n          }\n\t]\n  },\n  \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n  \"system_timestamp\": \"2025-08-13 10:36:54\"\n}\n"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.298</processing_time>\n  <response_data>\n    <group_id>2</group_id>\n    <group_name>Group B</group_name>\n    <children>\n      <group_id>3</group_id>\n      <group_name>Group C</group_name>\n      <children>\n        <group_id>4</group_id>\n        <group_name>Group D</group_name>\n        <children/></children>\n    </children>\n  </response_data>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-08-13 10:36:54</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_getgrouphierarchy
+  /getAccountGroupRelationships:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      tags:
+      - Corporate Hierarchy
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                groupId:
+                  type: string
+                  minLength: 1
+                  maxLength: 10
+                  pattern: ^[\d]+$
+                  description: 'Identifier of the group (`group_id`) as returned by the <a href="ref:post_creategroup" target="_blank">Create Group</a> endpoint.
+
+                    Pattern: Max 10 numeric characters
+
+                    Example: `"4522"`'
+                  example: '4522'
+                includeSubGroups:
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - Y
+                  - N
+                  description: 'Whether to retrieve accounts that are in the subgroups of `groupId`. Default: `"N"`
+
+                    Pattern: String
+
+                    Example: `"Y"`'
+                  example: Y
+              required:
+              - groupId
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      summary: Get Account Group Relationships
+      description: Use the Get Account Group Relationships endpoint to retrieve all accounts that are in a group, either in a single group or in all associated subgroups. See Creating a Corporate Hierarchy for instructions on using this endpoint.
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    type:
+                    - array
+                    - 'null'
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    items:
+                      type: object
+                      properties:
+                        group_id:
+                          type: string
+                          description: Identifier of the group
+                        pmt_ref_no:
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            type:
+                            - string
+                            - 'null'
+                            description: List of PRNs associated with the group
+                      required:
+                      - group_id
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n  \"status_code\": 0,\n  \"status\": \"Success\",\n  \"processing_time\": 0.298,\n    \"response_data\": [\n    {\n    \"group_id\": \"2\",\n    \"pmt_ref_no\": [\n\"PRN5\",\n\t\t\"PRN6\"\n]\n    },\n    {\n      \"group_id\": \"3\",\n      \"pmt_ref_no\": [\n\t\t\"PRN7\",\n\t\t\"PRN8\"\n\t\t]\n    },\n    {\n      \"group_id\": \"4\",\n      \"pmt_ref_no\": [\n\t\t\"PRN9\",\n\t\t\"PRN10\"\n\t\t]\n    }\n],\n  \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n  \"system_timestamp\": \"2025-08-13 10:36:54\"\n}\n"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.298</processing_time>\n  <response_data>\n    <group_id>2</group_id>\n    <pmt_ref_no>PRN5</pmt_ref_no>\n    <pmt_ref_no>PRN6</pmt_ref_no>\n  </response_data>\n  <response_data>\n    <group_id>3</group_id>\n    <pmt_ref_no>PRN7</pmt_ref_no>\n    <pmt_ref_no>PRN8</pmt_ref_no>\n  </response_data>\n  <response_data>\n    <group_id>4</group_id>\n    <pmt_ref_no>PRN9</pmt_ref_no>\n    <pmt_ref_no>PRN10</pmt_ref_no>\n  </response_data>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-08-13 10:36:54</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_getaccountgrouprelationships
+  /deleteGroups:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      tags:
+      - Corporate Hierarchy
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                groupIds:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  description: 'A list of group identifiers to get information for.
+
+                    To input a JSON list as the value, you must set the `Content-Type` in the header to `application/json`. If the `Content-Type` is not `json`, then pass one parameter/value pair for each value. See <a href="doc:creating-a-corporate-hierarchy#inputting-multiple-values" target="_blank">Inputting multiple values</a> for examples.Pattern: List of identifiers
+
+                    Example: `["2222", "3333", "4444"]` or `["5555"]`'
+                  example: '["3333", "4444"]'
+                  items:
+                    type: string
+                    minLength: 1
+                    maxLength: 10
+                    pattern: ^[\d]+$
+                    description: 'The identifier of the next group up in the hierarchy. **Required** when creating a non-root group; not valid when `maxLevel` is populated. This value cannot be changed after it is set
+
+                      .Pattern: Max 10 numeric characters
+
+                      Example: `"456"`'
+                    example: '456'
+              required:
+              - groupIds
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      summary: Delete Groups
+      description: 'Use the Delete Groups endpoint to delete one or more groups. You cannot delete a group that has subgroups or linked accounts. To delete a group that has subgroups or linked accounts, follow the steps in Delete a Group in *Creating a Corporate Hierarchy*.
+
+
+        See Creating a Corporate Hierarchy for instructions on using this endpoint.'
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    type: object
+                    properties: {}
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.746,\n    \"response_data\": {},\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2025-08-13 10:36:54\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.746</processing_time>\n  <response_data/>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-08-13 10:36:54</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_deletegroups
+components:
+  parameters:
+    ResponseContentTypeHeaderParam:
+      name: response-content-type
+      in: header
+      description: Use this header instead of the standard `accept` header to specify the response format.
+      schema:
+        type: string
+        enum:
+        - xml
+        - json
+        default: json
+x-readme:
+  samples-languages:
+  - curl
+  - python
+  - node
+  - java
+  - go
+  - ruby
+  - javascript
+  explorer-enabled: true
+  proxy-enabled: true

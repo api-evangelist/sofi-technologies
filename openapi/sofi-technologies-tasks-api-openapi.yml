@@ -1,0 +1,971 @@
+openapi: 3.2.0
+info:
+  version: '25.02'
+  title: Dispute API 3.0 Tasks API
+  description: The following documents the Intake API and Interaction APIs.
+  termsOfService: ''
+  contact: {}
+  license:
+    name: ''
+servers:
+- url: '{corename}.gft-dispute-api.{env}.gpsrv.com/gft-dispute-api/1.0/'
+tags:
+- name: Tasks
+paths:
+  /task/summary:
+    parameters:
+    - $ref: '#/components/parameters/AuthorizationHeaderParam'
+    - $ref: '#/components/parameters/ProfileTypeHeaderParam'
+    post:
+      summary: /task/summary
+      operationId: postTaskSummary
+      description: Use this endpoint to retrieve a summary count of tasks for the passed-in client
+      parameters: []
+      responses:
+        '200':
+          description: Successful task summary request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  TaskSummaryList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        TaskCount:
+                          type: number
+                        TaskLabel:
+                          type: string
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                successExample:
+                  value:
+                    StatusList:
+                    - Type: Success
+                      Message: Success
+                      Code: '200'
+                    TaskSummaryList:
+                    - TaskCount: 47
+                      TaskLabel: Approval Level
+                    - TaskCount: 13
+                      TaskLabel: Execute Accounting
+                    - TaskCount: 42
+                      TaskLabel: Final Investigation
+                    - TaskCount: 33
+                      TaskLabel: Manually Send Letter
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '200'
+        '400':
+          description: Error task summary request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                error5Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: 'Invalid Request: {message}'
+                      Code: '5'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 5 response
+        '500':
+          description: Error task summary request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                errorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Could not obtain a lock on the claim
+                      Code: '500'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '500'
+                  summary: A sample Error 500 response
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ClientId
+              - transactionId
+              - providerId
+              properties:
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  maxLength: 60
+                  minLength: 1
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction").
+
+                    Pattern: Max 60 characters
+
+                    Example: `"984513-395483653-4483483478"`'
+                  example: 984513-395483653-4483483478
+                ClientId:
+                  type: string
+                  example: Default
+      tags:
+      - Tasks
+  /task/list:
+    parameters:
+    - $ref: '#/components/parameters/AuthorizationHeaderParam'
+    - $ref: '#/components/parameters/ProfileTypeHeaderParam'
+    post:
+      summary: /task/list
+      operationId: postTaskList
+      description: Use this endpoint to retrieve tasks for a client or claim
+      parameters: []
+      responses:
+        '200':
+          description: Successful task list request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  TaskList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ClaimAmount:
+                          type: number
+                          description: Total claim amount
+                          examples:
+                          - 225.25
+                        ClaimAge:
+                          type: integer
+                          description: Age of claims in days
+                          examples:
+                          - 19
+                        NextRecoveryDateTime:
+                          type: string
+                          description: Next Recovery date time
+                          examples:
+                          - '2023-12-28T05:00:00.000Z'
+                        NextRegulatoryDateTime:
+                          type: string
+                          description: Next Regulatory date time
+                          examples:
+                          - '2024-03-26T09:00:00.000Z'
+                        TaskLabel:
+                          type: string
+                          description: label of task
+                          examples:
+                          - Process Liability
+                        ClaimCategory:
+                          type: string
+                          description: Claim category
+                          examples:
+                          - Fraud
+                        ClaimType:
+                          type: string
+                          description: Claim type
+                          examples:
+                          - CardPinless
+                        TaskId:
+                          type: string
+                          description: UUID of task
+                          examples:
+                          - b000fe17-e84e-42c4-85c9-5e962ea8bf70
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                successExample:
+                  value:
+                    StatusList:
+                    - Type: Success
+                      Message: Success
+                      Code: '200'
+                    TaskList:
+                    - ClaimAmount: 520
+                      ClaimAge: 15
+                      NextRecoveryDateTime: '2023-12-29T05:00:00.000Z'
+                      CreateDateTime: '2024-01-08T17:44:05.421Z'
+                      TaskLabel: Execute Accounting Service Failed
+                      ClaimCategory: Fraud
+                      ClaimType: CardPinless
+                      TaskId: b000fe17-e84e-42c4-85c9-5e962ea8bf70
+                    - ClaimAmount: 520
+                      ClaimAge: 15
+                      NextRecoveryDateTime: '2023-12-29T05:00:00.000Z'
+                      CreateDateTime: '2024-01-08T17:44:04.524Z'
+                      TaskLabel: Execute Accounting Service Failed
+                      ClaimCategory: Fraud
+                      ClaimType: CardPinless
+                      TaskId: b000fe17-e84e-42c4-85c9-5e962ea8bf71
+                    - ClaimAmount: 520
+                      ClaimAge: 15
+                      NextRecoveryDateTime: '2023-12-29T05:00:00.000Z'
+                      CreateDateTime: '2024-01-08T17:20:13.749Z'
+                      TaskLabel: Process Liability
+                      ClaimCategory: Fraud
+                      ClaimType: CardPinless
+                      TaskId: b000fe17-e84e-42c4-85c9-5e962ea8bf72
+                    - ClaimAmount: 520
+                      ClaimAge: 15
+                      NextRecoveryDateTime: '2023-12-29T05:00:00.000Z'
+                      CreateDateTime: '2024-01-08T17:20:14.026Z'
+                      TaskLabel: Process Liability
+                      ClaimCategory: Fraud
+                      ClaimType: CardPinless
+                      TaskId: b000fe17-e84e-42c4-85c9-5e962ea8bf73
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '200'
+        '400':
+          description: Error task list request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                error5Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: 'Invalid Request: {message}'
+                      Code: '5'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 5 response
+        '500':
+          description: Error task list request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                errorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Could not obtain a lock on the claim
+                      Code: '500'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '500'
+                  summary: A sample Error 500 response
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              oneOf:
+              - properties:
+                  ClaimId:
+                    type: string
+                    description: Unique claim ID
+                    example: 2401080016C
+                required:
+                - ClaimId
+              - properties:
+                  ClientId:
+                    type: string
+                    description: ClientId representing client for which tasks are being retrieved
+                    example: Default
+                  TaskLabel:
+                    type: string
+                    description: Label of tasks being retrieved for said client
+                    example: Process Liability
+                required:
+                - ClientId
+                - TaskLabel
+              required:
+              - transactionId
+              - providerId
+              properties:
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  maxLength: 60
+                  minLength: 1
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction").
+
+                    Pattern: Max 60 characters
+
+                    Example: `"984513-395483653-4483483478"`'
+                  example: 984513-395483653-4483483478
+                PageNum:
+                  type: integer
+                  description: page to retrieve, 1 if not included in request
+                  example: 2
+                PageSize:
+                  type: integer
+                  description: number of results per page, 1000 if not included in request
+                  example: 10
+                SortBy:
+                  type: string
+                  description: 'Field to sort by (ClaimAmount|NextRecoveryDateTime|etc)
+
+
+                    CreateDateTime if not included in request'
+                  example: ClaimCategory
+                SortType:
+                  type: string
+                  description: 'Ascending or Descending sort (ASC|DESC)
+
+
+                    ASC if not included in request'
+                  example: ASC
+      tags:
+      - Tasks
+  /task/details/list:
+    parameters:
+    - $ref: '#/components/parameters/AuthorizationHeaderParam'
+    - $ref: '#/components/parameters/ProfileTypeHeaderParam'
+    post:
+      summary: /task/details/list
+      operationId: postTaskDetailsList
+      description: Use this endpoint to retrieve list of tasks details for a claim
+      parameters: []
+      responses:
+        '200':
+          description: Successful task details list request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  AvailableActionList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Value:
+                          type: string
+                          description: available action
+                          examples:
+                          - Accounting Compete
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  TaskDetailList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        TaskId:
+                          type: string
+                          description: UUID of task
+                          examples:
+                          - b000fe17-e84e-42c4-85c9-5e962ea8bf70
+                        DisputeId:
+                          type: string
+                          description: Dispute Id
+                          examples:
+                          - 2401080025D
+                        Detail:
+                          type: object
+                          description: Dynamic detail object, depends on task
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                successExample:
+                  value:
+                    StatusList:
+                    - Type: Success
+                      Message: Success
+                      Code: '200'
+                    TaskDetailsList:
+                    - TaskId: 8da91239-ecdd-47b6-962c-dcf76c6c20c3
+                      DisputeId: 2401080026D
+                      Detail:
+                        CreditCollection: AccountHolder
+                        Amount: 400
+                        DebitAccountNumber: ''
+                        CreditAccountNumber: '5363140001113137'
+                        DebitCollection: Suspense
+                        Reason: Provisional Credit
+                    - TaskId: 402b92ee-6896-4ad5-a878-7ceec5e6b3ad
+                      DisputeId: 2401080025D
+                      Detail:
+                        CreditCollection: AccountHolder
+                        Amount: 120
+                        DebitAccountNumber: ''
+                        CreditAccountNumber: '5363140001113137'
+                        DebitCollection: Suspense
+                        Reason: Provisional Credit
+                    AvailableActionList:
+                    - Value: Accounting Complete
+                    - Value: No Action
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '200'
+        '400':
+          description: Error task list details request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                error5Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: 'Invalid Request: {message}'
+                      Code: '5'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 5 response
+        '500':
+          description: Error task list request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                errorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Could not obtain a lock on the claim
+                      Code: '500'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '500'
+                  summary: A sample Error 500 response
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ClaimId
+              - TaskLabel
+              - transactionId
+              - providerId
+              properties:
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  maxLength: 60
+                  minLength: 1
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction").
+
+                    Pattern: Max 60 characters
+
+                    Example: `"984513-395483653-4483483478"`'
+                  example: 984513-395483653-4483483478
+                ClaimId:
+                  type: string
+                  description: Unique claim ID
+                  example: 2401080016C
+                TaskLabel:
+                  type: string
+                  description: Label of tasks being retrieved for said claim
+                  example: Process Liability
+      tags:
+      - Tasks
+  /task/action:
+    parameters:
+    - $ref: '#/components/parameters/AuthorizationHeaderParam'
+    - $ref: '#/components/parameters/ProfileTypeHeaderParam'
+    post:
+      summary: /task/action
+      operationId: postTaskAction
+      description: This resource is used perform an available task action (as identified by the `/task/details/list` endpoint)
+      parameters: []
+      responses:
+        '200':
+          description: Successful task action request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                successExample:
+                  value:
+                    StatusList:
+                    - Type: Success
+                      Message: Success
+                      Code: '200'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '200'
+        '400':
+          description: Error task action request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                error5Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: 'Invalid Request: {message}'
+                      Code: '5'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 5 response
+        '500':
+          description: Error task list request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                errorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Could not obtain a lock on the claim
+                      Code: '500'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '500'
+                  summary: A sample Error 500 response
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - TaskList
+              - Action
+              - transactionId
+              - providerId
+              properties:
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  maxLength: 60
+                  minLength: 1
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction").
+
+                    Pattern: Max 60 characters
+
+                    Example: `"984513-395483653-4483483478"`'
+                  example: 984513-395483653-4483483478
+                Action:
+                  type: string
+                  description: Action to perform
+                  example: Deny Claim
+                TaskList:
+                  type: array
+                  description: List of Tasks to be actions
+                  items:
+                    type: object
+                    required:
+                    - TaskId
+                    properties:
+                      TaskId:
+                        type: string
+                        description: Task identifier to be actioned
+                        example: 123e4567-e89b-12d3-a456-426614174000
+                Detail:
+                  type: object
+                  description: When an action requires action specific details, these are passed in the Detail object.
+      tags:
+      - Tasks
+components:
+  parameters:
+    ProfileTypeHeaderParam:
+      name: profile-type
+      in: header
+      description: Optional param to call Dispute API as a customer-service agent or a cardholder
+      schema:
+        type: string
+        enum:
+        - agent
+        - cardholder
+        default: agent
+    AuthorizationHeaderParam:
+      name: Authorization
+      in: header
+      description: For `{token}` insert base64-encoded `apiLogin:apiTransKey`
+      schema:
+        type: string
+        default: Basic {token}
+externalDocs:
+  url: ''
+  description: ''
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

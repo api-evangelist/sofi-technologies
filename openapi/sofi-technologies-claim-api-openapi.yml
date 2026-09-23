@@ -1,0 +1,1525 @@
+openapi: 3.2.0
+info:
+  version: '25.02'
+  title: Dispute API 3.0 Claim API
+  description: The following documents the Intake API and Interaction APIs.
+  termsOfService: ''
+  contact: {}
+  license:
+    name: ''
+servers:
+- url: '{corename}.gft-dispute-api.{env}.gpsrv.com/gft-dispute-api/1.0/'
+tags:
+- name: Claim
+paths:
+  /claim/reopenRequest:
+    parameters:
+    - $ref: '#/components/parameters/AuthorizationHeaderParam'
+    - $ref: '#/components/parameters/ProfileTypeHeaderParam'
+    post:
+      summary: /claim/reopenRequest
+      operationId: postClaimReopenRequest
+      description: Use this endpoint to request a claim to be reopened
+      parameters: []
+      responses:
+        '200':
+          description: Successful claim reopen request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ConfirmationHeaderMessage:
+                    type: string
+                    description: header message for customer content
+                    example: Reopen request message content
+                  ConfirmationMessageMarkup:
+                    type: string
+                    description: base64 encoded markup for confirmation letter
+                    example: .sts-customercontent-table { border-collapse:collapse;
+                  ConfirmationHeader:
+                    type: string
+                    description: header/title for confirmation
+                    example: Reopen Request
+                  Address:
+                    allOf:
+                    - type: object
+                      properties:
+                        Line1:
+                          type: string
+                          description: Mailing address line 1
+                          examples:
+                          - 6 Ashbridge Lane
+                        Line2:
+                          type: string
+                          description: Mailing address line 2
+                          examples:
+                          - Suite 1
+                        Line3:
+                          type: string
+                          description: Mailing address line 3
+                          examples:
+                          - Atlanta, GA. 30033
+                        City:
+                          type: string
+                          description: Mailing address City
+                          examples:
+                          - Linwood
+                        State:
+                          type: string
+                          description: Mailing address 2 character State code
+                          examples:
+                          - NJ
+                        Zip:
+                          type: string
+                          description: Mailing address zip code (5 digits or 5-4 digites)
+                          examples:
+                          - 12345-4567
+                        Country:
+                          type: string
+                          description: Mailing address Country code
+                          examples:
+                          - USA
+                    type: object
+                    description: 'optional address details. returned if the selected correspondence
+
+                      channel is mail
+
+                      '
+                    properties:
+                      Province:
+                        type: string
+                        description: Mailing address province
+                        example: Saskatchewan
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+        '400':
+          description: Error reopening claim
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                reopenErrorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Error occurred while requesting reopen
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Reopen Error Response
+                error4Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: The requested Claim ID is not valid.
+                      Code: '4'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 4 response
+                error5Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: 'Invalid Request: {message}'
+                      Code: '5'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 5 response
+                error14Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Invalid request message
+                      Code: '14'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 14 response
+                error21Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: A request to reopen this dispute is already in progress.
+                      Code: '21'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 21 response
+        '500':
+          description: Server connection error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                errorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Could not obtain a lock on the claim
+                      Code: '500'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '500'
+                  summary: A sample Error 500 response
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ClaimId
+              - ReopenReason
+              - TransactionList
+              - transactionId
+              - providerId
+              properties:
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  maxLength: 60
+                  minLength: 1
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction").
+
+                    Pattern: Max 60 characters
+
+                    Example: `"984513-395483653-4483483478"`'
+                  example: 984513-395483653-4483483478
+                ClaimId:
+                  type: string
+                  description: Unique claim ID
+                  example: 2108160022C
+                ReopenReason:
+                  type: string
+                  description: Reasoning for requesting the claim to be reopen
+                  example: Test reopen reason
+                ReopenNewInformation:
+                  type: string
+                  description: Any new information about the disputes. Optional information the user can choose to provide.
+                  example: New information about the disputes
+                TransactionList:
+                  description: List of transactions to reopen when calling `/claim/reopenRequest`
+                  items:
+                    type: object
+                    required:
+                    - TransactionId
+                    properties:
+                      TransactionId:
+                        type: string
+                        description: 'ID for the disputed transaction: `P[prog_id]|[prn]|[auth_id]|[network_code]|[trans_code]` Example: `P111|999123456789|0169|M|AUA`'
+                        examples:
+                        - 460268821703314
+      tags:
+      - Claim
+  /claim/withdrawRequest:
+    parameters:
+    - $ref: '#/components/parameters/AuthorizationHeaderParam'
+    - $ref: '#/components/parameters/ProfileTypeHeaderParam'
+    post:
+      summary: /claim/withdrawRequest
+      operationId: postClaimWithdrawRequest
+      description: Use this endpoint to request a claim to be withdrawn
+      parameters: []
+      responses:
+        '200':
+          description: Successful claim withdraw request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Type:
+                      type: string
+                      description: Status of the request
+                      examples:
+                      - Success
+                      enum:
+                      - Error
+                      - Success
+                    Message:
+                      type: string
+                      description: Message about the status
+                      examples:
+                      - Success
+                    Code:
+                      type: string
+                      description: Numeric code for the status
+                      examples:
+                      - '200'
+                properties:
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                successExample:
+                  value:
+                    StatusList:
+                    - Type: Success
+                      Message: Success
+                      Code: '200'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '200'
+                  summary: A sample Success response
+        '400':
+          description: Error withdrawing claim
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                WithdrawErrorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Withdraw Request Error
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Withdraw Request Error Response
+                error4Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: The requested Claim ID is not valid.
+                      Code: '4'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 4 response
+                error5Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: 'Invalid Request: {message}'
+                      Code: '5'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 5 response
+                error14Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Invalid request message
+                      Code: '14'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 14 response
+        '500':
+          description: Error withdraw claim request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                errorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Could not obtain a lock on the claim
+                      Code: '500'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '500'
+                  summary: A sample Error 500 response
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ClaimId
+              - WithdrawalReason
+              - TransactionList
+              - transactionId
+              - providerId
+              properties:
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  maxLength: 60
+                  minLength: 1
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction").
+
+                    Pattern: Max 60 characters
+
+                    Example: `"984513-395483653-4483483478"`'
+                  example: 984513-395483653-4483483478
+                ClaimId:
+                  type: string
+                  description: Unique claim ID
+                  example: 2408050075C
+                WithdrawalReason:
+                  type: string
+                  description: Reason for claim to be withdrawn
+                  example: Test reason for withdrawal
+                TransactionList:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - TransactionId
+                    properties:
+                      TransactionId:
+                        type: string
+                        description: 'ID for the disputed transaction: `P[prog_id]|[prn]|[auth_id]|[network_code]|[trans_code]` Example: `P111|999123456789|0169|M|AUA`'
+                        examples:
+                        - 460268821703314
+                  description: List of transactions to be withdrawn
+      tags:
+      - Claim
+  /claim/list:
+    parameters:
+    - $ref: '#/components/parameters/AuthorizationHeaderParam'
+    - $ref: '#/components/parameters/ProfileTypeHeaderParam'
+    post:
+      summary: /claim/list
+      operationId: postClaimList
+      description: 'Use this endpoint to get a list of claims for the provided search parameters
+
+
+        You must pass only one of these fields: `customerId`, `accountNumber`, `claimId`.'
+      parameters: []
+      responses:
+        '200':
+          description: Successful claim list request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  claimListResponse:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        accountHolder:
+                          type: string
+                          description: Account Holder
+                        requiredDocumentCount:
+                          type: number
+                          description: Number of document required on this claim
+                        customerContactDate:
+                          type: string
+                          format: Date-Time
+                          description: Customer Contact Date<br><br> Format:yyyyMMdd
+                        claimId:
+                          type: string
+                          description: Unique claim ID
+                        accountNumber:
+                          type: string
+                          description: Account Number
+                        claimStatus:
+                          type: string
+                          description: Status of the Claim, see <a href="ref:api-reference-status-values-3" target="_blank">Status Values</a>
+                        createName:
+                          type: string
+                          description: Who created the claim
+                        accountType:
+                          type: string
+                          description: Type of account
+                        customerId:
+                          type: string
+                          description: Customer ID
+                          example: 25945893
+                        externalCaseId:
+                          type: string
+                          description: Optional ID representing claim identifier external to this dispute system (client internal identifier)
+                        isClaimSubmitted:
+                          type: boolean
+                          description: If the claim has been submitted or not
+                        totalClaimAmount:
+                          type: number
+                          description: The sum of all disputed transaction amounts
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                successExample:
+                  value:
+                    claimListResponse:
+                    - accountHolder: William James Murray
+                      requiredDocumentCount: 0
+                      customerContactDate: 20271005T000000.000 GMT
+                      claimId: 2110050013C
+                      externalCaseId: '123456789'
+                      accountNumber: '4447111111117413'
+                      claimStatus: Open-Execute
+                      createName: creat or
+                      accountType: Credit
+                      customerId: '123456789'
+                      isClaimSubmitted: 'true'
+                      totalClaimAmount: 150.23
+                    StatusList:
+                    - Type: Success
+                      Message: Success
+                      Code: '200'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '200'
+        '400':
+          description: Error claim list request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                ClaimRetrieveErrorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Error Retrieving Claim List
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample retrieve claim list Error Response
+                error1Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Invalid CustomerId
+                      Code: '1'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 1 response
+                error2Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: CustomerId or AccountNumber returned no claims
+                      Code: '2'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 2 response
+                error4Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: The requested Claim ID is not valid.
+                      Code: '4'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 4 response
+                error5Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: 'Invalid Request: {message}'
+                      Code: '5'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 5 response
+                error14Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Invalid request message
+                      Code: '14'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 14 response
+                error18Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: AccountNumber is not found
+                      Code: '18'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 18 response
+        '500':
+          description: Error claim list request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                errorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Could not obtain a lock on the claim
+                      Code: '500'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '500'
+                  summary: A sample Error 500 response
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  maxLength: 60
+                  minLength: 1
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction").
+
+                    Pattern: Max 60 characters
+
+                    Example: `"984513-395483653-4483483478"`'
+                  example: 984513-395483653-4483483478
+                daysToLookBack:
+                  type: number
+                  description: 'Days prior to search for claims.
+
+                    REQUIRED'
+                  example: 30
+                customerId:
+                  type: string
+                  description: "Customer ID to search for claims for.\nPass the same value as `accountNumber`. Exactly one of `customerId`, `accountNumber`, or `claimId` is required \nPattern: `P{prog_id}|{prn}`\nExample: `P123|123456789012`"
+                  example: P123|123456789012
+                accountNumber:
+                  type: string
+                  description: 'Account number to search for claims for. Exactly one of `customerId`, `accountNumber`, or `claimId` is required.
+
+                    Pattern: `P{prog_id}|{prn}`
+
+                    Example: `P123|123456789012`'
+                  example: P123|123456789012
+                claimId:
+                  type: string
+                  description: 'Specific Claim ID to search for
+
+
+                    Exactly one of `customerId`, `accountNumber`, or `claimId` is **required**'
+                  example: 2503040008C
+              required:
+              - transactionId
+              - providerId
+      tags:
+      - Claim
+  /claim/details/retrieve:
+    parameters:
+    - $ref: '#/components/parameters/AuthorizationHeaderParam'
+    - $ref: '#/components/parameters/ProfileTypeHeaderParam'
+    post:
+      summary: /claim/details/retrieve
+      operationId: postClaimDetailsRetrieve
+      description: 'Use this endpoint to get claim details
+
+
+        > 📘 Note
+
+        >
+
+        > This endpoint may return different data depending on the value of `profile-type`. See Profile Type Differences for details.'
+      parameters: []
+      responses:
+        '200':
+          description: Successful claim details retrieve request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Questionnaire:
+                    type: object
+                    description: 'Questionnaire for the user to provide answers for.
+
+
+                      PostQuestionnaire is to be presented to the user after they provide answers for Questionnaire'
+                    properties:
+                      QuestionList:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            Identifier:
+                              type: string
+                              description: Question identifier
+                              example: ClaimReason
+                            DisplayText:
+                              type: string
+                              description: Text to display with the question
+                              example: Which of the following best describes the reason for your dispute?
+                            DataType:
+                              type: string
+                              example: String
+                              enum:
+                              - String
+                              - Decimal
+                              - Integer
+                              - Date
+                              - DateTime
+                              - Boolean
+                              - List
+                              description: "This list of question datatypes indicates what the `AnswerValue` can be:\n\n * `String` — Text, e.g., `Yes`\n * `Decimal` — Floating-point decimal, e.g., `14.52`\n * `Integer` — Integer, e.g., `15`\n * `Date` — Date with format yyyymmdd, e.g., `20240216`\n * `DateTime` — Datetime with format yyyyMMdd`T`HHmmss.SSS z, e.g., `20230201T225915.773 GMT`\n * `Boolean` — Boolean, either `true` or `false`\n * `List` — Text, where `Identifier` can be provided multiple times. See <a href=\"doc:creating-an-api-30-dispute#adding-list-answers\" target=\"_blank\">Adding `List` answers</a> for examples.\n"
+                            Type:
+                              type: string
+                              description: Question type
+                              example: RadioButtons
+                              enum:
+                              - YesNo
+                              - Date
+                              - DateTime
+                              - Text
+                              - TextMulti
+                              - Dropdown
+                              - AutoComplete
+                              - RadioButtons
+                              - Checkboxes
+                              - MultiSelect
+                              - Decimal
+                              - Integer
+                              - Currency
+                              - RichText
+                              - Nothing
+                              - Section
+                              - Questionnaire
+                            Format:
+                              type: string
+                              description: Metadata describing the question format, can be used to optionally provide different visual treatment
+                              example: RadioButtons
+                              enum:
+                              - Caption
+                              - Default
+                              - Internal
+                              - Notification
+                              - Warning
+                            IsOptional:
+                              type: boolean
+                              description: Is this question optional?
+                              example: true
+                            AnswerList:
+                              type: array
+                              description: A list of possible answers for a question
+                              items:
+                                type: object
+                                properties:
+                                  Identifier:
+                                    type: string
+                                    description: Unique answer identifier
+                                    example: MerchantDuplicate
+                                  DisplayText:
+                                    type: string
+                                    description: Answer text to display
+                                    example: I was charged more than once.
+                            SelectedAnswer:
+                              type: string
+                              description: The selected answer to this question. This could be a default for an initially loaded questionnaire or a persisted previous answer.
+                              example: 'Yes'
+                            APIDocumentationList:
+                              type: array
+                              description: This is returned for questions of type Section. It provides the implementation details to provide the answer to said question.
+                              items:
+                                type: object
+                                properties:
+                                  ImplementationNotes:
+                                    type: string
+                                    description: Description of the connector
+                                    example: Get list of similar transactions within search criteria
+                                  Endpoint:
+                                    type: string
+                                    description: REST connector endpoint suffix
+                                    example: /claim/intake/retrieveSimilarTransactions
+                                  Method:
+                                    type: string
+                                    description: Method for REST connector (always `POST`)
+                                    example: post
+                        description: 'A List of questions the user can answer.
+
+
+                          This QuestionList can be nested inside of another Question''s AnswerList indicating that these questions should only be displayed if that Answer is selected.'
+                  DisputeReasonQuestionnaire:
+                    type: object
+                    description: 'Questionnaire for the user to provide answers for.
+
+
+                      PostQuestionnaire is to be presented to the user after they provide answers for Questionnaire'
+                    properties:
+                      QuestionList:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            Identifier:
+                              type: string
+                              description: Question identifier
+                              example: ClaimReason
+                            DisplayText:
+                              type: string
+                              description: Text to display with the question
+                              example: Which of the following best describes the reason for your dispute?
+                            DataType:
+                              type: string
+                              example: String
+                              enum:
+                              - String
+                              - Decimal
+                              - Integer
+                              - Date
+                              - DateTime
+                              - Boolean
+                              - List
+                              description: "This list of question datatypes indicates what the `AnswerValue` can be:\n\n * `String` — Text, e.g., `Yes`\n * `Decimal` — Floating-point decimal, e.g., `14.52`\n * `Integer` — Integer, e.g., `15`\n * `Date` — Date with format yyyymmdd, e.g., `20240216`\n * `DateTime` — Datetime with format yyyyMMdd`T`HHmmss.SSS z, e.g., `20230201T225915.773 GMT`\n * `Boolean` — Boolean, either `true` or `false`\n * `List` — Text, where `Identifier` can be provided multiple times. See <a href=\"doc:creating-an-api-30-dispute#adding-list-answers\" target=\"_blank\">Adding `List` answers</a> for examples.\n"
+                            Type:
+                              type: string
+                              description: Question type
+                              example: RadioButtons
+                              enum:
+                              - YesNo
+                              - Date
+                              - DateTime
+                              - Text
+                              - TextMulti
+                              - Dropdown
+                              - AutoComplete
+                              - RadioButtons
+                              - Checkboxes
+                              - MultiSelect
+                              - Decimal
+                              - Integer
+                              - Currency
+                              - RichText
+                              - Nothing
+                              - Section
+                              - Questionnaire
+                            Format:
+                              type: string
+                              description: Metadata describing the question format, can be used to optionally provide different visual treatment
+                              example: RadioButtons
+                              enum:
+                              - Caption
+                              - Default
+                              - Internal
+                              - Notification
+                              - Warning
+                            IsOptional:
+                              type: boolean
+                              description: Is this question optional?
+                              example: true
+                            AnswerList:
+                              type: array
+                              description: A list of possible answers for a question
+                              items:
+                                type: object
+                                properties:
+                                  Identifier:
+                                    type: string
+                                    description: Unique answer identifier
+                                    example: MerchantDuplicate
+                                  DisplayText:
+                                    type: string
+                                    description: Answer text to display
+                                    example: I was charged more than once.
+                            SelectedAnswer:
+                              type: string
+                              description: The selected answer to this question. This could be a default for an initially loaded questionnaire or a persisted previous answer.
+                              example: 'Yes'
+                            APIDocumentationList:
+                              type: array
+                              description: This is returned for questions of type Section. It provides the implementation details to provide the answer to said question.
+                              items:
+                                type: object
+                                properties:
+                                  ImplementationNotes:
+                                    type: string
+                                    description: Description of the connector
+                                    example: Get list of similar transactions within search criteria
+                                  Endpoint:
+                                    type: string
+                                    description: REST connector endpoint suffix
+                                    example: /claim/intake/retrieveSimilarTransactions
+                                  Method:
+                                    type: string
+                                    description: Method for REST connector (always `POST`)
+                                    example: post
+                        description: 'A List of questions the user can answer.
+
+
+                          This QuestionList can be nested inside of another Question''s AnswerList indicating that these questions should only be displayed if that Answer is selected.'
+                  QuestionnaireExt:
+                    type: object
+                    description: 'Questionnaire for the user to provide answers for.
+
+
+                      PostQuestionnaire is to be presented to the user after they provide answers for Questionnaire'
+                    properties:
+                      QuestionList:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            Identifier:
+                              type: string
+                              description: Question identifier
+                              example: ClaimReason
+                            DisplayText:
+                              type: string
+                              description: Text to display with the question
+                              example: Which of the following best describes the reason for your dispute?
+                            DataType:
+                              type: string
+                              example: String
+                              enum:
+                              - String
+                              - Decimal
+                              - Integer
+                              - Date
+                              - DateTime
+                              - Boolean
+                              - List
+                              description: "This list of question datatypes indicates what the `AnswerValue` can be:\n\n * `String` — Text, e.g., `Yes`\n * `Decimal` — Floating-point decimal, e.g., `14.52`\n * `Integer` — Integer, e.g., `15`\n * `Date` — Date with format yyyymmdd, e.g., `20240216`\n * `DateTime` — Datetime with format yyyyMMdd`T`HHmmss.SSS z, e.g., `20230201T225915.773 GMT`\n * `Boolean` — Boolean, either `true` or `false`\n * `List` — Text, where `Identifier` can be provided multiple times. See <a href=\"doc:creating-an-api-30-dispute#adding-list-answers\" target=\"_blank\">Adding `List` answers</a> for examples.\n"
+                            Type:
+                              type: string
+                              description: Question type
+                              example: RadioButtons
+                              enum:
+                              - YesNo
+                              - Date
+                              - DateTime
+                              - Text
+                              - TextMulti
+                              - Dropdown
+                              - AutoComplete
+                              - RadioButtons
+                              - Checkboxes
+                              - MultiSelect
+                              - Decimal
+                              - Integer
+                              - Currency
+                              - RichText
+                              - Nothing
+                              - Section
+                              - Questionnaire
+                            Format:
+                              type: string
+                              description: Metadata describing the question format, can be used to optionally provide different visual treatment
+                              example: RadioButtons
+                              enum:
+                              - Caption
+                              - Default
+                              - Internal
+                              - Notification
+                              - Warning
+                            IsOptional:
+                              type: boolean
+                              description: Is this question optional?
+                              example: true
+                            AnswerList:
+                              type: array
+                              description: A list of possible answers for a question
+                              items:
+                                type: object
+                                properties:
+                                  Identifier:
+                                    type: string
+                                    description: Unique answer identifier
+                                    example: MerchantDuplicate
+                                  DisplayText:
+                                    type: string
+                                    description: Answer text to display
+                                    example: I was charged more than once.
+                            SelectedAnswer:
+                              type: string
+                              description: The selected answer to this question. This could be a default for an initially loaded questionnaire or a persisted previous answer.
+                              example: 'Yes'
+                            APIDocumentationList:
+                              type: array
+                              description: This is returned for questions of type Section. It provides the implementation details to provide the answer to said question.
+                              items:
+                                type: object
+                                properties:
+                                  ImplementationNotes:
+                                    type: string
+                                    description: Description of the connector
+                                    example: Get list of similar transactions within search criteria
+                                  Endpoint:
+                                    type: string
+                                    description: REST connector endpoint suffix
+                                    example: /claim/intake/retrieveSimilarTransactions
+                                  Method:
+                                    type: string
+                                    description: Method for REST connector (always `POST`)
+                                    example: post
+                        description: 'A List of questions the user can answer.
+
+
+                          This QuestionList can be nested inside of another Question''s AnswerList indicating that these questions should only be displayed if that Answer is selected.'
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                successExample:
+                  value:
+                    Questionnaire:
+                      QuestionList:
+                      - QuestionList:
+                        - Type: Date
+                          Identifier: CardLSDate
+                          DisplayText: When did you lose your card?
+                          DataType: Date
+                          SelectedAnswer: '20270802'
+                        - QuestionList:
+                          - Type: Nothing
+                            Identifier: ''
+                            DisplayText: Where did you lose your card?
+                            DataType: String
+                          - Type: Dropdown
+                            Identifier: LostStolenArea
+                            DisplayText: Area
+                            DataType: String
+                            SelectedAnswer: Store
+                          - Type: YesNo
+                            AnswerList:
+                            - QuestionList:
+                              - Type: Text
+                                Identifier: LostStolenLocation
+                                DisplayText: Additional details
+                                DataType: String
+                              Identifier: 'Yes'
+                              DisplayText: 'Yes'
+                            - Identifier: 'No'
+                              DisplayText: 'No'
+                            Identifier: HasAdditionalDetails
+                            DisplayText: Do you have additional details about where your card was lost?
+                            DataType: String
+                            SelectedAnswer: 'No'
+                          - Type: AutoComplete
+                            AnswerList:
+                            - QuestionList:
+                              - Type: Dropdown
+                                Identifier: LostStolenState
+                                DisplayText: State
+                                DataType: String
+                                SelectedAnswer: GA
+                              Identifier: United States of America
+                              DisplayText: US
+                            Identifier: LostStolenCountry
+                            DisplayText: Country
+                            DataType: String
+                            SelectedAnswer: United States of America
+                          Type: Questionnaire
+                          Identifier: LostStolenLocationQn
+                          DisplayText: ''
+                          DataType: String
+                        - Type: YesNo
+                          AnswerList:
+                          - QuestionList:
+                            - Type: TextMulti
+                              Identifier: AnythingElseDetails
+                              DisplayText: Please provide additional details on what else was lost.
+                              DataType: String
+                            Identifier: 'Yes'
+                            DisplayText: 'Yes'
+                          - Identifier: 'No'
+                            DisplayText: 'No'
+                          Identifier: AnythingElseInd
+                          DisplayText: Was anything else lost?
+                          DataType: String
+                          SelectedAnswer: 'No'
+                        Type: Questionnaire
+                        Identifier: CardLostDetails
+                        DisplayText: ''
+                        DataType: String
+                      Type: Nothing
+                      Identifier: ''
+                      Format: Caption
+                      DisplayText: I lost my card.
+                      DataType: String
+                    QuestionnaireExt:
+                      QuestionList:
+                      - Type: YesNo
+                        AnswerList:
+                        - QuestionList:
+                          - Type: TextMulti
+                            Identifier: AddlInfoDetails
+                            DisplayText: Please provide any additional information.
+                            DataType: String
+                          Identifier: 'Yes'
+                          DisplayText: 'Yes'
+                        - Identifier: 'No'
+                          DisplayText: 'No'
+                        Identifier: AddlInfo
+                        DisplayText: Do you have any additional information to provide about this dispute?
+                        DataType: String
+                        SelectedAnswer: 'No'
+                    StatusList:
+                    - Type: Success
+                      Message: Success
+                      Code: '200'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '200'
+        '400':
+          description: Error claim details retrieve request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                ClaimRetrieveErrorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Error Retrieving Claim Details
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample retrieve claim details Error Response
+                error4Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: The requested Claim ID is not valid.
+                      Code: '4'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 4 response
+                error5Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: 'Invalid Request: {message}'
+                      Code: '5'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 5 response
+                error14Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Invalid request message
+                      Code: '14'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 14 response
+        '500':
+          description: Error claim details retrieve request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                errorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Could not obtain a lock on the claim
+                      Code: '500'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '500'
+                  summary: A sample Error 500 response
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ClaimId
+              - transactionId
+              - providerId
+              properties:
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  maxLength: 60
+                  minLength: 1
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction").
+
+                    Pattern: Max 60 characters
+
+                    Example: `"984513-395483653-4483483478"`'
+                  example: 984513-395483653-4483483478
+                ClaimId:
+                  type: string
+                  example: 2503040008C
+      tags:
+      - Claim
+components:
+  parameters:
+    ProfileTypeHeaderParam:
+      name: profile-type
+      in: header
+      description: Optional param to call Dispute API as a customer-service agent or a cardholder
+      schema:
+        type: string
+        enum:
+        - agent
+        - cardholder
+        default: agent
+    AuthorizationHeaderParam:
+      name: Authorization
+      in: header
+      description: For `{token}` insert base64-encoded `apiLogin:apiTransKey`
+      schema:
+        type: string
+        default: Basic {token}
+externalDocs:
+  url: ''
+  description: ''
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

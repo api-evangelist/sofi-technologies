@@ -1,0 +1,1331 @@
+openapi: 3.2.0
+info:
+  title: Program Corporate Credit and RTF API
+  version: '4.0'
+servers:
+- url: api-{corename}.{env}.gpsrv.com/intserv/4.0/
+tags:
+- name: Corporate Credit and RTF
+paths:
+  /getRtfAccountRelationship:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      tags:
+      - Corporate Credit and RTF
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                accountNo:
+                  type: string
+                  pattern: ^$|^([0-9]{12}|[0-9]{16})$
+                  description: 'The <<glossary:PRN>> for either an RTF funding or RTF spending account. Do not use the <<glossary:CAD>> or <<glossary:PAN>>.
+
+                    Pattern: 12-digit numeric string
+
+                    Example: `"344101254935"`'
+                  example: 074103447228
+                page:
+                  type:
+                  - integer
+                  - 'null'
+                  format: int32
+                  default: 1
+                  minimum: 1
+                  maximum: 999999
+                  description: 'The number of the page to retrieve.
+
+                    Pattern: Integer value of `1` or greater
+
+                    Example: `3`'
+                  example: 3
+                recordCnt:
+                  type:
+                  - integer
+                  - 'null'
+                  format: int32
+                  minimum: 1
+                  maximum: 99999
+                  description: 'The maximum number of records per page to be returned.
+
+                    Pattern: Positive integer `1-99999`
+
+                    Example: `100`'
+                  example: 100
+              required:
+              - accountNo
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      summary: Get RTF Account Relationship
+      description: 'Use the Get > Account Relationship endpoint to retrieve either the RTF spending accounts that are associated with an RTF funding account, or the RTF funding account that is associated with an RTF spending account.
+
+
+        For instructions on using this endpoint see Creating Real-Time Funding Accounts.'
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      funding_account:
+                        description: The funding account associated with the RTF spending account.
+                        type: object
+                        properties:
+                          pmt_ref_no:
+                            type: string
+                            description: The payment reference number of the account.
+                          status:
+                            type: string
+                            description: The status of the account. See <a href="ref:api-reference-account-statuses" target="_blank">Account Statuses</a> for valid values.
+                          active:
+                            type: string
+                            description: 'Whether the account is active: `Y` or `N`'
+                          galileo_account_number:
+                            type: string
+                            description: Balance ID for the account.
+                          product_id:
+                            type: string
+                            description: The identifier for the product that this account belongs to.
+                        required:
+                        - active
+                        - galileo_account_number
+                        - product_id
+                        - status
+                      spending_accounts:
+                        type: array
+                        description: Contains a list of RTF spending accounts associated with the RTF funding account.
+                        items:
+                          type: object
+                          properties:
+                            pmt_ref_no:
+                              type: string
+                              description: The payment reference number of the account.
+                            status:
+                              type: string
+                              description: The status of the account. See <a href="ref:api-reference-account-statuses" target="_blank">Account Statuses</a> for valid values.
+                            active:
+                              type: string
+                              description: 'Whether the account is active: `Y` or `N`'
+                            galileo_account_number:
+                              type: string
+                              description: Balance ID for the account.
+                            product_id:
+                              type: string
+                              description: The identifier for the product that this account belongs to.
+                          required:
+                          - active
+                          - galileo_account_number
+                          - product_id
+                          - status
+                      funding_account_prn:
+                        type: string
+                        description: The PRN of the funding account.
+                      spending_account_prn:
+                        type: string
+                        description: The PRN of the spending account.
+                      spending_account_count:
+                        type: integer
+                        format: int32
+                        description: Number of spending accounts returned.
+                      page:
+                        type: integer
+                        format: int32
+                        description: The page number to be retrieved in the context of recordset paging
+                      total_record_count:
+                        type: integer
+                        format: int32
+                        description: Number of records in the accounts list display
+                      number_of_pages:
+                        type: integer
+                        format: int32
+                        description: Total number of pages in the accounts list display
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n\t\"status_code\": 0,\n\t\"status\": \"Success\",\n\t\"processing_time\": 0.081,\n\t\"response_data\": {\n    \t\"spending_account_count\": 2,\n    \t\"page\": 1,\n    \t\"total_record_count\": 2,\n    \t\"number_of_pages\": 1,\n    \t\"spending_accounts\": [\n        \t{\n            \t\"pmt_ref_no\": \"999102798106\",\n            \t\"product_id\": \"4444\",\n            \t\"galileo_account_number\": \"7000398\",\n            \t\"status\": \"N\",\n            \t\"active\": \"Y\"\n        \t},\n        \t{\n            \t\"pmt_ref_no\": \"999102798262\",\n            \t\"product_id\": \"4444\",\n            \t\"galileo_account_number\": \"7000555\",\n            \t\"status\": \"N\",\n            \t\"active\": \"Y\"\n        \t}\n    \t],\n    \t\"funding_account_prn\": \"999102798098\"\n\t},\n\t\"echo\": {\n    \t\"provider_transaction_id\": \"\",\n    \t\"provider_timestamp\": null,\n    \t\"transaction_id\": \"b0465cf0-c32a-4dbc-8c6e-011cff4e20af\"\n\t},\n\t\"system_timestamp\": \"2023-07-12 15:57:45\",\n\t\"rtoken\": \"af1be148-1c61-447b-8848-52469c75dd83\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<root>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.081</processing_time>\n  <response_data>\n    <spending_account_count>2</spending_account_count>\n    <page>1</page>\n    <total_record_count>2</total_record_count>\n    <number_of_pages>1</number_of_pages>\n    <spending_accounts>\n      <pmt_ref_no>999102798106</pmt_ref_no>\n      <product_id>4444</product_id>\n      <galileo_account_number>7000398</galileo_account_number>\n      <status>N</status>\n      <active>Y</active>\n    </spending_accounts>\n    <spending_accounts>\n      <pmt_ref_no>999102798262</pmt_ref_no>\n      <product_id>4444</product_id>\n      <galileo_account_number>7000555</galileo_account_number>\n      <status>N</status>\n      <active>Y</active>\n    </spending_accounts>\n    <funding_account_prn>999102798098</funding_account_prn>\n  </response_data>\n  <echo>\n    <provider_transaction_id></provider_transaction_id>\n    <provider_timestamp/>\n    <transaction_id>b0465cf0-c32a-4dbc-8c6e-011cff4e20af</transaction_id>\n  </echo>\n  <system_timestamp>2023-07-12 15:57:45</system_timestamp>\n  <rtoken>af1be148-1c61-447b-8848-52469c75dd83</rtoken>\n</root>"
+          description: ''
+      operationId: post_getrtfaccountrelationship
+  /getCorporateCreditChangeHistory:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      changes:
+                        type: array
+                        description: An object containing a list of credit-limit changes.
+                        items:
+                          type: object
+                          properties:
+                            timestamp:
+                              type: string
+                              format: date-time
+                              description: The date/time when the credit limit was changed.
+                            credit_limit:
+                              type: number
+                              format: float
+                              description: The amount that the credit limit was changed to.
+                      total_record_count:
+                        type: integer
+                        format: int32
+                        description: Number of credit-limit changes in the list.
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.081,\n    \"response_data\": {\n      \"total_record_account\": 3,\n      \"changes\": [\n        {\n          \"timestamp\": \"2023-07-13 14:23:40\",\n          \"credit_limit\": \"2500\"\n        },\n        {\n          \"timestamp\": \"2023-07-12 14:23:40\",\n          \"credit_limit\": \"2000\"\n        },\n        {\n          \"timestamp\": \"2023-07-11 14:23:40\",\n          \"credit_limit\": \"1500\"\n        }\n      ]\n    },\n    \"echo\": {\n      \"provider_transaction_id\": \"\",\n      \"provider_timestamp\": null,\n      \"transaction_id\": \"9845dk-39fdk3fj3-4483483478\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2023-07-13 10:38:13\"}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<root>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.081</processing_time>\n  <response_data>\n    <total_record_account>3</total_record_account>\n    <changes>\n      <timestamp>2023-07-13 14:23:40</timestamp>\n      <credit_limit>2500</credit_limit>\n    </changes>\n    <changes>\n      <timestamp>2023-07-12 14:23:40</timestamp>\n      <credit_limit>2000</credit_limit>\n    </changes>\n    <changes>\n      <timestamp>2023-07-11 14:23:40</timestamp>\n      <credit_limit>1500</credit_limit>\n    </changes>\n  </response_data>\n  <echo>\n    <provider_transaction_id></provider_transaction_id>\n    <provider_timestamp>null</provider_timestamp>\n    <transaction_id>9845dk-39fdk3fj3-4483483478</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2023-07-13 10:38:13</system_timestamp>\n</root>"
+          description: ''
+      parameters: []
+      summary: Get Corporate Credit Change History
+      description: Use the Get Corporate Credit Change History endpoint to retrieve a history of changes to the credit limit for the specified > funding account. Pass a CC funding account for `accountNo`.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                accountNo:
+                  type: string
+                  pattern: ^$|^([0-9]{12}|[0-9]{16})$
+                  description: "The <<glossary:PRN>> or <<glossary:PAN>> of the account.\nPattern: PAN or PRN \nExample: `\"074103447228\"`"
+                  example: 074103447228
+              required:
+              - accountNo
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      tags:
+      - Corporate Credit and RTF
+      operationId: post_getcorporatecreditchangehistory
+  /getCorporateCreditSummary:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      credit_limit:
+                        type: number
+                        format: float
+                        description: Credit limit for the account
+                      available_credit:
+                        type: number
+                        format: float
+                        description: The available credit for the account
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.081,\n    \"response_data\": {\n      \"credit_limit\": \"5000.00\",\n      \"available_credit\": \"4150.27\"\n    },\n    \"echo\": {\n      \"provider_transaction_id\": \"\",\n      \"provider_timestamp\": null,\n      \"transaction_id\": \"9845dk-39fdk3fj3-4483483478\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2023-07-13 10:38:13\"\n  }"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<root>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.081</processing_time>\n  <response_data>\n    <credit_limit>5000.00</credit_limit>\n    <available_credit>4150.27</available_credit>\n  </response_data>\n  <echo>\n    <provider_transaction_id></provider_transaction_id>\n    <provider_timestamp>null</provider_timestamp>\n    <transaction_id>9845dk-39fdk3fj3-4483483478</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2023-07-13 10:38:13</system_timestamp>\n</root>"
+          description: ''
+      parameters: []
+      summary: Get Corporate Credit Summary
+      description: Use the Get Corporate Credit Summary endpoint to retrieve the credit limit on the > funding account as well as how much of the credit limit is still available to spend. Pass a CC funding account for `accountNo`.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                accountNo:
+                  type: string
+                  pattern: ^$|^([0-9]{12}|[0-9]{16})$
+                  description: "The <<glossary:PRN>> or <<glossary:PAN>> of the account.\nPattern: PAN or PRN \nExample: `\"074103447228\"`"
+                  example: 074103447228
+              required:
+              - accountNo
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      tags:
+      - Corporate Credit and RTF
+      operationId: post_getcorporatecreditsummary
+  /setCorporateCreditLimit:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      new_credit_limit:
+                        type: number
+                        format: float
+                        description: The updated credit limit for the account
+                      available_credit:
+                        type: number
+                        format: float
+                        description: The available credit for the account
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.081,\n    \"response_data\": {\n      \"new_credit_limit\": \"5000.00\",\n      \"available_credit\": \"4150.27\"\n    },\n    \"echo\": {\n      \"provider_transaction_id\": \"\",\n      \"provider_timestamp\": null,\n      \"transaction_id\": \"9845dk-39fdk3fj3-4483483478\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2023-07-13 10:38:13\"\n  }"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<root>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.081</processing_time>\n  <response_data>\n    <new_credit_limit>5000.00</new_credit_limit>\n    <available_credit>4150.27</available_credit>\n  </response_data>\n  <echo>\n    <provider_transaction_id></provider_transaction_id>\n    <provider_timestamp>null</provider_timestamp>\n    <transaction_id>9845dk-39fdk3fj3-4483483478</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2023-07-13 10:38:13</system_timestamp>\n</root>"
+          description: ''
+      parameters: []
+      summary: Set Corporate Credit Limit
+      description: Use the Set Corporate Credit Limit endpoint to set a credit limit on a > funding account. As desired, set LIMMX and LIMMN product parameters to control maximum and minimum amounts to set.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                accountNo:
+                  type: string
+                  pattern: ^$|^([0-9]{12}|[0-9]{16})$
+                  description: "The <<glossary:PRN>> or <<glossary:PAN>> of the account.\nPattern: PAN or PRN \nExample: `\"074103447228\"`"
+                  example: 074103447228
+                amount:
+                  type: number
+                  format: float
+                  description: 'Currency amount as a whole or decimal amount.
+
+                    Pattern: Positive integer or decimal number
+
+                    Example: `100.00`, `100`, or `100.73`'
+                  example: 25.5
+              required:
+              - accountNo
+              - amount
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      tags:
+      - Corporate Credit and RTF
+      operationId: post_setcorporatecreditlimit
+  /isCorpCreditFundingAccount:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      result:
+                        type: boolean
+                        description: 'Whether the account is a Corporate Credit funding account: `true` or `false`.'
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.081,\n    \"response_data\": {\n      \"result\": \"true\"\n    },\n    \"echo\": {\n      \"provider_transaction_id\": \"\",\n    \t\"provider_timestamp\": null,\n      \"transaction_id\": \"9845dk-39fdk3fj3-4483483478\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2023-07-13 10:38:13\"\n  }"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<root>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.081</processing_time>\n  <response_data>\n    <result>true</result>\n  </response_data>\n  <echo>\n    <provider_transaction_id></provider_transaction_id>\n    <provider_timestamp>null</provider_timestamp>\n    <transaction_id>9845dk-39fdk3fj3-4483483478</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2023-07-13 10:38:13</system_timestamp>\n</root>"
+          description: ''
+      parameters: []
+      summary: Is Corporate Credit Funding Account
+      description: Use the Is Corporate Credit Funding Account endpoint to determine whether the specified account is a Corporate Credit funding account.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                accountNo:
+                  type: string
+                  pattern: ^$|^([0-9]{12}|[0-9]{16})$
+                  description: "The <<glossary:PRN>> or <<glossary:PAN>> of the account.\nPattern: PAN or PRN \nExample: `\"074103447228\"`"
+                  example: 074103447228
+              required:
+              - accountNo
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      tags:
+      - Corporate Credit and RTF
+      operationId: post_iscorpcreditfundingaccount
+  /isCorpCreditSpendingAccount:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      result:
+                        type: boolean
+                        description: 'Whether the account is a Corporate Credit spending account: `true` or `false`.'
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.081,\n    \"response_data\": {\n      \"result\": \"false\"\n    },\n    \"echo\": {\n      \"provider_transaction_id\": \"\",\n      \"provider_timestamp\": null,\n      \"transaction_id\": \"9845dk-39fdk3fj3-4483483478\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2023-07-13 10:38:13\"\n  }"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<root>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.081</processing_time>\n  <response_data>\n    <result>false</result>\n  </response_data>\n  <echo>\n    <provider_transaction_id></provider_transaction_id>\n    <provider_timestamp>null</provider_timestamp>\n    <transaction_id>9845dk-39fdk3fj3-4483483478</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2023-07-13 10:38:13</system_timestamp>\n</root>"
+          description: ''
+      parameters: []
+      summary: Is Corporate Credit Spending Account
+      description: Use the Is Corporate Credit Spending Account endpoint to determine whether the specified account is a Corporate Credit spending account.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                accountNo:
+                  type: string
+                  pattern: ^$|^([0-9]{12}|[0-9]{16})$
+                  description: "The <<glossary:PRN>> or <<glossary:PAN>> of the account.\nPattern: PAN or PRN \nExample: `\"074103447228\"`"
+                  example: 074103447228
+              required:
+              - accountNo
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      tags:
+      - Corporate Credit and RTF
+      operationId: post_iscorpcreditspendingaccount
+  /isRtfFundingAccount:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      result:
+                        type: boolean
+                        description: 'Whether the account is an <<glossary:RTF>> funding account: `true` or `false`.'
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.081,\n    \"response_data\": {\n      \"result\": \"true\"\n    },\n    \"echo\": {\n      \"provider_transaction_id\": \"\",\n      \"provider_timestamp\": null,\n      \"transaction_id\": \"9845dk-39fdk3fj3-4483483478\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2023-07-13 10:38:13\"\n  }"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<root>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.081</processing_time>\n  <response_data>\n    <result>true</result>\n  </response_data>\n  <echo>\n    <provider_transaction_id></provider_transaction_id>\n    <provider_timestamp>null</provider_timestamp>\n    <transaction_id>9845dk-39fdk3fj3-4483483478</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2023-07-13 10:38:13</system_timestamp>\n</root>"
+          description: ''
+      parameters: []
+      summary: Is RTF Funding Account
+      description: Use the Is > Funding Account endpoint to determine whether the specified account is an RTF funding account.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                accountNo:
+                  type: string
+                  pattern: ^$|^([0-9]{12}|[0-9]{16})$
+                  description: "The <<glossary:PRN>> or <<glossary:PAN>> of the account.\nPattern: PAN or PRN \nExample: `\"074103447228\"`"
+                  example: 074103447228
+              required:
+              - accountNo
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      tags:
+      - Corporate Credit and RTF
+      operationId: post_isrtffundingaccount
+  /isRtfSpendingAccount:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      result:
+                        type: boolean
+                        description: 'Whether the account is an <<glossary:RTF>> spending account: `true` or `false`.'
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.081,\n    \"response_data\": {\n      \"result\": \"false\"\n    },\n    \"echo\": {\n      \"provider_transaction_id\": \"\",\n      \"provider_timestamp\": null,\n      \"transaction_id\": \"9845dk-39fdk3fj3-4483483478\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2023-07-13 10:38:13\"\n  }"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<root>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.081</processing_time>\n  <response_data>\n    <result>false</result>\n  </response_data>\n  <echo>\n    <provider_transaction_id></provider_transaction_id>\n    <provider_timestamp>null</provider_timestamp>\n    <transaction_id>9845dk-39fdk3fj3-4483483478</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2023-07-13 10:38:13</system_timestamp>\n</root>"
+          description: ''
+      parameters: []
+      summary: Is RTF Spending Account
+      description: Use the Is > Spending Account endpoint to determine whether the specified account is an RTF spending account.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                accountNo:
+                  type: string
+                  pattern: ^$|^([0-9]{12}|[0-9]{16})$
+                  description: "The <<glossary:PRN>> or <<glossary:PAN>> of the account.\nPattern: PAN or PRN \nExample: `\"074103447228\"`"
+                  example: 074103447228
+              required:
+              - accountNo
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      tags:
+      - Corporate Credit and RTF
+      operationId: post_isrtfspendingaccount
+components:
+  parameters:
+    ResponseContentTypeHeaderParam:
+      name: response-content-type
+      in: header
+      description: Use this header instead of the standard `accept` header to specify the response format.
+      schema:
+        type: string
+        enum:
+        - xml
+        - json
+        default: json
+x-readme:
+  samples-languages:
+  - curl
+  - python
+  - node
+  - java
+  - go
+  - ruby
+  - javascript
+  explorer-enabled: true
+  proxy-enabled: true

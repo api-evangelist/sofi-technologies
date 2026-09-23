@@ -1,0 +1,1600 @@
+openapi: 3.2.0
+info:
+  title: Program Location Management API
+  version: '4.0'
+servers:
+- url: api-{corename}.{env}.gpsrv.com/intserv/4.0/
+tags:
+- name: Location Management
+paths:
+  /createLocation:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      summary: Create Location
+      description: Use the Create Location endpoint to create a new store location, associated with a provider-specific ID, and nest it below a parent location (store). The first location you create will be designated location 0, the top-level location.
+      parameters: []
+      tags:
+      - Location Management
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                name:
+                  type: string
+                  description: 'The name of the location.
+
+                    Pattern: Max 85 characters: letters, numbers, spaces, `_` (underscore), `''` (single quote), `-` (hyphen), `.` (period). All other characters will be removed.
+
+                    Example: `"ABC Store 5"`'
+                  example: ABC Store 5
+                address1:
+                  type: string
+                  description: 'First address line of the location.
+
+                    Pattern: 4&ndash;40 alphanumeric characters
+
+                    Example: `"33 Maple Street"`'
+                  example: 33 Maple Street
+                address2:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'Second address line of the location.
+
+                    Pattern: Max 30 alphanumeric characters
+
+                    Example: `"#4B"`'
+                  example: '#4B'
+                city:
+                  type: string
+                  description: 'City for the location.
+
+                    Pattern: Max 30 characters: letters, spaces, hyphen and period
+
+                    Example: `"Salt Lake City"`'
+                  example: Salt Lake City
+                state:
+                  type: string
+                  minLength: 2
+                  maxLength: 2
+                  description: 'State or province for the location.
+
+                    Pattern: 2-character state or province abbreviation
+
+                    Example: `"UT"`'
+                  example: UT
+                postalCode:
+                  type: string
+                  minLength: 5
+                  maxLength: 10
+                  pattern: ^[a-zA-Z0-9\-\ ]*$
+                  description: 'Postal (ZIP) code for the location.
+
+                    Pattern: `12345`, `12345-1234`, `K1A-1A1`
+
+                    Example: `"84121"`'
+                  example: '84121'
+                countryCode:
+                  type:
+                  - string
+                  - 'null'
+                  pattern: '[0-9]{3}$'
+                  description: 'TCountry for the location. Three-digit UN M49 code, such as `840` for USA, `124` for Canada, `484` for Mexico, `170` for Colombia.
+
+                    Pattern: Three-digit country code
+
+                    Example: `"840"`'
+                  example: '840'
+                phone:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'Phone number of the location.
+
+                    Pattern: Exactly 10 digits, no hyphens or other characters
+
+                    Example: `"8013656060"`'
+                  example: '8013656060'
+                parentLocation:
+                  type: string
+                  pattern: ^[a-zA-Z0-9]{1,20}$
+                  description: 'Identifier for the parent location. The first time you create a location, pass `0`.
+
+                    Pattern: Integer if `parentLocationType: 0`; max 15 characters if `parentLocationType: 1`
+
+                    Example: `"5"`'
+                  example: '5'
+                parentLocationType:
+                  type: integer
+                  format: int32
+                  enum:
+                  - 0
+                  - 1
+                  - 2
+                  description: 'The type of location specified in `parentLocation`. If `parentLocation` is the top-level value from SoFi Tech Solutions, then pass `0` for this parameter.
+
+                    * `0` &mdash; SoFi Tech Solutions location ID
+
+                    * `1` &mdash; Partner location ID
+
+                    * `2` &mdash; Don''t validate
+
+
+                    Pattern: `0`, `1` or `2`
+
+                    Example: `0`'
+                  example: 0
+                providerSpecifiedId:
+                  type:
+                  - string
+                  - 'null'
+                  pattern: ^[a-zA-Z0-9]{1,15}$
+                  description: 'The provider-supplied identifier for a location, when `parentLocationType: 1`.
+
+                    Pattern: Max 15 alphanumeric characters
+
+                    Example: `"abc-123"`'
+                  example: abc-123
+                status:
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - C
+                  - N
+                  - S
+                  - n
+                  description: 'Location status. Default `N`:
+
+                    * `C` &mdash; Closed
+
+                    * `N` &mdash; Active
+
+                    * `S` &mdash; Suspended
+
+                    * `n` &mdash; New
+
+
+                    Pattern: Single character, case-sensitive
+
+                    Example: `"N"`'
+                  example: N
+                store_type:
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - '1'
+                  - '2'
+                  - '3'
+                  - '4'
+                  - '5'
+                  - 'null'
+                  description: 'The store or location type. Default `5`:
+
+                    * `1` &mdash; Corporate
+
+                    * `2` &mdash; Chain
+
+                    * `3` &mdash; Reseller
+
+                    * `4` &mdash; Region
+
+                    * `5` &mdash; Store
+
+
+                    Pattern: Single digit or `null`
+
+                    Example: `"5"`'
+                  example: '5'
+              required:
+              - address1
+              - city
+              - name
+              - parentLocation
+              - parentLocationType
+              - postalCode
+              - state
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type: object
+                    properties:
+                      location:
+                        type: string
+                        description: Numerical value assigned to the location
+                    required:
+                    - location
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.042,\n    \"response_data\": {\n        \"location\": \"3048\"\n    },\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"Y4IS8887GMBXO42UMKQI\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2025-07-13 10:46:27\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.039</processing_time>\n  <response_data>\n    <location>3065</location>\n  </response_data>\n  <echo>\n    <provider_transaction_id/>\n    <provider_timestamp/>\n    <transaction_id>VSK8TMQ8MTHOB698MVI5</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-07-13 12:40:39</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_createlocation
+  /modifyLocation:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      summary: Modify Location
+      description: 'Use the Modify Location endpoint to update data elements that are related to the location. Pass only the parameters to be modified — leave the rest blank.
+
+
+        #### Nullifying data elements
+
+        You can pass `null` for the following parameters to set the value in the database to `null`.
+
+
+        | | |
+
+        |:--|:--|
+
+        | `name` | `address1` |
+
+        | `address2` | `city` |
+
+        | `phone` | `providerSpecifiedId`|'
+      parameters: []
+      tags:
+      - Location Management
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                name:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'The name of the location.
+
+                    Pattern: Max 85 alphanumeric characters
+
+                    Example: `"ABC Store #5"`'
+                  example: 'ABC Store #5'
+                address1:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'First address line of the location.
+
+                    Pattern: 4&ndash;40 alphanumeric characters
+
+                    Example: `"33 Maple Street"`'
+                  example: 33 Maple Street
+                address2:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'Second address line of the location.
+
+                    Pattern: Max 30 alphanumeric characters
+
+                    Example: `"#4B"`'
+                  example: '#4B'
+                city:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'City for the location.
+
+                    Pattern: Max 30 characters: letters, spaces, hyphen and period
+
+                    Example: `"Salt Lake City"`'
+                  example: Salt Lake City
+                state:
+                  type:
+                  - string
+                  - 'null'
+                  description: "State or province for the location. \nPattern: String\nExample: `\"UT\"`"
+                  example: UT
+                postalCode:
+                  type:
+                  - string
+                  - 'null'
+                  minLength: 5
+                  maxLength: 10
+                  pattern: ^[a-zA-Z0-9\-\ ]*$
+                  description: 'Postal (ZIP) code for the location.
+
+                    Pattern: `12345`, `12345-1234`, `K1A-1A1`
+
+                    Example: `"84121"`'
+                  example: '84121'
+                countryCode:
+                  type:
+                  - string
+                  - 'null'
+                  pattern: '[0-9]{3}$'
+                  description: 'Country for the location. Three-digit UN M49 code, such as `840` for USA, `124` for Canada, `484` for Mexico, `170` for Colombia.
+
+                    Pattern: Numeric string
+
+                    Example: `"840"`'
+                  example: '840'
+                phone:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'Phone number of the location.
+
+                    Pattern: Exactly 10 digits, no hyphens or other characters
+
+                    Example: `"8013656060"`'
+                  example: '8013656060'
+                location:
+                  type: string
+                  pattern: ^[a-zA-Z0-9]{1,20}$
+                  description: 'Unique location identifier (`location`) as returned by the <a href="ref:post_createlocation" target="_blank">Create Location</a> endpoint.  This value is also returned by the <a href="ref:post_getlocations" target="_blank">Get Locations</a> endpoint depending on the value of `locationType` when the location was created:
+
+                    * `0` or `2` &mdash; Returned in the `location_id` field
+
+                    * `1` &mdash; Returned in the `provider_specified_id` field
+
+
+                    Pattern: String
+
+                    Example: `"a455-3483"`'
+                  example: a455-3483
+                locationType:
+                  type: string
+                  pattern: ^[0|1|2]$
+                  description: 'Type of ID in `location`:
+
+                    * `0` &mdash; SoFi Tech Solutions location ID
+
+                    * `1` &mdash; Partner location ID
+
+                    * `2` &mdash; Don''t validate
+
+
+                    Pattern: Numeric string
+
+                    Example: `"0"`'
+                  example: '0'
+                providerSpecifiedId:
+                  type:
+                  - string
+                  - 'null'
+                  pattern: ^[a-zA-Z0-9]{1,20}$
+                  description: 'The provider-supplied identifier for a location, when `parentLocationType: 1`.
+
+                    Pattern: Max 15 alphanumeric characters
+
+                    Example: `"abc-123"`'
+                  example: abc-123
+                status:
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - C
+                  - N
+                  - S
+                  - n
+                  description: 'Location status. Default `N`:
+
+                    * `C` &mdash; Closed
+
+                    * `N` &mdash; Active
+
+                    * `S` &mdash; Suspended
+
+                    * `n` &mdash; New
+
+
+                    Pattern: Single character, case-sensitive
+
+                    Example: `"N"`'
+                  example: N
+                store_type:
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - '1'
+                  - '2'
+                  - '3'
+                  - '4'
+                  - '5'
+                  - 'null'
+                  description: 'The store or location type. Default `5`:
+
+                    * `1` &mdash; Corporate
+
+                    * `2` &mdash; Chain
+
+                    * `3` &mdash; Reseller
+
+                    * `4` &mdash; Region
+
+                    * `5` &mdash; Store
+
+
+                    Pattern: Single digit or `null`
+
+                    Example: `"5"`'
+                  example: '5'
+              required:
+              - location
+              - locationType
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      name:
+                        type: string
+                        description: Name of the location
+                      address1:
+                        type:
+                        - string
+                        - 'null'
+                        description: Address 1 of the location
+                      address2:
+                        type:
+                        - string
+                        - 'null'
+                        description: Address 2 of the location
+                      city:
+                        type:
+                        - string
+                        - 'null'
+                        description: City of the location
+                      state:
+                        type:
+                        - string
+                        - 'null'
+                        description: State of the location
+                      postalCode:
+                        type:
+                        - string
+                        - 'null'
+                        description: Postal code of the location
+                      phone:
+                        type:
+                        - string
+                        - 'null'
+                        description: The phone number associated with the locations
+                      providerSpecifiedId:
+                        type:
+                        - string
+                        - 'null'
+                        description: The partner or program identity for a location
+                      centralBillFlag:
+                        type: integer
+                        format: int32
+                        description: Indicates a central corporate credit aggregate billing location
+                      creditLimit:
+                        type:
+                        - number
+                        - 'null'
+                        format: float
+                        description: The credit limit for this location
+                      cycleType:
+                        type:
+                        - string
+                        - 'null'
+                        description: The type of time period
+                      cycleInvoice:
+                        type:
+                        - integer
+                        - 'null'
+                        format: int32
+                        description: If cycleType is weekly, the value must be a day of the week with 0 meaning Sunday. If cycleType is monthly, the value must be a day of the month from 1 to 28. If daily, the value is to be 1.
+                      cycleStart:
+                        type:
+                        - integer
+                        - 'null'
+                        format: int32
+                        description: Represents a day of the week or day of the month that the invoice cycle begins (1=Monday, 7=Sunday).
+                    required:
+                    - address1
+                    - address2
+                    - city
+                    - name
+                    - phone
+                    - postalCode
+                    - providerSpecifiedId
+                    - state
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.067,\n    \"response_data\": {\n        \"name\": \"ABC Store 5\",\n        \"address1\": \"33 Maple Street\",\n        \"address2\": null,\n        \"city\": \"Orem\",\n        \"state\": \"UT\",\n        \"postalCode\": \"84097\",\n        \"phone\": \"8013656060\",\n        \"providerSpecifiedId\": null\n    },\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"9C63COYZDDHOVOL1X8Y6\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2025-07-13 10:46:29\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.064</processing_time>\n  <response_data>\n    <name>ABC Store 5</name>\n    <address1>33 Maple Street</address1>\n    <address2/>\n    <city>Orem</city>\n    <state>UT</state>\n    <postalCode>84097</postalCode>\n    <phone>8013656060</phone>\n    <providerSpecifiedId/>\n  </response_data>\n  <echo>\n    <provider_transaction_id/>\n    <provider_timestamp/>\n    <transaction_id>VCUASK9HIH3JXYKAR1BY</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-07-13 12:40:40</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_modifylocation
+  /getLocations:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      summary: Get Locations
+      description: Use the Get Locations endpoint to retrieve a list of locations according to the search criteria. You can search by location ID, location name, and location street address. You can use a partial match for location name and location street address.
+      parameters: []
+      tags:
+      - Location Management
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                searchCriteria:
+                  type: string
+                  pattern: ^.+$
+                  description: 'String containing the search criteria. Must be of the type specified in `searchCriteriaType`.
+
+                    Pattern: Alphanumeric string
+
+                    Example: `"5544"`'
+                  example: '5544'
+                searchCriteriaType:
+                  type: string
+                  pattern: ^[1|2|3]$
+                  description: 'Type of criteria that is specified in `searchCriteria`:
+
+                    * `1` &mdash; Location ID
+
+                    * `2` &mdash; Location name, full or partial
+
+                    * `3` &mdash; Location street address, full or partial
+
+
+                    Pattern: Numeric string
+
+                    Example: `"1"`'
+                  example: '1'
+              required:
+              - searchCriteria
+              - searchCriteriaType
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      locations:
+                        type: array
+                        description: List of locations
+                        items:
+                          type: object
+                          properties:
+                            location_id:
+                              type: integer
+                              format: int32
+                              description: The numerical value assigned to the location
+                            name:
+                              type:
+                              - string
+                              - 'null'
+                              description: The name of the location
+                            address1:
+                              type:
+                              - string
+                              - 'null'
+                              description: Address 1 of the location
+                            address2:
+                              type:
+                              - string
+                              - 'null'
+                              description: Address 2 of the location
+                            city:
+                              type:
+                              - string
+                              - 'null'
+                              description: City of the location
+                            state:
+                              type:
+                              - string
+                              - 'null'
+                              description: State of the location
+                            postalCode:
+                              type:
+                              - string
+                              - 'null'
+                              description: Postal code of the location
+                            parent_location_id:
+                              type:
+                              - string
+                              - 'null'
+                              description: The numerical ID of the parent location
+                            provider_specified_id:
+                              type:
+                              - string
+                              - 'null'
+                              description: The partner or program identity for a location
+                            centralBillFlag:
+                              type: integer
+                              format: int32
+                              description: Indicates a central corporate credit aggregate billing location. Allows one centralized billing location for all invoice records attached to the location.
+                            creditLimit:
+                              type: number
+                              format: float
+                              description: The credit limit for this location
+                            store_type:
+                              type:
+                              - string
+                              - 'null'
+                              description: The store or location type. Values are `Corporate`, `Chain`, `Reseller`, `Region`, or `Store`.
+                            status:
+                              type:
+                              - string
+                              - 'null'
+                              description: Current status of the location. Values are `Closed`, `Active`, `Suspended`, or `New`.
+                            fees:
+                              type: array
+                              description: List of fees attached to the location
+                              items:
+                                type: object
+                                properties:
+                                  active:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: Y/N field, determines if the fee is active
+                                  amount:
+                                    type:
+                                    - number
+                                    - 'null'
+                                    format: float
+                                    description: Amount of fee
+                                  amount_type:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: 'Type of amount: flat or percent'
+                                  max_fee:
+                                    type:
+                                    - number
+                                    - 'null'
+                                    format: float
+                                    description: Maximum amount of fee
+                                  fee_type:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: Type of fee, current support FBD and DEL
+                                  min_fee:
+                                    type:
+                                    - number
+                                    - 'null'
+                                    format: float
+                                    description: Minimum amount of the fee
+                          required:
+                          - address1
+                          - address2
+                          - city
+                          - location_id
+                          - name
+                          - parent_location_id
+                          - postalCode
+                          - provider_specified_id
+                          - state
+                          - status
+                          - store_type
+                    required:
+                    - locations
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n    \"status_code\": 0,\n    \"status\": \"Success\",\n    \"processing_time\": 0.033,\n    \"response_data\": {\n        \"locations\": [\n            {\n                \"location_id\": \"7\",\n                \"name\": \"my checking account\",\n                \"address1\": \"33 Maple Street\",\n                \"address2\": null,\n                \"city\": \"Salt Lake City\",\n                \"state\": \"UT\",\n                \"postalCode\": \"84121\",\n                \"parent_location_id\": \"1\",\n                \"provider_specified_id\": null,\n                \"store_type\": \"Store\",\n                \"status\": \"Active\",\n                \"fees\": []\n            }\n        ]\n    },\n    \"echo\": {\n        \"provider_transaction_id\": \"\",\n        \"provider_timestamp\": null,\n        \"transaction_id\": \"6RU1Z5CAQSYJF89U1TGE\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"system_timestamp\": \"2025-07-13 10:46:28\"\n}"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.032</processing_time>\n  <response_data>\n    <locations>\n      <location>\n        <location_id>7</location_id>\n        <name>my checking account</name>\n        <address1>33 Maple Street</address1>\n        <address2/>\n        <city>Salt Lake City</city>\n        <state>UT</state>\n        <postalCode>84121</postalCode>\n        <parent_location_id>1</parent_location_id>\n        <provider_specified_id/>\n        <fees>\n        </fees>\n      </location>\n    </locations>\n  </response_data>\n  <echo>\n    <provider_transaction_id/>\n    <provider_timestamp/>\n    <transaction_id>JXQPK3UNRSISH33M07WP</transaction_id>\n  </echo>\n  <rtoken>8cc16de0-5eda-4e2a-968e-3b08fce6f778</rtoken>\n  <system_timestamp>2025-07-13 12:40:39</system_timestamp>\n</response>"
+          description: ''
+      operationId: post_getlocations
+  /createLocationFee:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      summary: Create Location Fee
+      description: 'Use the Create Location Fee endpoint to create a fee to assess at a location. A fee can be assessed as a flat rate or a percentage. When the fee is a percentage, you can specify minimum and maximum amounts. The fee becomes active upon creation and can be deactivated using the Modify Location Fee endpoint.
+
+
+        These are the fee types:
+
+        * `FBD` — FBE direct deposit fee
+
+        * `DEL` — ACH direct deposit fee'
+      parameters: []
+      tags:
+      - Location Management
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                location:
+                  type: string
+                  pattern: ^[a-zA-Z0-9]{1,20}$
+                  description: 'Unique location identifier (`location`) as returned by the <a href="ref:post_createlocation" target="_blank">Create Location</a> endpoint.  This value is also returned by the <a href="ref:post_getlocations" target="_blank">Get Locations</a> endpoint depending on the value of `locationType` when the location was created:
+
+                    * `0` or `2` &mdash; Returned in the `location_id` field
+
+                    * `1` &mdash; Returned in the `provider_specified_id` field
+
+
+                    Pattern: Integer if `locationType: 0` or `locationType: 2`; max 15 characters if `locationType: 1`
+
+                    Example: `"a455-3483"`'
+                  example: a455-3483
+                locationType:
+                  type: integer
+                  format: int32
+                  enum:
+                  - 0
+                  - 1
+                  - 2
+                  description: 'Type of ID in `location`:
+
+                    * `0` &mdash; SoFi Tech Solutions location ID
+
+                    * `1` &mdash; Partner location ID
+
+                    * `2` &mdash; Don''t validate
+
+
+                    Pattern: `0`, `1`, or `2`
+
+                    Example: `0`'
+                  example: '0'
+                feeType:
+                  type: string
+                  enum:
+                  - FBD
+                  - DEL
+                  description: 'Type of fee to assess at this location. To set up both fee types at the same location, call this endpoint twice:
+
+                    * `FBD` &mdash; Federal benefit enrollment direct-deposit fee
+
+                    * `DEL` &mdash; ACH direct-deposit fee
+
+
+                    Pattern: 3-character code
+
+                    Example: `"FBD"`'
+                  example: FBD
+                amount:
+                  type: number
+                  format: float
+                  minimum: 0.01
+                  maximum: 999999999999.99
+                  description: 'Specify either a flat amount or a percentage. For a flat amount the valid range is between `.01` and `999`. For a percentage the valid range is `.01` (1%) to `1` (100%). When this parameter is populated then `amountType` is **required**.
+
+                    Pattern: Positive integer or decimal number
+
+                    Example: `1.23`'
+                  example: '1.23'
+                amountType:
+                  type: string
+                  enum:
+                  - percent
+                  - flat
+                  description: 'Specify which type of value is in `amount`:
+
+                    * `flat` &mdash; Flat rate
+
+                    * `percent` &mdash; Percentage
+
+
+                    Pattern: String
+
+                    Example: `"flat"`'
+                  example: flat
+                minFee:
+                  type:
+                  - number
+                  - 'null'
+                  format: float
+                  minimum: 0
+                  maximum: 999999999999.99
+                  description: 'The minimum amount for the fee, when `amountType: percent`.
+
+                    Pattern: Positive integer or decimal number
+
+                    Example: `1.10`'
+                  example: '1.10'
+                maxFee:
+                  type:
+                  - number
+                  - 'null'
+                  format: float
+                  minimum: 0
+                  maximum: 999999999999.99
+                  description: 'The maximum amount for the fee, when `amountType: percent`.
+
+                    Pattern: Positive integer or decimal number
+
+                    Example: `1.10`'
+                  example: '1.10'
+              required:
+              - amount
+              - amountType
+              - feeType
+              - location
+              - locationType
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      location:
+                        type: integer
+                        format: int32
+                        description: SoFi Tech Solutions ID of the location, when `locationType` is `0` or `2`.
+                      provider_specified_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Provider ID of the location, when `locationType` is `1`.
+                      fee_type:
+                        type:
+                        - string
+                        - 'null'
+                        description: Type of fee, `FBD` (FBE direct deposit fee) or `DEL` (ACH direct deposit fee).
+                      amount:
+                        type: number
+                        format: float
+                        description: Amount of the fee.
+                      amount_type:
+                        type: string
+                        description: 'The type of the amount: `flat` or `percent`.'
+                      min_fee:
+                        type:
+                        - string
+                        - 'null'
+                        description: The minimum amount to charge, when `amount_type` is `percent`.
+                      max_fee:
+                        type:
+                        - string
+                        - 'null'
+                        description: The minimum amount to charge, when `amount_type` is `percent`.
+                    required:
+                    - amount
+                    - amount_type
+                    - fee_type
+                    - location
+                    - max_fee
+                    - min_fee
+                    - provider_specified_id
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n  \"status_code\": 0,\n  \"status\": \"Success\",\n  \"processing_time\": 0.023,\n  \"response_data\": {\n    \"location\": 4400002,\n    \"provider_specified_id\": \"zzz4567\",\n    \"fee_type\": \"FBD\",\n    \"amount\": 1,\n    \"amount_type\": \"flat\",\n    \"min_fee\": 0,\n    \"max_fee\": 0\n  },\n  \"echo\": {\n    \"provider_transaction_id\": \"\",\n    \"provider_timestamp\": null,\n    \"transaction_id\": \"7036a565-8d73-4ff5-96f0-5b0c8016fc2a\"\n  },\n  \"system_timestamp\": \"2025-09-02 14:15:19\",\n  \"rtoken\": \"7a3bf2ae-11a4-4d1c-8679-926fa3d40d07\"\n}\n"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.576</processing_time>\n  <response_data>\n    <location>4400004</location>\n    <provider_specified_id>zzz4567</provider_specified_id>\n    <fee_type>FBD</fee_type>\n    <amount>1</amount>\n    <amount_type>flat</amount_type>\n    <min_fee>0</min_fee>\n    <max_fee>0</max_fee>\n  </response_data>\n  <echo>\n    <provider_transaction_id></provider_transaction_id>\n    <provider_timestamp></provider_timestamp>\n    <transaction_id>4044d5d6-c7bf-46cf-96e9-72334dbc472d</transaction_id>\n  </echo>\n  <system_timestamp>2025-09-02 14:18:12</system_timestamp>\n  <rtoken>c4653e5b-1693-4786-87ea-598cdfe4e3dc</rtoken>\n</response>\n"
+          description: ''
+      operationId: post_createlocationfee
+  /modifyLocationFee:
+    parameters:
+    - $ref: '#/components/parameters/ResponseContentTypeHeaderParam'
+    post:
+      summary: Modify Location Fee
+      description: 'Use the Modify Location Fee endpoint to modify a fee that was created with the Create Location Fee endpoint. You cannot change `feeType` (`FBD` or `DEL`) with this endpoint. Instead, you must create a new fee with Create Location Fee and use this endpoint to deactivate the old fee.
+
+
+        For this endpoint, `amount` and `amountType` are not required, but if one of them is populated, then both are required.'
+      parameters: []
+      tags:
+      - Location Management
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Web service username, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by SoFi Tech Solutions.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction"). Might be used for <a href="ref:idempotency#endpoints-that-use-transactionid-for-idempotency" target="_blank">idempotency</a>.. A UUID is preferred.
+
+                    Pattern: Maximum 60 characters
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                location:
+                  type: string
+                  pattern: ^[a-zA-Z0-9]{1,20}$
+                  description: 'Identifier for the location that was created with Create Location. This value is returned by Get Locations in the `location_id` field when `locationType: 0` or `locationType: 2`, or in the `provider_specified_id` field when `locationType: 1`.
+
+                    Pattern: Must be a number if type is 0; Must be less than or equal to 15 characters if type is 1.
+
+                    Example: `"a455-3483"`'
+                  example: a455-3483
+                locationType:
+                  type: integer
+                  format: int32
+                  enum:
+                  - 0
+                  - 1
+                  - 2
+                  description: 'Location type, as specified by Create Location. 0=SoFi Tech Solutions location ID, 1=Partner location ID, 2=Don''t validate.
+
+                    Pattern: `0`, `1` or `2`
+
+                    Example: `"0"`'
+                  example: '0'
+                feeType:
+                  type: string
+                  enum:
+                  - FBD
+                  - DEL
+                  description: 'Type of fee as specified by Create Location Fee. This value must be the original value provided at the time of the fee creation: `FBD` (FBE direct deposit fee) or `DEL` (ACH direct deposit fee)
+
+                    Pattern: `FBD` or `DEL`
+
+                    Example: `"FBD"`'
+                  example: FBD
+                amount:
+                  type:
+                  - number
+                  - 'null'
+                  format: float
+                  minimum: 0.01
+                  maximum: 999999999999.99
+                  description: 'Specify either a flat amount or a percentage. For a flat amount the valid range is between `.01` and `999`. For a percentage the valid range is `.01` (1%) to `1` (100%). When this parameter is populated then `amountType` is required.
+
+                    Pattern: 1, 1.10, 0.5
+
+                    Example: 1.23'
+                  example: '1.23'
+                amountType:
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - percent
+                  - flat
+                  description: 'Specify whether the value in `amount` is a flat rate (`flat`) or a percentage (`percent`). When this parameter is populated then `amount` is required.
+
+                    Pattern: `flat` or `percent`
+
+                    Example: ''flat'''
+                  example: '''flat'''''
+                minFee:
+                  type:
+                  - number
+                  - 'null'
+                  format: float
+                  minimum: 0
+                  maximum: 999999999999.99
+                  description: 'The minimum amount for the fee, if the amount type is a percentage.
+
+                    Pattern: 10, 20.5, 2.33
+
+                    Example: 1.10'
+                  example: '1.10'
+                maxFee:
+                  type:
+                  - number
+                  - 'null'
+                  format: float
+                  minimum: 0
+                  maximum: 999999999999.99
+                  description: 'The maximum amount for the fee, if the amount type is a percentage.
+
+                    Pattern: 10, 20.5, 2.33
+
+                    Example: 1.10'
+                  example: '1.10'
+                active:
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - Y
+                  - N
+                  description: 'Specify whether to activate the fee (`Y`) or deactivate the fee (`N`).
+
+                    Pattern: `Y` or `N`
+
+                    Example: `"Y"`'
+                  example: Y
+              required:
+              - feeType
+              - location
+              - locationType
+              - transactionId
+              - apiLogin
+              - apiTransKey
+              - providerId
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code. May return a string for some statuses.
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processing_time:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: An ID that represents an API transaction
+                      provider_timestamp:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Store a related timestamp for reporting and troubleshooting purposes
+                      provider_transaction_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Secondary transaction identifier (generated by a provider)
+                    required:
+                    - provider_timestamp
+                    - provider_transaction_id
+                    - transaction_id
+                  system_timestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A system-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  response_data:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      location:
+                        type: integer
+                        format: int32
+                        description: SoFi Tech Solutions ID of the location, when `locationType` is `0` or `2`.
+                      provider_specified_id:
+                        type:
+                        - string
+                        - 'null'
+                        description: Customer ID of the location, when `locationType` is `1`.
+                      fee_type:
+                        type:
+                        - string
+                        - 'null'
+                        description: Type of fee, `FBD` (FBE direct deposit fee) or `DEL` (ACH direct deposit fee).
+                      amount:
+                        type: string
+                        description: Amount of the fee.
+                      amount_type:
+                        type: string
+                        description: 'The type of the amount: `flat` or `percent`.'
+                      min_fee:
+                        type:
+                        - string
+                        - 'null'
+                        description: The minimum amount to charge, when `amount_type` is `percent`.
+                      max_fee:
+                        type:
+                        - string
+                        - 'null'
+                        description: The maximum amount to charge, when `amount_type` is `percent`.
+                      active:
+                        type:
+                        - string
+                        - 'null'
+                        description: Active flag for the fee.
+                    required:
+                    - active
+                    - amount
+                    - amount_type
+                    - fee_type
+                    - location
+                    - max_fee
+                    - min_fee
+                    - provider_specified_id
+                required:
+                - echo
+                - processing_time
+                - response_data
+                - rtoken
+                - status
+                - status_code
+                - system_timestamp
+              examples:
+                response:
+                  value: "{\n  \"status_code\": 0,\n  \"status\": \"Success\",\n  \"processing_time\": 0.018,\n  \"response_data\": {\n    \"location\": 4400024,\n    \"provider_specified_id\": \"zzz4567\",\n    \"fee_type\": \"FBD\",\n    \"amount\": 2.5,\n    \"amount_type\": \"flat\",\n    \"min_fee\": 0,\n    \"max_fee\": 0,\n    \"active\": \"Y\"\n  },\n  \"echo\": {\n    \"provider_transaction_id\": \"\",\n    \"provider_timestamp\": null,\n    \"transaction_id\": \"80c75962-9443-4a1e-b3b2-ae5524372cbc\"\n  },\n  \"system_timestamp\": \"2025-09-02 14:20:53\",\n  \"rtoken\": \"004c97a0-df05-4481-a549-35b0a376c230\"\n}\n"
+            application/xml:
+              examples:
+                response:
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<response>\n  <status_code>0</status_code>\n  <status>Success</status>\n  <processing_time>0.021</processing_time>\n  <response_data>\n    <location>4400026</location>\n    <provider_specified_id>zzz4567</provider_specified_id>\n    <fee_type>FBD</fee_type>\n    <amount>2</amount>\n    <amount_type>flat</amount_type>\n    <min_fee>0</min_fee>\n    <max_fee>0</max_fee>\n    <active>Y</active>\n  </response_data>\n  <echo>\n    <provider_transaction_id></provider_transaction_id>\n    <provider_timestamp></provider_timestamp>\n    <transaction_id>867f1a2d-73ad-48a8-b6fc-dcf3c7d0abc6</transaction_id>\n  </echo>\n  <system_timestamp>2025-09-02 14:23:03</system_timestamp>\n  <rtoken>5bbfc1ee-bae1-4c49-978b-12f3cc178152</rtoken>\n</response>\n"
+          description: ''
+      operationId: post_modifylocationfee
+components:
+  parameters:
+    ResponseContentTypeHeaderParam:
+      name: response-content-type
+      in: header
+      description: Use this header instead of the standard `accept` header to specify the response format.
+      schema:
+        type: string
+        enum:
+        - xml
+        - json
+        default: json
+x-readme:
+  samples-languages:
+  - curl
+  - python
+  - node
+  - java
+  - go
+  - ruby
+  - javascript
+  explorer-enabled: true
+  proxy-enabled: true

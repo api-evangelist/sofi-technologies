@@ -1,0 +1,525 @@
+openapi: 3.2.0
+info:
+  version: '25.02'
+  title: Dispute API 3.0 Status API
+  description: The following documents the Intake API and Interaction APIs.
+  termsOfService: ''
+  contact: {}
+  license:
+    name: ''
+servers:
+- url: '{corename}.gft-dispute-api.{env}.gpsrv.com/gft-dispute-api/1.0/'
+tags:
+- name: Status
+paths:
+  /claim/retrieve:
+    parameters:
+    - $ref: '#/components/parameters/AuthorizationHeaderParam'
+    - $ref: '#/components/parameters/ProfileTypeHeaderParam'
+    post:
+      summary: /claim/retrieve
+      operationId: postClaimRetrieve
+      description: Use this endpoint to retrieve claim details and status
+      parameters: []
+      responses:
+        '200':
+          description: Successful status retrieve request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ClaimType:
+                    type: string
+                  ClaimReason:
+                    type: string
+                  ClaimReasonType:
+                    type: string
+                  TotalClaimAmount:
+                    type: number
+                  IsRegE10Satisfied:
+                    type: boolean
+                    description: Whether the Reg E 10 Business Day provisional credit obligation has been satisfied.
+                  RegE10:
+                    type: string
+                    format: Date-Time
+                    description: The deadline by which provisional credit must be granted and the provisional credit letter sent — 10 business days from the contact date (for ATM/debit POS and non-US ATM disputes).
+                  RegE10Threshold:
+                    type: string
+                    format: Date-Time
+                    description: The approaching/warning date for the Reg E 10 milestone, used to trigger early action before the RegE10 deadline.
+                  IsRegESatisfied:
+                    type: boolean
+                    description: Whether the final Reg E resolution deadline has been satisfied.
+                  RegEDeadline:
+                    type: string
+                    format: Date-Time
+                    description: The final Reg E regulatory deadline by which the claim must be resolved (write-off executed and resolution letter sent). 90 days for POS/non-US ATM disputes; 45 days for US ATM and ACH disputes.
+                  RegEThreshold:
+                    type: string
+                    format: Date-Time
+                    description: The approaching/warning date for the final Reg E deadline (RegEDeadline), used to trigger action before the deadline is breached.
+                  IsRegZ30Satisfied:
+                    type: boolean
+                    description: Whether the Reg Z 30-day acknowledgement obligation has been satisfied.
+                  RegZ30:
+                    type: string
+                    format: Date-Time
+                    description: The deadline by which an acknowledgement letter must be sent to the cardholder — 30 days from the contact date.
+                  RegZ30Threshold:
+                    type: string
+                    format: Date-Time
+                    description: The approaching/warning date for the Reg Z 30 milestone.
+                  IsRegZPCSatisfied:
+                    type: boolean
+                    description: Whether the Reg Z Withholding Protection provisional credit obligation has been satisfied.
+                  RegZPC:
+                    type: string
+                    format: Date-Time
+                    description: The Reg Z Withholding Protection date — the deadline by which provisional credit must be issued to prevent collection on the disputed amount (primarily relevant for cardholders enrolled in autopayment). Set to the earlier of the next autopayment date or statement cycle date, with a minimum of contact date + 3 business days.
+                  RegZPCThreshold:
+                    type: string
+                    format: Date-Time
+                    description: The approaching/warning date for the Reg Z PC provisional credit milestone.
+                  IsRegZ90Satisfied:
+                    type: boolean
+                    description: Whether the Reg Z 90-day resolution obligation has been satisfied.
+                  RegZ90:
+                    type: string
+                    format: Date-Time
+                    description: The final Reg Z deadline by which write-off must be executed and a resolution letter sent. Equals the 2nd statement cycle date following the contact date, capped at 90 days. Defaults to 60 days if cycle date is unavailable or the calculated date falls below 60 days.
+                  RegZ90Threshold:
+                    type: string
+                    format: Date-Time
+                    description: The approaching/warning date for the Reg Z 90 milestone.
+                  CustomerDetails:
+                    type: object
+                    properties:
+                      FirstName:
+                        type: string
+                      MiddleName:
+                        type: string
+                      LastName:
+                        type: string
+                      EmailAddress:
+                        type: string
+                      PhoneNumber:
+                        type: string
+                      LastAddressChangeDate:
+                        type: string
+                        format: Date-Time
+                      CustomerId:
+                        type: string
+                  Address:
+                    type: object
+                    properties:
+                      Line1:
+                        type: string
+                        description: Mailing address line 1
+                        examples:
+                        - 6 Ashbridge Lane
+                      Line2:
+                        type: string
+                        description: Mailing address line 2
+                        examples:
+                        - Suite 1
+                      Line3:
+                        type: string
+                        description: Mailing address line 3
+                        examples:
+                        - Atlanta, GA. 30033
+                      City:
+                        type: string
+                        description: Mailing address City
+                        examples:
+                        - Linwood
+                      State:
+                        type: string
+                        description: Mailing address 2 character State code
+                        examples:
+                        - NJ
+                      Zip:
+                        type: string
+                        description: Mailing address zip code (5 digits or 5-4 digites)
+                        examples:
+                        - 12345-4567
+                      Country:
+                        type: string
+                        description: Mailing address Country code
+                        examples:
+                        - USA
+                  AccountDetails:
+                    type: object
+                    properties:
+                      Description:
+                        type: string
+                      AccountNumber:
+                        type: string
+                      CardDescription:
+                        type: string
+                      CardNumber:
+                        type: string
+                      Balance:
+                        type: number
+                      OpenDate:
+                        type: string
+                        format: Date-Time
+                      AccountStatus:
+                        type: string
+                      LastStatementDate:
+                        type: string
+                        format: Date-Time
+                  ExternalCaseId:
+                    type: string
+                    description: Optional ID representing claim identifier external to this dispute system (client internal identifier)
+                  CustomerContactDate:
+                    type: string
+                    format: Date-Time
+                    description: Date customer contacted institution about dispute
+                    example: '2024-08-05T16:29:45.350Z'
+                  CreateName:
+                    type: string
+                    description: userId of the user who created the claim
+                    example: dispute_api@disputeme.info
+                  AccountType:
+                    type: string
+                    example: CreditCard
+                  ClaimStatus:
+                    type: string
+                    example: Open-Analyze
+                  AccountHolder:
+                    type: string
+                    example: SoFi Tech Solutions User
+                  Actions:
+                    type: array
+                    description: Actions that can be taken on the claim
+                    items:
+                      type: object
+                      properties:
+                        Importance:
+                          type: string
+                          description: Importance of the action
+                        ActionName:
+                          type: string
+                          description: Action Name
+                  HasOutstandingTasks:
+                    type: boolean
+                    description: Does the claim have oustanding workable tasks for interaction api
+                  HeaderDisplay:
+                    type: string
+                    description: Text for display
+                  Stages:
+                    type: array
+                    description: List of claim stages
+                    items:
+                      type: object
+                      properties:
+                        Status:
+                          type: string
+                          description: Status of this stage
+                        Name:
+                          type: string
+                          description: Name of this stage
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  TalkingPoints:
+                    type: array
+                    description: List of claim talking points
+                    items:
+                      type: object
+                      properties:
+                        DisplayText:
+                          type: string
+                          description: Text for display
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                successExample:
+                  value:
+                    ClaimType: ConvenienceCheck
+                    ClaimReason: Unauthorized
+                    TotalClaimAmount: 50.99
+                    IsRegE10Satisfied: false
+                    RegE10: '2025-09-23T22:00:00.000Z'
+                    RegE10Threshold: '2025-09-26T22:00:00.000Z'
+                    IsRegESatisfied: false
+                    RegEDeadline: '2025-09-28T22:00:00.000Z'
+                    RegEThreshold: '2025-09-23T22:00:00.000Z'
+                    IsRegZ30Satisfied: false
+                    RegZ30: '2025-09-23T22:00:00.000Z'
+                    RegZ30Threshold: '2025-09-21T22:00:00.000Z'
+                    IsRegZPCSatisfied: false
+                    RegZPC: '2025-09-23T22:00:00.000Z'
+                    RegZPCThreshold: '2025-09-23T22:00:00.000Z'
+                    IsRegZ90Satisfied: false
+                    RegZ90: '2025-09-23T22:00:00.000Z'
+                    RegZ90Threshold: '2025-09-23T22:00:00.000Z'
+                    CustomerDetails:
+                      CustomerId: 123456789
+                      FirstName: John
+                      MiddleName: J
+                      LastName: Smith
+                      EmailAddress: john.smith@disputeme.info
+                      PhoneNumber: 122-345-6789
+                      LastAddressChangeDate: '2023-02-03T22:00:00.000Z'
+                    AccountDetails:
+                      Description: MyChecking Account
+                      AccountNumber: 47386789132877656
+                      CardDescription: Visa Credit Card
+                      CardNumber: '562139058235'
+                      Balance: 234.71
+                      OpenDate: '1997-06-09'
+                      AccountStatus: ''
+                      LastStatementDate: '2025-01-31'
+                    CardNumber: '562139058235'
+                    ClaimId: 2110050013C
+                    ExternalCaseId: 13tovbv
+                    Actions:
+                    - Importance: other
+                      ActionName: View Communication
+                    StatusList:
+                    - Type: Success
+                      Message: Success
+                      Code: '200'
+                    Stages:
+                    - Status: Current
+                      Name: Received
+                    - Status: Complete
+                      Name: Investigating
+                    CustomerContactDate: 20220323 GMT
+                    CreateName: SoFi Tech Solutions User
+                    EmailAddress: dispute_api@disputeme.info
+                    AccountType: CreditCard
+                    AccountNumber: '8025307835'
+                    RequiredDocumentCount: 1
+                    ClaimStatus: New
+                    TalkingPoints:
+                    - DisplayText: We have created a claim ID, but the process is incomplete
+                    AccountHolder: SoFi Tech Solutions User
+                    HeaderDisplay: Transaction Dispute (claimId)
+                    HasOutstandingTasks: true
+                    Address:
+                      Zip: '01234'
+                      State: NY
+                      LongAddress: THE CRIB NYC NY 01234
+                      Country: United States of America
+                      City: NYC
+                      Line1: THE CRIB
+                      Line2: ''
+                      Line3: ''
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '200'
+        '400':
+          description: Error retrieve status request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                claimRetrievalError:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Error Retrieving Claim Status
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample failed claim retrieval error Response
+                error4Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: The requested Claim ID is not valid.
+                      Code: '4'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 4 response
+                error5Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: 'Invalid Request: {message}'
+                      Code: '5'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 5 response
+                error14Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Invalid request message
+                      Code: '14'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 14 response
+        '500':
+          description: Error retrieve status request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                errorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Could not obtain a lock on the claim
+                      Code: '500'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '500'
+                  summary: A sample Error 500 response
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - claimId
+              - statusRole
+              - transactionId
+              - providerId
+              properties:
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  maxLength: 60
+                  minLength: 1
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction").
+
+                    Pattern: Max 60 characters
+
+                    Example: `"984513-395483653-4483483478"`'
+                  example: 984513-395483653-4483483478
+                claimId:
+                  type: string
+                  description: Unique claim ID
+                  example: 2501240026C
+                statusRole:
+                  type: string
+                  description: Status role of the current user
+                  example: Customer
+      tags:
+      - Status
+components:
+  parameters:
+    ProfileTypeHeaderParam:
+      name: profile-type
+      in: header
+      description: Optional param to call Dispute API as a customer-service agent or a cardholder
+      schema:
+        type: string
+        enum:
+        - agent
+        - cardholder
+        default: agent
+    AuthorizationHeaderParam:
+      name: Authorization
+      in: header
+      description: For `{token}` insert base64-encoded `apiLogin:apiTransKey`
+      schema:
+        type: string
+        default: Basic {token}
+externalDocs:
+  url: ''
+  description: ''
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

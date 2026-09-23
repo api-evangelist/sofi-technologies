@@ -1,0 +1,235 @@
+openapi: 3.2.0
+info:
+  title: Authorization Events Webhook API
+  description: 'Events API (also known as Alerts API) is a collection of webhooks that clients
+
+    can use to get events from Galileo.'
+  version: 1.0.0
+tags:
+- name: Authorization Events Webhook
+paths:
+  /Authorization:
+    post:
+      summary: Authorization Events Webhook
+      description: 'Galileo `POST`s to `/Authorization` to send Authorization Events to the client. An Authorization Event is triggered when a card financial transaction with an association occurs. This includes card authorizations and denied card authorizations due to invalid PIN, insufficient funds, inactive card, etc.
+
+
+        ### Requests
+
+
+        The event data (described in the index pages that follow) will be in the body of the request, as JSON or form data.
+
+
+        #### JSON example (`application/json`)
+
+        ```json
+
+        {
+
+        "type": "denied_auth_gas",
+
+        "account_id": "2011",
+
+        "amount": "10.25",
+
+        "balance": "500.00",
+
+        "card_id": "12534",
+
+        "mcc": "5712",
+
+        "merch_loc": "NEW YORK, NY",
+
+        "merch_name": "Widgets Incorporated",
+
+        "merch_num": "L4DIV6D5LM4X7LF",
+
+        "network": "V",
+
+        "pmt_ref_no": "155200002022",
+
+        "prod_id": "1701",
+
+        "prog_id": "305",
+
+        "timestamp": "2019-10-09 11:20:33 MST",
+
+        "auth_id": "12303090"
+
+        }
+
+        ```
+
+
+        #### Form example (`application/x-www-form-urlencoded`)
+
+        ```
+
+        type=denied_auth_gas&prod_id=1504&prog_id=255&pmt_ref_no=199999999998&merchant_name=DISCOUNT+FM+1&merchant_number=231000000129001&mcc=5541&merch_loc=ARCHER%2C+FLUS&auth_tran_type=5&amount=30.65&network=V&open_to_buy=2.95&auth_id=29143890×tamp=2019-10-09+11%3A20%3A33+MST&account_id=388750&card_id=740724
+
+        ```
+
+
+        ### Responses
+
+
+        | Value | Description | Retransmit |
+
+        | :---: | --- | :---: |
+
+        | 0 | Success | No |
+
+        | 1 | Parameters do not pass validation (parsing error) | No |
+
+        | 2 | Cardholder account not in system | No |
+
+        | 3 | General system failure | No |
+
+        | 4 | Authentication failed | No |
+
+        | 5 | Not ready to accept messages | Yes |
+
+
+        #### JSON example
+
+        ```json
+
+        {
+
+        "success_code": "0"
+
+        }
+
+        ```
+
+
+        XML responses should use the webhook name (`Authorization`) as the envelope.
+
+        #### XML example
+
+        ```xml
+
+        0
+
+        ```'
+      operationId: webhook_authorization_event_post
+      tags:
+      - Authorization Events Webhook
+      parameters:
+      - name: X-Request-ID
+        in: header
+        description: A unique identifier for the HTTP request.
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: Encryption-Type
+        in: header
+        description: Signature algorithm. For now, always `"HMAC-SHA256"`.
+        schema:
+          type: string
+          enum:
+          - HMAC-SHA256
+          default: HMAC-SHA256
+        required: true
+      - name: User-ID
+        in: header
+        description: Identifies request as coming from Galileo. Hard-coded to `"galileo"`.
+        schema:
+          type: string
+          enum:
+          - galileo
+          default: galileo
+        required: true
+      - name: Date
+        in: header
+        description: 'UTC timestamp when request is sent. Format: `"<timestamp><timezone>"` where `timestamp = YYYYMMDD:HHMMSS` and `timezone = UTC`. Example: `20170504:141752UTC`.'
+        schema:
+          type: string
+        required: true
+      - name: Signature
+        in: header
+        description: Signature of request. See overview for more details.
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          description: Response from client.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success_code:
+                    type: string
+                    description: 'Response ("success") codes. Possible values:
+
+
+                      * `0` - Success
+
+                      * `1` - Parameters do not pass validation
+
+                      * `2` - Cardholder account not in system
+
+                      * `3` - General system failure
+
+                      * `4` - Authentication failed
+
+                      * `5` - Not ready to accept messages. Event will be retransmitted.
+
+
+                      For all but `5`, the event will not be retransmitted.
+
+                      '
+                    enum:
+                    - '0'
+                    - '1'
+                    - '2'
+                    - '3'
+                    - '4'
+                    - '5'
+              examples:
+                response:
+                  value: "{\n  \"success_code\": \"0\"\n}\n"
+            application/xml:
+              schema:
+                type: object
+                properties:
+                  success_code:
+                    type: string
+                    description: 'Response ("success") codes. Possible values:
+
+
+                      * `0` - Success
+
+                      * `1` - Parameters do not pass validation
+
+                      * `2` - Cardholder account not in system
+
+                      * `3` - General system failure
+
+                      * `4` - Authentication failed
+
+                      * `5` - Not ready to accept messages. Event will be retransmitted.
+
+
+                      For all but `5`, the event will not be retransmitted.
+
+                      '
+                    enum:
+                    - '0'
+                    - '1'
+                    - '2'
+                    - '3'
+                    - '4'
+                    - '5'
+                xml:
+                  name: Authorization
+              examples:
+                response:
+                  value: "<Authorization>\n  <success_code>0</success_code>\n</Authorization>\n"
+x-explorer-enabled: false
+x-samples-enabled: false
+x-readme:
+  proxy-enabled: true

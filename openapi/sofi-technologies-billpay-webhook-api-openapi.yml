@@ -1,0 +1,207 @@
+openapi: 3.2.0
+info:
+  title: External Trans Billpay Webhook API
+  description: '# Overview
+
+
+    External Trans API is a webhook that allows clients to participate in
+
+    the decisioning for:
+
+    * Approving/denying bill payments
+
+    * Approving/denying ACH debits
+
+
+    It''s similar to Auth API, but for bill pay and ACH debits.'
+  version: 1.0.0
+servers:
+- url: https://client.domain.com
+  description: Clients will provide the URLs they would like to use for External Trans API. The URLs should use HTTPS.
+tags:
+- name: Billpay Webhook
+paths:
+  /billpay:
+    post:
+      summary: Billpay Webhook
+      description: Use the Billpay webhook to approve or deny billpay transactions. Use the `response_code` field in the response to communicate your decision to SoFi Tech Solutions.
+      operationId: webhook_billpay_post
+      tags:
+      - Billpay Webhook
+      parameters:
+      - name: X-Request-ID
+        in: header
+        description: A unique identifier for the HTTP request.
+        schema:
+          type: string
+          format: uuid
+        required: true
+      requestBody:
+        description: Information about the billpay transaction.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account:
+                  type: object
+                  properties:
+                    xid:
+                      type: integer
+                      description: 'Internal system account ID. Example: `5398373`.'
+                      example: 5398373
+                    prn:
+                      type: string
+                      minLength: 12
+                      maxLength: 12
+                      description: '<a href="doc:about-accounts#prn" target="_blank">Payment reference number</a> for the account. Example: `"999200002022"`.'
+                      example: '999200002022'
+                    account_status:
+                      type: string
+                      description: 'Account status code. See the possible values in the <a href="ref:api-reference-account-statuses" target="_blank">Account Statuses</a> enumeration.
+
+
+                        Example: `"N"`'
+                  required:
+                  - xid
+                  - prn
+                  - account_status
+                amounts:
+                  type: object
+                  properties:
+                    trans_amount:
+                      type: number
+                      format: float
+                      description: 'Amount of the billpay transaction. Example: `150.00`'
+                      example: 150
+                    available_funds:
+                      type: number
+                      format: float
+                      description: 'Amount of funds available to the account holder for this transaction. Example: `500.00`'
+                      example: 500
+                    currency:
+                      type: string
+                      minLength: 3
+                      maxLength: 3
+                      description: 'The currency code for `trans_amount` and `fee_amount`. ISO 4217 numeric currency code. 3 digits. Example: `"840"`'
+                      example: '840'
+                    fee_amount:
+                      type: number
+                      format: float
+                      description: 'Amount of fees for this transaction, if any. Example: `3.00`'
+                      example: 3
+                  required:
+                  - trans_amount
+                  - available_funds
+                  - currency
+                  - fee_amount
+                timestamp:
+                  type: string
+                  description: 'Timestamp when this webhook message was sent. Format is `<timestamp><timezone>` where `timestamp` is `YYYYmmdd:HHMMSS` and `timezone` is always `MST`. Example: `"20200315:121504MST"`'
+                  example: 20200315:121504MST
+                billpay_trans_id:
+                  type: integer
+                  description: 'Unique system-generated billpay transaction ID. Example: `559386`.'
+                  example: 559386
+                biller:
+                  type: object
+                  description: Biller information. The information sent in this object is configurable (or the `biller` object can be skipped or not sent entirely).
+                  properties:
+                    biller_id:
+                      type: integer
+                      description: 'Registry ID for the biller. Example: `1024930`'
+                      example: 1024930
+                    nickname:
+                      type:
+                      - string
+                      - 'null'
+                      description: 'Account holder''s nickname for the biller. Nullable. Example: `"Questar"`.'
+                      example: Questar
+                    name:
+                      type:
+                      - string
+                      - 'null'
+                      description: 'Registry name for the biller. Nullable. Example: `"Questar Gas"`.'
+                      example: Questar Gas
+                    type:
+                      type: string
+                      description: 'Biller type. Possible values:
+
+                        - `R` &mdash; Electronic
+
+                        - `Z` &mdash; Paper'
+                      enum:
+                      - R
+                      - Z
+                    address_1:
+                      type:
+                      - string
+                      - 'null'
+                      description: 'Biller address line 1. Nullable. Example: `"123 Las Vegas Blvd."`'
+                      example: 123 Las Vegas Blvd.
+                    address_2:
+                      type:
+                      - string
+                      - 'null'
+                      description: 'Biller address line 2. Nullable. Example: `"Suite 300"`'
+                      example: Suite 300
+                    city:
+                      type:
+                      - string
+                      - 'null'
+                      description: 'Biller city. Nullable. Example: `"Las Vegas"`'
+                      example: Las Vegas
+                    state_province:
+                      type:
+                      - string
+                      - 'null'
+                      description: 'Biller state or province. Nullable. Example: `"NV"`'
+                      example: NV
+                    postal_code:
+                      type:
+                      - string
+                      - 'null'
+                      description: 'Biller postal code. Nullable. Example: `"88901"`'
+                      example: '88901'
+                    phone:
+                      type:
+                      - string
+                      - 'null'
+                      description: 'Biller phone number. Nullable. Example: `"7021231234"`'
+                      example: '7021231234'
+                version:
+                  type: string
+                  description: The version of this API. Hard-coded to `"1.0"`.
+                  enum:
+                  - '1.0'
+                jwt:
+                  type: string
+                  description: The JSON web token (JWT) that authenticates the HTTP request from SoFi Tech Solutions. See the <a href="ref:api-reference-external-trans-api-about-external-trans-api-security" target="_blank">security overview</a> for more information and an example.
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnYWxpbGVvIiwiaWF0IjoxNTM0Mjc0ODgxLCJleHAiOjE1MzQyNzQ4ODZ9.1xUk4iNFGWLo01MyJUHXRlyrNlzwPvDMSXpN38TrblU
+              required:
+              - account
+              - amounts
+              - timestamp
+              - billpay_trans_id
+              - version
+      responses:
+        '200':
+          description: Your decision and instructions for SoFi Tech Solutions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response_code:
+                    type: string
+                    description: "Response code indicating how to process the billpay transaction. Possible response codes:\n\n* `00` &mdash; Approve\n\n* `01` &mdash; Reject; Insufficient funds\n\n* `98` &mdash; System Error; Reject and do not retry\n\n* `99` &mdash; System Error; Retry later\n\n\nYou can use `99` to tell SoFi Tech Solutions to retry later if your product is configured for retries. \n"
+                required:
+                - response_code
+              examples:
+                response:
+                  value: "{\n  \"response_code\": \"00\"\n}\n"
+x-explorer-enabled: false
+x-samples-enabled: false
+x-readme:
+  proxy-enabled: true

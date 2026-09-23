@@ -1,0 +1,3810 @@
+openapi: 3.2.0
+info:
+  title: Payment Hub Api 2.0 Transfers API
+  version: '1.0'
+servers:
+- url: '{corename}.payment-hub.{env}.gpsrv.com/payment-hub/1.0/'
+tags:
+- name: Transfers
+paths:
+  /createTransfer:
+    post:
+      tags:
+      - Transfers
+      summary: Create Transfer
+      description: '> 👍 Availability
+
+        >
+
+        >Some of the field descriptions for this endpoint reference FedNow or Fedwire, which are future capabilities not yet available for clients.
+
+
+        Use the Create Transfer endpoint to move funds between a source account and a destination account. You can use an active account link that was created by Create External Account Link or create a new one via the request.
+
+
+        For card transfers, the referenced external debit card link must have a validation status of `"PASSED"` before it can be used for transfers.
+
+
+        For new transfers: Omit the `returnDetails` field.
+
+        For payment returns: Include the `returnDetails` field with the original transaction reference.
+
+        When `returnDetails` is present, the request initiates a return of the original transfer.'
+      operationId: paymenthub_post_createtransfer
+      parameters:
+      - name: x-gft-idempotency-key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid4
+          title: X-Gft-Idempotency-Key
+      - name: Authorization
+        in: header
+        required: true
+        description: Basic authentication token (base64-encoded {apilogin}:{apitranskey} credentials provided by SoFi Tech Solutions)
+        schema:
+          type: string
+          pattern: ^Basic [A-Za-z0-9+/]+=*$
+          example: Basic eW91cl9hcGlsb2dpbjp5b3VyX2FwaXRyYW5za2V5
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                accountNo:
+                  type: string
+                  title: Accountno
+                  description: 'The <<glossary:PRN>> associated with this transfer.
+
+                    Pattern: PRN
+
+                    Example: `"074103447228"`'
+                paymentMethod:
+                  description: 'Payment network to use for the transfer.
+
+                    Rail-specific validation: `CARD` requires the `sourceAccount` to be `GALILEO` and `creditOrDebit` to be `DEBIT` or `CREDIT`.
+
+                    Example: `"CARD"`'
+                  type: string
+                  enum:
+                  - ACH
+                  - FEDNOW
+                  - FEDWIRE
+                  - CARD
+                  title: PaymentRails
+                currencyAmount:
+                  description: Request-side currency amount. Raises BadRequestException (400) on invalid client input.
+                  properties:
+                    amount:
+                      type: number
+                      examples:
+                      - 199.32
+                    currency:
+                      type: string
+                      title: Currency
+                      description: 'Currency code following ISO 4217 standard.
+
+                        Validation: Exactly 3 uppercase letters.
+
+                        Pattern: ^[A-Z]{3}$
+
+                        Example: ''USD'' (US Dollar), ''EUR'' (Euro), ''GBP'' (British Pound)'
+                      default: USD
+                      examples:
+                      - USD
+                  type: object
+                  required:
+                  - amount
+                  title: CurrencyAmount
+                creditOrDebit:
+                  description: 'Posting type indicating debit or credit.
+
+
+                    - DEBIT: Debit transaction (funds withdrawn)
+
+                    - CREDIT: Credit transaction (funds deposited)'
+                  type: string
+                  enum:
+                  - DEBIT
+                  - CREDIT
+                  title: PostingType
+                sourceAccount:
+                  description: 'Identifies the account''s role in the transaction.
+
+
+                    If used as the **sourceAccount**, this is the account being debited. For push transfers (withdrawals), use the
+
+                    SoFi Tech Solutions account; for pull transfers (deposits), use the linked external account.
+
+
+                    If used as the **destinationAccount**, this is the account being credited. For push transfers, use the linked
+
+                    external account; for pull transfers, use the SoFi Tech Solutions account.'
+                  properties:
+                    type:
+                      description: Indicates the account category.
+                      enum:
+                      - GALILEO_ACCOUNT
+                      - EXTERNAL_ACCOUNT_REFERENCE
+                      - EXTERNAL_ACCOUNT_LINK_REQUEST
+                      - LEGACY
+                      title: AccountType
+                      type: string
+                  required:
+                  - type
+                  title: AccountReferenceBase
+                  type: object
+                  discriminator:
+                    propertyName: type
+                    mapping:
+                      EXTERNAL_ACCOUNT_LINK_REQUEST: '#/components/schemas/AccountRequest'
+                      EXTERNAL_ACCOUNT_REFERENCE: '#/components/schemas/ExternalAccountReference'
+                      GALILEO_ACCOUNT: '#/components/schemas/GalileoAccount'
+                destinationAccount:
+                  description: 'Identifies the account''s role in the transaction.
+
+
+                    If used as the **sourceAccount**, this is the account being debited. For push transfers (withdrawals), use the
+
+                    SoFi Tech Solutions account; for pull transfers (deposits), use the linked external account.
+
+
+                    If used as the **destinationAccount**, this is the account being credited. For push transfers, use the linked
+
+                    external account; for pull transfers, use the SoFi Tech Solutions account.'
+                  properties:
+                    type:
+                      description: Indicates the account category.
+                      enum:
+                      - GALILEO_ACCOUNT
+                      - EXTERNAL_ACCOUNT_REFERENCE
+                      - EXTERNAL_ACCOUNT_LINK_REQUEST
+                      - LEGACY
+                      title: AccountType
+                      type: string
+                  required:
+                  - type
+                  title: AccountReferenceBase
+                  type: object
+                  discriminator:
+                    propertyName: type
+                    mapping:
+                      EXTERNAL_ACCOUNT_LINK_REQUEST: '#/components/schemas/AccountRequest'
+                      EXTERNAL_ACCOUNT_REFERENCE: '#/components/schemas/ExternalAccountReference'
+                      GALILEO_ACCOUNT: '#/components/schemas/GalileoAccount'
+                externalId:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Externalid
+                  description: 'Client-defined identifier for tracking and reconciliation.
+
+                    Pattern: Alphanumeric string
+
+                    Example: `My-Internal-ID-123`'
+                purpose:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Purpose
+                  description: 'Reason for the transfer.
+
+                    Pattern: Alphanumeric string
+
+                    Validation:
+
+                    - Default: Alphanumeric string
+
+                    - FEDWIRE: Limited to alphanumeric and special characters: @&/\''"\`~()<>$#%+-={}*|[]^.,?!;:_
+
+                    Example: "`Bill Payment`"'
+                remittanceInfo:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Remittanceinfo
+                  description: 'Additional details about the transfer, such as an invoice number.
+
+                    Pattern: Alphanumeric string
+
+                    Validation:
+
+                    - Default: Alphanumeric string
+
+                    - FEDWIRE: 1-140 characters, limited to alphanumeric and special characters: @&/\''"`~()<>$#%+-={}*|[]^.,?!;:_
+
+                    Example: "`Invoice #456-ABC`"'
+                returnDetails:
+                  anyOf:
+                  - properties:
+                      code:
+                        anyOf:
+                        - type: string
+                        - type: 'null'
+                        title: Code
+                        description: 'Reason code describing why the transaction was returned.
+
+                          Validation:
+
+                          - FEDNOW: Required. Uses ISO 20022 External Status Reason Codes (pacs.002 StsRsnInf/Rsn/Cd). Must be 1-4 characters. Common codes include AC01 (Incorrect account number), AC03 (Invalid creditor account number), AC04 (Closed account number), AC06 (Blocked account), AC13 (Invalid debtor account type), AC14 (Invalid agent), AC15 (Account details changed), AG01 (Transaction forbidden). Refer to ISO 20022 ExternalCodeSets for the complete list of reason codes.'
+                        examples:
+                        - AC03
+                        - AC04
+                      additionalInfo:
+                        anyOf:
+                        - type: string
+                        - type: 'null'
+                        title: Additionalinfo
+                        description: 'Optional additional context for the return.
+
+                          Validation:
+
+                          - FEDNOW: Maximum 105 characters. Maps to ISO 20022 pacs.002 StsRsnInf/AddtlInf.'
+                        examples:
+                        - Account closed by customer request
+                      originalTransactionId:
+                        type: string
+                        format: uuid
+                        title: Originaltransactionid
+                        description: Reference to the original transaction being returned (transferId).
+                        examples:
+                        - 123e4567-e89b-12d3-a456-426614174000
+                    type: object
+                    required:
+                    - originalTransactionId
+                    title: ReturnDetails
+                    description: Payment return information for reversing a previous transfer.
+                  - type: 'null'
+                  description: 'Payment return information. If present, this request initiates a return/reversal of a previous transfer.
+
+
+                    When provided, the following fields take on return-specific meanings:
+
+                    - `currencyAmount`: The amount being returned (supports partial returns, must be less than or equal to the original amount)
+
+                    - `sourceAccount`: Account initiating the return.
+
+                    - `destinationAccount`: Account receiving the return.
+
+                    - `paymentMethod`: Payment rail used for the return.
+
+
+                    See `ReturnDetails` class documentation for additional return fields and requirements.'
+                destinationEntities:
+                  anyOf:
+                  - properties:
+                      instructedAgent:
+                        anyOf:
+                        - properties:
+                            memberId:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Memberid
+                              description: 'Clearing system member identification number. Required if bic is not provided.
+
+                                For US banks: 9-digit ABA/RTN. For foreign banks: local clearing code.
+
+                                When provided without clearingSystemId, defaults to USABA.'
+                            clearingSystemId:
+                              anyOf:
+                              - type: string
+                                enum:
+                                - USABA
+                                title: ClearingSystemId
+                              - type: 'null'
+                              description: 'Identifies the clearing system for the memberId.
+
+                                Only applicable when memberId is provided. Defaults to USABA if omitted.'
+                            bic:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Bic
+                              description: 'SWIFT/BIC code of the financial institution.
+
+                                Exactly 8 or 11 characters. Required if memberId is not provided.'
+                            lei:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Lei
+                              description: Legal Entity Identifier. 20-character alphanumeric code.
+                            name:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Name
+                              description: Financial institution name. Max 140 characters.
+                            address:
+                              anyOf:
+                              - properties:
+                                  line1:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                    title: Line1
+                                    description: 'First line of the address.
+
+                                      Pattern:
+
+                                      - Default: 1-105 characters with at least one non-whitespace character
+
+                                      - FEDWIRE: 1-105 characters, limited to alphanumeric and special characters'
+                                    examples:
+                                    - 123 sesame street
+                                  line2:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                    title: Line2
+                                    description: 'Second line of the address (apartment, suite, etc.).
+
+                                      Pattern:
+
+                                      - Default: 1-35 characters with at least one non-whitespace character
+
+                                      - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                    examples:
+                                    - apt 4321
+                                  city:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                    title: City
+                                    description: 'City name.
+
+                                      Pattern:
+
+                                      - Default: 1-35 characters with at least one non-whitespace character
+
+                                      - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                    examples:
+                                    - Brooklyn
+                                  state:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                    title: State
+                                    description: 'State or province code.
+
+                                      Pattern:
+
+                                      - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+
+                                      - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
+                                    examples:
+                                    - NY
+                                  zipCode:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                    title: Zipcode
+                                    description: 'Postal code or ZIP code.
+
+                                      Pattern:
+
+                                      - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+
+                                      - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
+                                    examples:
+                                    - '11201'
+                                  country:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                    title: Country
+                                    description: 'Country code following ISO 3166-1 alpha-2 format.
+
+                                      Pattern: Exactly 2 uppercase letters.
+
+                                      Examples: ''US'' (United States), ''MX'' (Mexico)'
+                                    examples:
+                                    - US
+                                    - MX
+                                type: object
+                                title: RequestAddress
+                              - type: 'null'
+                              description: Financial institution address (bank location, not account owner).
+                          type: object
+                          title: FinancialAgentRequest
+                          description: Financial institution involved in the transfer
+                        - type: 'null'
+                        description: 'The financial institution receiving the wire on FedWire.
+
+                          For FedWire: clearingSystemId must be USABA and memberId must be a valid 9-digit ABA/RTN.'
+                      intermediaryAgent1:
+                        anyOf:
+                        - properties:
+                            memberId:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Memberid
+                              description: 'Clearing system member identification number. Required if bic is not provided.
+
+                                For US banks: 9-digit ABA/RTN. For foreign banks: local clearing code.
+
+                                When provided without clearingSystemId, defaults to USABA.'
+                            clearingSystemId:
+                              anyOf:
+                              - type: string
+                                enum:
+                                - USABA
+                                title: ClearingSystemId
+                              - type: 'null'
+                              description: 'Identifies the clearing system for the memberId.
+
+                                Only applicable when memberId is provided. Defaults to USABA if omitted.'
+                            bic:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Bic
+                              description: 'SWIFT/BIC code of the financial institution.
+
+                                Exactly 8 or 11 characters. Required if memberId is not provided.'
+                            lei:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Lei
+                              description: Legal Entity Identifier. 20-character alphanumeric code.
+                            name:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                              title: Name
+                              description: Financial institution name. Max 140 characters.
+                            address:
+                              anyOf:
+                              - properties:
+                                  line1:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                    title: Line1
+                                    description: 'First line of the address.
+
+                                      Pattern:
+
+                                      - Default: 1-105 characters with at least one non-whitespace character
+
+                                      - FEDWIRE: 1-105 characters, limited to alphanumeric and special characters'
+                                    examples:
+                                    - 123 sesame street
+                                  line2:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                    title: Line2
+                                    description: 'Second line of the address (apartment, suite, etc.).
+
+                                      Pattern:
+
+                                      - Default: 1-35 characters with at least one non-whitespace character
+
+                                      - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                    examples:
+                                    - apt 4321
+                                  city:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                    title: City
+                                    description: 'City name.
+
+                                      Pattern:
+
+                                      - Default: 1-35 characters with at least one non-whitespace character
+
+                                      - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                    examples:
+                                    - Brooklyn
+                                  state:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                    title: State
+                                    description: 'State or province code.
+
+                                      Pattern:
+
+                                      - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+
+                                      - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
+                                    examples:
+                                    - NY
+                                  zipCode:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                    title: Zipcode
+                                    description: 'Postal code or ZIP code.
+
+                                      Pattern:
+
+                                      - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+
+                                      - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
+                                    examples:
+                                    - '11201'
+                                  country:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                    title: Country
+                                    description: 'Country code following ISO 3166-1 alpha-2 format.
+
+                                      Pattern: Exactly 2 uppercase letters.
+
+                                      Examples: ''US'' (United States), ''MX'' (Mexico)'
+                                    examples:
+                                    - US
+                                    - MX
+                                type: object
+                                title: RequestAddress
+                              - type: 'null'
+                              description: Financial institution address (bank location, not account owner).
+                          type: object
+                          title: FinancialAgentRequest
+                          description: Financial institution involved in the transfer
+                        - type: 'null'
+                        description: 'Intermediary/correspondent bank in the SWIFT chain.
+
+                          At least bic or memberId required. When present, instructedAgent is required.'
+                      intermediaryAccount1:
+                        anyOf:
+                        - properties:
+                            number:
+                              type: string
+                              title: Number
+                              description: Account number or IBAN.
+                            type:
+                              description: 'Type of account number.
+
+                                - IBAN: International Bank Account Number, validated per ISO 13616
+
+                                - ACCOUNT_NUMBER: Standard account identifier (default when omitted)'
+                              default: ACCOUNT_NUMBER
+                              type: string
+                              enum:
+                              - IBAN
+                              - ACCOUNT_NUMBER
+                              title: AccountNumberType
+                          type: object
+                          required:
+                          - number
+                          title: AccountIdentification
+                          description: Account identification — account number or IBAN.
+                        - type: 'null'
+                        description: 'Correspondent account at the intermediary bank.
+
+                          The account the sending bank holds AT the intermediary (not the beneficiary''s account).'
+                    type: object
+                    title: DestinationEntitiesRequest
+                    description: 'Agent routing for international wire transfers.
+
+
+                      Only allowed for outbound international FedWire transfers.
+
+                      When intermediaryAgent1 is present, instructedAgent is required.'
+                  - type: 'null'
+                  description: 'Agent routing for outbound international FedWire transfers.
+
+                    Contains the instructed agent (receiving FI on FedWire) and optional intermediary/correspondent bank in the payment chain.
+
+                    Validation:
+
+                    - Only allowed for outbound international FedWire transfers
+
+                    - When intermediaryAgent1 is present, instructedAgent is required
+
+                    - FedWire instructedAgent: clearingSystemId must be USABA, memberId must be valid ABA/RTN'
+                isCrossBorder:
+                  type: boolean
+                  title: Iscrossborder
+                  description: 'Indicates whether this is a cross-border (international) transfer.
+
+                    Currently supported for FEDWIRE only.'
+                  default: false
+              type: object
+              required:
+              - accountNo
+              - paymentMethod
+              - currencyAmount
+              - creditOrDebit
+              - sourceAccount
+              - destinationAccount
+              - apiLogin
+              - apiTransKey
+              - providerId
+              title: CreateTransferRequest
+              description: "Create a new payment transfer OR return a previous transfer.\n\nFor new transfers: Omit the `returnDetails` field.\nFor payment returns: Include the `returnDetails` field with the original transaction reference.\n\nWhen `returnDetails` is present, the request initiates a return of the original transfer.\nSee `ReturnDetails` class documentation for field meanings and return-specific behavior.\n\n**Character Set Restrictions for FEDWIRE and FEDNOW rails:**\n\nAll free-text fields (e.g. `purpose`, `remittanceInfo`, address fields, owner names, `bankName`)\nmust conform to the payment rail's character set when using FEDWIRE or FEDNOW:\n\n- **FEDWIRE**: Alphanumeric characters and special characters: @&/\\'\"` ~()<>$#%+-={}*|[]^.,?!;:_\n- **FEDNOW**: FedNow Service Character Set — alphanumeric, space, all printable ASCII special\n  characters (!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~), and extended Latin characters (U+00C0–U+00FF)"
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  transferId:
+                    type: string
+                    title: Transferid
+                    description: Unique identifier assigned to the newly created transfer.
+                type: object
+                required:
+                - transferId
+                title: CreateTransferResponse
+              examples:
+                response:
+                  value: "{\n    \"transferId\": \"890e4567-e89b-12d3-a456-426614174222\"\n}"
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+          description: Bad Request
+        '401':
+          description: No valid API credentials provided.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '403':
+          description: The provided API credential does not allow this operation.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '404':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+          description: Conflict
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  detail:
+                    items:
+                      properties:
+                        loc:
+                          items:
+                            anyOf:
+                            - type: string
+                            - type: integer
+                          type: array
+                          title: Location
+                        msg:
+                          type: string
+                          title: Message
+                        type:
+                          type: string
+                          title: Error Type
+                      type: object
+                      required:
+                      - loc
+                      - msg
+                      - type
+                      title: ValidationError
+                    type: array
+                    title: Detail
+                type: object
+                title: HTTPValidationError
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '500':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+          description: Internal Server Error
+        '502':
+          description: Bad Gateway.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '503':
+          description: Service Unavailable.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+  /listTransfers:
+    post:
+      tags:
+      - Transfers
+      summary: List Transfers
+      description: Use the List Transfer endpoint to get incoming and outgoing transfers attached to the provided account_no.All transfers created by Create Transfer will be returned as outgoing transfers.
+      operationId: paymenthub_post_listtransfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                accountNo:
+                  type: string
+                  title: Accountno
+                  description: 'All transfers associated with this <<glossary:PRN>>.
+
+                    Pattern: PRN
+
+                    Example: `074103447228`'
+                filters:
+                  description: Filters the list of transfers by direction, payment method, and status.
+                  properties:
+                    direction:
+                      anyOf:
+                      - type: string
+                        enum:
+                        - IN
+                        - OUT
+                        title: Direction
+                        description: 'Direction of the transfer relative to the specified account.
+
+
+                          - IN: The specified account is the destination account of the transfer
+
+                          - OUT: The specified account is the source account of the transfer
+
+
+                          Note: Direction indicates transfer flow, but actual fund movement depends on the debit/credit indicator. For example, an incoming debit or outgoing credit may both result in funds leaving the specified account.'
+                      - type: 'null'
+                      description: 'Filters the list to include only incoming or outgoing transfers relative to the specified account.
+
+                        Example: `OUT`'
+                    paymentMethod:
+                      anyOf:
+                      - type: string
+                        enum:
+                        - ACH
+                        - FEDNOW
+                        - FEDWIRE
+                        - CARD
+                        title: PaymentRails
+                      - type: 'null'
+                      description: 'Filters the list by the payment network used for the transfer relative to the specified account.
+
+                        Example: `ACH`'
+                    status:
+                      anyOf:
+                      - type: string
+                        enum:
+                        - CREATED
+                        - IN PROGRESS
+                        - COMPLETED
+                        - FAILED
+                        - PENDING REVIEW
+                        - SENT
+                        - ACCEPTED WITHOUT POST
+                        - BLOCKED
+                        - REJECTED
+                        - REQUESTED
+                        - REQUEST APPROVED
+                        - REQUEST REJECTED
+                        title: TransferStatus
+                        description: 'Status of the transaction.
+
+
+                          **For FedNow and FedWire transactions:**
+
+
+                          - CREATED: Initial state for transactions after creation via API call.
+
+                          - SENT: Outbound-only state indicating payment message (pacs.008 or pacs.004) successfully published to the payment network, awaiting pacs.002 status report.
+
+                          - IN PROGRESS: Transaction is being processed.
+
+                          - COMPLETED: Terminal success state. Payment network confirmed successful settlement via pacs.002 with ACSC or ACCC status.
+
+                          - FAILED: Terminal failure state. Transaction rejected by payment network or receiving FI initially.
+
+
+                          **For FedNow transactions only:**
+
+
+                          - ACCEPTED WITHOUT POST: Special intermediate state for outbound payments. Received pacs.002 with ACWP status - funds have settled but receiving Financial Institution requires additional investigation time before posting.
+
+                          - BLOCKED: Terminal state for outbound payments previously in ACCEPTED WITHOUT POST. Receiving FI sent pacs.002 with BLCK status - funds are blocked and will not be posted.
+
+                          - REJECTED: Terminal state for outbound payments previously in ACCEPTED WITHOUT POST. Received pacs.002 with RJCT status after investigation - funds must be returned via new pacs.004.
+
+                          - REQUESTED: Return has been requested (FedNow returns only).
+
+                          - REQUEST APPROVED: Return request has been approved (FedNow returns only).
+
+                          - REQUEST REJECTED: Return request has been rejected (FedNow returns only).'
+                      - type: 'null'
+                      description: 'Filters the list by the current status of the transfers.
+
+                        Example: `COMPLETED`'
+                  type: object
+                  title: GetTransferFilters
+                dateFrom:
+                  type: string
+                  title: Datefrom
+                  description: 'Start date for the transaction query. Defaults to the past 30 days from the current date.
+
+                    Pattern: YYYY-MM-DD or ISO 8601 date-time
+
+                    Example: `"2025-07-13"`'
+                  examples:
+                  - '2025-07-12'
+                  - '2025-07-12 16:20:00'
+                  - '2022-05-03T12:24:37-07:00'
+                dateTo:
+                  type: string
+                  title: Dateto
+                  description: 'End date for the transaction query. Defaults to the current date and time.
+
+                    Pattern: YYYY-MM-DD or ISO 8601 datetime
+
+                    Example: `"2025-08-13"`'
+                  examples:
+                  - '2025-07-12'
+                  - '2025-07-12 16:20:00'
+                  - '2022-05-03T12:24:37-07:00'
+                limit:
+                  type: integer
+                  title: Limit
+                  description: 'Maximum number of transfers to return in the response.
+
+                    Pattern: Integer, max 15
+
+                    Example: 15'
+                  examples:
+                  - 1
+                  - 12
+                  - 15
+                page:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Page
+                  description: 'Pass the `nextPage` token from a previous response to fetch the subsequent page.
+
+                    Pattern: Alphanumeric token
+
+                    Example: `"NO34BNT04TV234N6V274692376G32NNFNNF7988247923865017061N"`'
+                  examples:
+                  - NO34BNT04TV234N6V274692376G32NNFNNF7988247923865017061N
+              type: object
+              required:
+              - accountNo
+              - apiLogin
+              - apiTransKey
+              - providerId
+              title: ListTransfersRequest
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  nextPage:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                    title: Nextpage
+                    description: Token used to retrieve the next page of results. This field is null if there are no more results.
+                  data:
+                    items:
+                      properties:
+                        transferId:
+                          type: string
+                          title: Transferid
+                          description: The unique identifier for the transfer.
+                        currencyAmount:
+                          description: 'Response-side currency amount. Raises InternalServiceException (500) on invalid persisted data
+
+                            — bad values in response construction reflect server-side data integrity issues, not client error.'
+                          properties:
+                            amount:
+                              type: number
+                              examples:
+                              - 199.32
+                            currency:
+                              type: string
+                              title: Currency
+                              description: 'Currency code following ISO 4217 standard.
+
+                                Validation: Exactly 3 uppercase letters.
+
+                                Pattern: ^[A-Z]{3}$
+
+                                Example: ''USD'' (US Dollar), ''EUR'' (Euro), ''GBP'' (British Pound)'
+                              default: USD
+                              examples:
+                              - USD
+                          type: object
+                          required:
+                          - amount
+                          title: CurrencyAmountResponse
+                        purpose:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                          title: Purpose
+                          description: Purpose provided for the transfer.
+                        createdDate:
+                          type: string
+                          title: Createddate
+                          description: The date when the transfer was created or received, either a date or date-time.
+                      type: object
+                      required:
+                      - transferId
+                      - currencyAmount
+                      - createdDate
+                      title: TransferHistoryData
+                    type: array
+                    title: Data
+                    description: A list of transfer history data objects.
+                type: object
+                required:
+                - nextPage
+                - data
+                title: ListTransfersResponse
+              examples:
+                response:
+                  value: "{\n    \"nextPage\": \"123e4567-e89b-12d3-a456-4266100532\",\n    \"data\": [\n      {\n        \"transferId\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"currencyAmount\": {\n          \"amount\": 199.32,\n          \"currency\": \"USD\"\n        },\n        \"purpose\": \"Expense reimbursement\",\n        \"createdDate\": \"2025-11-11T07:19:24.485954-07:00\"\n      }\n    ]\n}"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '401':
+          description: No valid API credentials provided.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '403':
+          description: The provided API credential does not allow this operation.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  detail:
+                    items:
+                      properties:
+                        loc:
+                          items:
+                            anyOf:
+                            - type: string
+                            - type: integer
+                          type: array
+                          title: Location
+                        msg:
+                          type: string
+                          title: Message
+                        type:
+                          type: string
+                          title: Error Type
+                      type: object
+                      required:
+                      - loc
+                      - msg
+                      - type
+                      title: ValidationError
+                    type: array
+                    title: Detail
+                type: object
+                title: HTTPValidationError
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '502':
+          description: Bad Gateway.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '503':
+          description: Service Unavailable.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Basic authentication token (base64-encoded {apilogin}:{apitranskey} credentials provided by SoFi Tech Solutions)
+        schema:
+          type: string
+          pattern: ^Basic [A-Za-z0-9+/]+=*$
+          example: Basic eW91cl9hcGlsb2dpbjp5b3VyX2FwaXRyYW5za2V5
+  /getTransfer:
+    post:
+      tags:
+      - Transfers
+      summary: Get Transfer
+      description: '> 👍 Availability
+
+        >
+
+        >Some of the field descriptions for this endpoint reference FedNow or Fedwire, which are future capabilities not yet available for clients.
+
+
+        Use the Get Transfer endpoint to retrieve information about an existing incoming or outgoing transferthat was initiated by the Create Transfer.'
+      operationId: paymenthub_post_gettransfer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                accountNo:
+                  type: string
+                  title: Accountno
+                  description: "The <<glossary:PRN>> associated with this transfer. The `direction` field in the response identifies whether this account is the source or destination of the funds. \nPattern: PRN\nExample: \"`074103447228`\""
+                transferId:
+                  type: string
+                  title: Transferid
+                  description: 'Unique identifier for the specific transfer to retrieve.
+
+                    Pattern: Alphanumeric string
+
+                    Example: "`890e4567-e89b-12d3-a456-426614174222`"'
+              type: object
+              required:
+              - accountNo
+              - transferId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              title: GetTransferRequest
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  transferId:
+                    type: string
+                    title: Transferid
+                    description: The unique identifier for the transfer.
+                  currencyAmount:
+                    description: 'Response-side currency amount. Raises InternalServiceException (500) on invalid persisted data
+
+                      — bad values in response construction reflect server-side data integrity issues, not client error.'
+                    properties:
+                      amount:
+                        type: number
+                        examples:
+                        - 199.32
+                      currency:
+                        type: string
+                        title: Currency
+                        description: 'Currency code following ISO 4217 standard.
+
+                          Validation: Exactly 3 uppercase letters.
+
+                          Pattern: ^[A-Z]{3}$
+
+                          Example: ''USD'' (US Dollar), ''EUR'' (Euro), ''GBP'' (British Pound)'
+                        default: USD
+                        examples:
+                        - USD
+                    type: object
+                    required:
+                    - amount
+                    title: CurrencyAmountResponse
+                  purpose:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                    title: Purpose
+                    description: The purpose provided for the transfer.
+                  remittanceInfo:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                    title: Remittanceinfo
+                    description: Additional details about the transfer, such as an invoice number.
+                  createdDate:
+                    type: string
+                    title: Createddate
+                    description: Timestamp when the transfer was created or received.
+                  paymentMethod:
+                    description: 'Payment network used for the transfer.
+
+                      Possible values:'
+                    type: string
+                    enum:
+                    - ACH
+                    - FEDNOW
+                    - FEDWIRE
+                    - CARD
+                    title: PaymentRails
+                  accountNo:
+                    type: string
+                    title: Accountno
+                    description: The <<glossary:PRN>> associated with this view of the transfer.
+                  sourceAccount:
+                    properties:
+                      type:
+                        description: Indicates the account category.
+                        enum:
+                        - GALILEO_ACCOUNT
+                        - EXTERNAL_ACCOUNT_REFERENCE
+                        - EXTERNAL_ACCOUNT_LINK_REQUEST
+                        - LEGACY
+                        title: AccountType
+                        type: string
+                    required:
+                    - type
+                    title: AccountReferenceResponseBase
+                    type: object
+                    discriminator:
+                      propertyName: type
+                      mapping:
+                        EXTERNAL_ACCOUNT_LINK_REQUEST: '#/components/schemas/ExternalAccountDetails'
+                        EXTERNAL_ACCOUNT_REFERENCE: '#/components/schemas/ExternalAccountReferenceResponse'
+                        GALILEO_ACCOUNT: '#/components/schemas/GalileoAccountResponse'
+                  destinationAccount:
+                    properties:
+                      type:
+                        description: Indicates the account category.
+                        enum:
+                        - GALILEO_ACCOUNT
+                        - EXTERNAL_ACCOUNT_REFERENCE
+                        - EXTERNAL_ACCOUNT_LINK_REQUEST
+                        - LEGACY
+                        title: AccountType
+                        type: string
+                    required:
+                    - type
+                    title: AccountReferenceResponseBase
+                    type: object
+                    discriminator:
+                      propertyName: type
+                      mapping:
+                        EXTERNAL_ACCOUNT_LINK_REQUEST: '#/components/schemas/ExternalAccountDetails'
+                        EXTERNAL_ACCOUNT_REFERENCE: '#/components/schemas/ExternalAccountReferenceResponse'
+                        GALILEO_ACCOUNT: '#/components/schemas/GalileoAccountResponse'
+                  direction:
+                    description: 'Direction of the transfer relative to the specified account.
+
+
+                      - IN: The specified account is the destination account of the transfer
+
+                      - OUT: The specified account is the source account of the transfer
+
+
+                      Note: Direction indicates transfer flow, but actual fund movement depends on the debit/credit indicator. For example, an incoming debit or outgoing credit may both result in funds leaving the specified account.'
+                    type: string
+                    enum:
+                    - IN
+                    - OUT
+                    title: Direction
+                  status:
+                    description: 'Status of the transaction.
+
+
+                      **For FedNow and FedWire transactions:**
+
+
+                      - CREATED: Initial state for transactions after creation via API call.
+
+                      - SENT: Outbound-only state indicating payment message (pacs.008 or pacs.004) successfully published to the payment network, awaiting pacs.002 status report.
+
+                      - IN PROGRESS: Transaction is being processed.
+
+                      - COMPLETED: Terminal success state. Payment network confirmed successful settlement via pacs.002 with ACSC or ACCC status.
+
+                      - FAILED: Terminal failure state. Transaction rejected by payment network or receiving FI initially.
+
+
+                      **For FedNow transactions only:**
+
+
+                      - ACCEPTED WITHOUT POST: Special intermediate state for outbound payments. Received pacs.002 with ACWP status - funds have settled but receiving Financial Institution requires additional investigation time before posting.
+
+                      - BLOCKED: Terminal state for outbound payments previously in ACCEPTED WITHOUT POST. Receiving FI sent pacs.002 with BLCK status - funds are blocked and will not be posted.
+
+                      - REJECTED: Terminal state for outbound payments previously in ACCEPTED WITHOUT POST. Received pacs.002 with RJCT status after investigation - funds must be returned via new pacs.004.
+
+                      - REQUESTED: Return has been requested (FedNow returns only).
+
+                      - REQUEST APPROVED: Return request has been approved (FedNow returns only).
+
+                      - REQUEST REJECTED: Return request has been rejected (FedNow returns only).'
+                    type: string
+                    enum:
+                    - CREATED
+                    - IN PROGRESS
+                    - COMPLETED
+                    - FAILED
+                    - PENDING REVIEW
+                    - SENT
+                    - ACCEPTED WITHOUT POST
+                    - BLOCKED
+                    - REJECTED
+                    - REQUESTED
+                    - REQUEST APPROVED
+                    - REQUEST REJECTED
+                    title: TransferStatus
+                  statusDetails:
+                    type: string
+                    title: Statusdetails
+                    description: Additional details or reasons for the current transfer status.
+                  railInformation:
+                    anyOf:
+                    - description: Contains payment rail specific information
+                      properties:
+                        type:
+                          description: Payment network used for the transfer.
+                          type: string
+                          enum:
+                          - ACH
+                          - FEDNOW
+                          - FEDWIRE
+                          - CARD
+                          title: PaymentRails
+                      required:
+                      - type
+                      title: RailInformationBase
+                      type: object
+                      discriminator:
+                        propertyName: type
+                        mapping:
+                          FEDWIRE: '#/components/schemas/FedwireRailInformation'
+                          FEDNOW: '#/components/schemas/FedNowRailInformation'
+                    - type: 'null'
+                    title: Railinformation
+                    description: Payment rail specific information. This field is optional and can be null if not applicable.
+                  externalId:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                    title: Externalid
+                    description: Client-defined identifier provided when the transfer was created.
+                  networkReferenceId:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                    title: Networkreferenceid
+                    description: "Primary network reference for the transaction. \nFor FedWire, this field contains the UETR. \nFor FedNow, it contains either the UETR or the Transaction Identification, as indicated by the `networkReferenceIdType` in the `railInformation` field."
+                  paymentType:
+                    anyOf:
+                    - type: string
+                      enum:
+                      - RETURN
+                      - CUSTOMER CREDIT TRANSFER
+                      title: PaymentType
+                      description: '- RETURN: Funds sent back to the originator to reverse a specific transaction
+
+                        - CUSTOMER CREDIT TRANSFER: A standard payment initiated by the customer to a third party'
+                    - type: 'null'
+                    description: Type of payment transaction.
+                  returnDetails:
+                    anyOf:
+                    - properties:
+                        code:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                          title: Code
+                          description: 'Reason code describing why the transaction was returned.
+
+                            Validation:
+
+                            - FEDNOW: Required. Uses ISO 20022 External Status Reason Codes (pacs.002 StsRsnInf/Rsn/Cd). Must be 1-4 characters. Common codes include AC01 (Incorrect account number), AC03 (Invalid creditor account number), AC04 (Closed account number), AC06 (Blocked account), AC13 (Invalid debtor account type), AC14 (Invalid agent), AC15 (Account details changed), AG01 (Transaction forbidden). Refer to ISO 20022 ExternalCodeSets for the complete list of reason codes.'
+                          examples:
+                          - AC03
+                          - AC04
+                        additionalInfo:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                          title: Additionalinfo
+                          description: 'Optional additional context for the return.
+
+                            Validation:
+
+                            - FEDNOW: Maximum 105 characters. Maps to ISO 20022 pacs.002 StsRsnInf/AddtlInf.'
+                          examples:
+                          - Account closed by customer request
+                        originalTransactionId:
+                          type: string
+                          format: uuid
+                          title: Originaltransactionid
+                          description: Reference to the original transaction being returned (transferId).
+                          examples:
+                          - 123e4567-e89b-12d3-a456-426614174000
+                      type: object
+                      required:
+                      - originalTransactionId
+                      title: ReturnDetails
+                      description: Payment return information for reversing a previous transfer.
+                    - type: 'null'
+                    description: 'Information about a return. Present only when `paymentType` is ''RETURN''. For FedNow, fields align to ISO 20022 pacs.002: code -> StsRsnInf/Rsn/Cd; additionalInfo -> StsRsnInf/AddtlInf.'
+                  failureDetails:
+                    anyOf:
+                    - description: Contains failure details with different rejection sources
+                      properties:
+                        type:
+                          description: Identifies where the rejection originated.
+                          enum:
+                          - NETWORK
+                          - GALILEO
+                          title: RejectSource
+                          type: string
+                      required:
+                      - type
+                      title: FailureDetailsBase
+                      type: object
+                      discriminator:
+                        propertyName: type
+                        mapping:
+                          NETWORK: '#/components/schemas/NetworkFailureDetails'
+                          GALILEO: '#/components/schemas/GalileoFailureDetails'
+                    - type: 'null'
+                    title: Failuredetails
+                    description: 'Information about transaction failures including rejections from the payment network or SoFi Tech Solutions processor validation failures. For FedNow network rejections, fields align to ISO 20022 pacs.002: code -> StsRsnInf/Rsn/Cd; additionalInfo -> StsRsnInf/AddtlInf.'
+                  sourceEntities:
+                    anyOf:
+                    - properties:
+                        ultimateSource:
+                          anyOf:
+                          - properties:
+                              name:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                title: Name
+                                description: 'Name of the entity.
+
+
+                                  FedNow: Maps to ISO 20022 Nm element.'
+                              address:
+                                anyOf:
+                                - properties:
+                                    line1:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Line1
+                                      description: 'First line of the address.
+
+                                        Pattern:
+
+                                        - Default: 1-105 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-105 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - 123 sesame street
+                                    line2:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Line2
+                                      description: 'Second line of the address (apartment, suite, etc.).
+
+                                        Pattern:
+
+                                        - Default: 1-35 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - apt 4321
+                                    city:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: City
+                                      description: 'City name.
+
+                                        Pattern:
+
+                                        - Default: 1-35 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - Brooklyn
+                                    state:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: State
+                                      description: 'State or province code.
+
+                                        Pattern:
+
+                                        - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+
+                                        - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - NY
+                                    zipCode:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Zipcode
+                                      description: 'Postal code or ZIP code.
+
+                                        Pattern:
+
+                                        - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+
+                                        - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - '11201'
+                                    country:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Country
+                                      description: 'Country code following ISO 3166-1 alpha-2 format.
+
+                                        Pattern: Exactly 2 uppercase letters.
+
+                                        Examples: ''US'' (United States), ''MX'' (Mexico)'
+                                      examples:
+                                      - US
+                                      - MX
+                                  type: object
+                                  title: ResponseAddress
+                                - type: 'null'
+                                description: 'Postal address of the entity.
+
+
+                                  FedNow: Maps to ISO 20022 PstlAdr element.'
+                              identification:
+                                anyOf:
+                                - description: Identity information for the first or third party entity
+                                  properties:
+                                    type:
+                                      description: Discriminator for entity identification type
+                                      enum:
+                                      - CONSUMER
+                                      - CORPORATE
+                                      title: IdentificationType
+                                      type: string
+                                    other:
+                                      default: []
+                                      description: 'List of other unique identifications for the entity. Used for proprietary or custom identifiers not covered by standard fields.
+
+
+                                        FedNow: Maps to ISO 20022 Othr element.'
+                                      items:
+                                        properties:
+                                          id:
+                                            type: string
+                                            title: Id
+                                            description: 'Unique identification value assigned to the entity. Examples: `customer ID`, `tax ID`, `membership number`.
+
+
+                                              FedNow: Maps to ISO 20022 Othr/Id.'
+                                        type: object
+                                        required:
+                                        - id
+                                        title: OtherIdentification
+                                        description: Other identification for the first or third party entity.
+                                      title: Other
+                                      type: array
+                                  required:
+                                  - type
+                                  title: IdentificationBase
+                                  type: object
+                                  discriminator:
+                                    propertyName: type
+                                    mapping:
+                                      CONSUMER: '#/components/schemas/ConsumerIdentification'
+                                      CORPORATE: '#/components/schemas/CorporateIdentification'
+                                - type: 'null'
+                                title: Identification
+                                description: 'Identification details for the entity. Contains type-specific fields such as BIC and LEI for corporate entities, or other IDs for consumers.
+
+
+                                  When absent, the entity type could not be determined (only name is known).
+
+
+                                  FedNow: Maps to ISO 20022 Id element. Absent when only `Nm` is present.'
+                            type: object
+                            title: Party
+                            description: Entity involved in a transfer
+                          - type: 'null'
+                          description: 'The ultimate party on whose behalf the transfer is being made. In nested or third-party scenarios, this identifies the actual individual or entity that is the source of the funds, which may differ from the account owner.
+
+
+                            FedNow: Maps to ISO 20022 UltmtDbtr (Ultimate Debtor).'
+                        initiatingParty:
+                          anyOf:
+                          - properties:
+                              name:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                title: Name
+                                description: 'Name of the entity.
+
+
+                                  FedNow: Maps to ISO 20022 Nm element.'
+                              address:
+                                anyOf:
+                                - properties:
+                                    line1:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Line1
+                                      description: 'First line of the address.
+
+                                        Pattern:
+
+                                        - Default: 1-105 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-105 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - 123 sesame street
+                                    line2:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Line2
+                                      description: 'Second line of the address (apartment, suite, etc.).
+
+                                        Pattern:
+
+                                        - Default: 1-35 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - apt 4321
+                                    city:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: City
+                                      description: 'City name.
+
+                                        Pattern:
+
+                                        - Default: 1-35 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - Brooklyn
+                                    state:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: State
+                                      description: 'State or province code.
+
+                                        Pattern:
+
+                                        - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+
+                                        - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - NY
+                                    zipCode:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Zipcode
+                                      description: 'Postal code or ZIP code.
+
+                                        Pattern:
+
+                                        - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+
+                                        - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - '11201'
+                                    country:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Country
+                                      description: 'Country code following ISO 3166-1 alpha-2 format.
+
+                                        Pattern: Exactly 2 uppercase letters.
+
+                                        Examples: ''US'' (United States), ''MX'' (Mexico)'
+                                      examples:
+                                      - US
+                                      - MX
+                                  type: object
+                                  title: ResponseAddress
+                                - type: 'null'
+                                description: 'Postal address of the entity.
+
+
+                                  FedNow: Maps to ISO 20022 PstlAdr element.'
+                              identification:
+                                anyOf:
+                                - description: Identity information for the first or third party entity
+                                  properties:
+                                    type:
+                                      description: Discriminator for entity identification type
+                                      enum:
+                                      - CONSUMER
+                                      - CORPORATE
+                                      title: IdentificationType
+                                      type: string
+                                    other:
+                                      default: []
+                                      description: 'List of other unique identifications for the entity. Used for proprietary or custom identifiers not covered by standard fields.
+
+
+                                        FedNow: Maps to ISO 20022 Othr element.'
+                                      items:
+                                        properties:
+                                          id:
+                                            type: string
+                                            title: Id
+                                            description: 'Unique identification value assigned to the entity. Examples: `customer ID`, `tax ID`, `membership number`.
+
+
+                                              FedNow: Maps to ISO 20022 Othr/Id.'
+                                        type: object
+                                        required:
+                                        - id
+                                        title: OtherIdentification
+                                        description: Other identification for the first or third party entity.
+                                      title: Other
+                                      type: array
+                                  required:
+                                  - type
+                                  title: IdentificationBase
+                                  type: object
+                                  discriminator:
+                                    propertyName: type
+                                    mapping:
+                                      CONSUMER: '#/components/schemas/ConsumerIdentification'
+                                      CORPORATE: '#/components/schemas/CorporateIdentification'
+                                - type: 'null'
+                                title: Identification
+                                description: 'Identification details for the entity. Contains type-specific fields such as BIC and LEI for corporate entities, or other IDs for consumers.
+
+
+                                  When absent, the entity type could not be determined (only name is known).
+
+
+                                  FedNow: Maps to ISO 20022 Id element. Absent when only `Nm` is present.'
+                            type: object
+                            title: Party
+                            description: Entity involved in a transfer
+                          - type: 'null'
+                          description: 'The party that initiates the transfer on behalf of the source.
+
+
+                            FedNow: Maps to ISO 20022 InitgPty (Initiating Party).'
+                        instructingAgent:
+                          anyOf:
+                          - properties:
+                              memberId:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                title: Memberid
+                                description: 'Clearing system member identification. The format depends on the clearing system specified in `clearingSystemId`.
+
+
+                                  FedNow: 9-digit ABA routing number (RTN). Maps to ISO 20022 ClrSysMmbId/MmbId.'
+                              clearingSystemId:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                title: Clearingsystemid
+                                description: 'Identifies the clearing system for the member ID. Example: `USABA` for US ABA routing numbers.
+
+
+                                  FedNow: Maps to ISO 20022 ClrSysId/Cd.'
+                              bic:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                title: Bic
+                                description: 'Business Identifier Code (BIC) of the financial institution. 8 or 11 character SWIFT code.
+
+
+                                  FedNow: Maps to ISO 20022 FinInstnId/BICFI.'
+                              lei:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                title: Lei
+                                description: 'Legal Entity Identifier (LEI) of the financial institution. 20 character alphanumeric code.
+
+
+                                  FedNow: Maps to ISO 20022 FinInstnId/LEI.'
+                              name:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                title: Name
+                                description: 'Name of the financial institution.
+
+
+                                  FedNow: Maps to ISO 20022 FinInstnId/Nm.'
+                              address:
+                                anyOf:
+                                - properties:
+                                    line1:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Line1
+                                      description: 'First line of the address.
+
+                                        Pattern:
+
+                                        - Default: 1-105 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-105 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - 123 sesame street
+                                    line2:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Line2
+                                      description: 'Second line of the address (apartment, suite, etc.).
+
+                                        Pattern:
+
+                                        - Default: 1-35 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - apt 4321
+                                    city:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: City
+                                      description: 'City name.
+
+                                        Pattern:
+
+                                        - Default: 1-35 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - Brooklyn
+                                    state:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: State
+                                      description: 'State or province code.
+
+                                        Pattern:
+
+                                        - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+
+                                        - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - NY
+                                    zipCode:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Zipcode
+                                      description: 'Postal code or ZIP code.
+
+                                        Pattern:
+
+                                        - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+
+                                        - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - '11201'
+                                    country:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Country
+                                      description: 'Country code following ISO 3166-1 alpha-2 format.
+
+                                        Pattern: Exactly 2 uppercase letters.
+
+                                        Examples: ''US'' (United States), ''MX'' (Mexico)'
+                                      examples:
+                                      - US
+                                      - MX
+                                  type: object
+                                  title: ResponseAddress
+                                - type: 'null'
+                                description: 'Postal address of the financial institution.
+
+
+                                  FedNow: Maps to ISO 20022 FinInstnId/PstlAdr.'
+                            type: object
+                            title: FinancialAgent
+                            description: Financial institution involved in originating the transfer
+                          - type: 'null'
+                          description: 'The financial institution that sends the transfer instruction. This is typically the originating bank.
+
+
+                            FedNow: Maps to ISO 20022 InstgAgt (Instructing Agent).'
+                      type: object
+                      title: SourceEntities
+                      description: Source side entities - entities and agents involved in originating the transfer
+                    - type: 'null'
+                    description: 'Source side entities. Contains information about entities and financial institutions involved in originating the transfer, including the ultimate source of funds, initiating party, and originating financial institution.
+
+
+                      FedNow: Populated from ISO 20022 message elements.'
+                  destinationEntities:
+                    anyOf:
+                    - properties:
+                        instructedAgent:
+                          anyOf:
+                          - properties:
+                              memberId:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                title: Memberid
+                                description: 'Clearing system member identification. The format depends on the clearing system specified in `clearingSystemId`.
+
+
+                                  FedNow: 9-digit ABA routing number (RTN). Maps to ISO 20022 ClrSysMmbId/MmbId.'
+                              clearingSystemId:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                title: Clearingsystemid
+                                description: 'Identifies the clearing system for the member ID. Example: `USABA` for US ABA routing numbers.
+
+
+                                  FedNow: Maps to ISO 20022 ClrSysId/Cd.'
+                              bic:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                title: Bic
+                                description: 'Business Identifier Code (BIC) of the financial institution. 8 or 11 character SWIFT code.
+
+
+                                  FedNow: Maps to ISO 20022 FinInstnId/BICFI.'
+                              lei:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                title: Lei
+                                description: 'Legal Entity Identifier (LEI) of the financial institution. 20 character alphanumeric code.
+
+
+                                  FedNow: Maps to ISO 20022 FinInstnId/LEI.'
+                              name:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                title: Name
+                                description: 'Name of the financial institution.
+
+
+                                  FedNow: Maps to ISO 20022 FinInstnId/Nm.'
+                              address:
+                                anyOf:
+                                - properties:
+                                    line1:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Line1
+                                      description: 'First line of the address.
+
+                                        Pattern:
+
+                                        - Default: 1-105 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-105 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - 123 sesame street
+                                    line2:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Line2
+                                      description: 'Second line of the address (apartment, suite, etc.).
+
+                                        Pattern:
+
+                                        - Default: 1-35 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - apt 4321
+                                    city:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: City
+                                      description: 'City name.
+
+                                        Pattern:
+
+                                        - Default: 1-35 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - Brooklyn
+                                    state:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: State
+                                      description: 'State or province code.
+
+                                        Pattern:
+
+                                        - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+
+                                        - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - NY
+                                    zipCode:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Zipcode
+                                      description: 'Postal code or ZIP code.
+
+                                        Pattern:
+
+                                        - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+
+                                        - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - '11201'
+                                    country:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Country
+                                      description: 'Country code following ISO 3166-1 alpha-2 format.
+
+                                        Pattern: Exactly 2 uppercase letters.
+
+                                        Examples: ''US'' (United States), ''MX'' (Mexico)'
+                                      examples:
+                                      - US
+                                      - MX
+                                  type: object
+                                  title: ResponseAddress
+                                - type: 'null'
+                                description: 'Postal address of the financial institution.
+
+
+                                  FedNow: Maps to ISO 20022 FinInstnId/PstlAdr.'
+                            type: object
+                            title: FinancialAgent
+                            description: Financial institution involved in originating the transfer
+                          - type: 'null'
+                          description: 'The financial institution that receives the transfer instruction. This is typically the receiving/beneficiary bank.
+
+
+                            FedNow: Maps to ISO 20022 InstdAgt (Instructed Agent).'
+                        ultimateDestination:
+                          anyOf:
+                          - properties:
+                              name:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                                title: Name
+                                description: 'Name of the entity.
+
+
+                                  FedNow: Maps to ISO 20022 Nm element.'
+                              address:
+                                anyOf:
+                                - properties:
+                                    line1:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Line1
+                                      description: 'First line of the address.
+
+                                        Pattern:
+
+                                        - Default: 1-105 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-105 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - 123 sesame street
+                                    line2:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Line2
+                                      description: 'Second line of the address (apartment, suite, etc.).
+
+                                        Pattern:
+
+                                        - Default: 1-35 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - apt 4321
+                                    city:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: City
+                                      description: 'City name.
+
+                                        Pattern:
+
+                                        - Default: 1-35 characters with at least one non-whitespace character
+
+                                        - FEDWIRE: 1-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - Brooklyn
+                                    state:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: State
+                                      description: 'State or province code.
+
+                                        Pattern:
+
+                                        - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+
+                                        - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - NY
+                                    zipCode:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Zipcode
+                                      description: 'Postal code or ZIP code.
+
+                                        Pattern:
+
+                                        - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+
+                                        - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
+                                      examples:
+                                      - '11201'
+                                    country:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Country
+                                      description: 'Country code following ISO 3166-1 alpha-2 format.
+
+                                        Pattern: Exactly 2 uppercase letters.
+
+                                        Examples: ''US'' (United States), ''MX'' (Mexico)'
+                                      examples:
+                                      - US
+                                      - MX
+                                  type: object
+                                  title: ResponseAddress
+                                - type: 'null'
+                                description: 'Postal address of the entity.
+
+
+                                  FedNow: Maps to ISO 20022 PstlAdr element.'
+                              identification:
+                                anyOf:
+                                - description: Identity information for the first or third party entity
+                                  properties:
+                                    type:
+                                      description: Discriminator for entity identification type
+                                      enum:
+                                      - CONSUMER
+                                      - CORPORATE
+                                      title: IdentificationType
+                                      type: string
+                                    other:
+                                      default: []
+                                      description: 'List of other unique identifications for the entity. Used for proprietary or custom identifiers not covered by standard fields.
+
+
+                                        FedNow: Maps to ISO 20022 Othr element.'
+                                      items:
+                                        properties:
+                                          id:
+                                            type: string
+                                            title: Id
+                                            description: 'Unique identification value assigned to the entity. Examples: `customer ID`, `tax ID`, `membership number`.
+
+
+                                              FedNow: Maps to ISO 20022 Othr/Id.'
+                                        type: object
+                                        required:
+                                        - id
+                                        title: OtherIdentification
+                                        description: Other identification for the first or third party entity.
+                                      title: Other
+                                      type: array
+                                  required:
+                                  - type
+                                  title: IdentificationBase
+                                  type: object
+                                  discriminator:
+                                    propertyName: type
+                                    mapping:
+                                      CONSUMER: '#/components/schemas/ConsumerIdentification'
+                                      CORPORATE: '#/components/schemas/CorporateIdentification'
+                                - type: 'null'
+                                title: Identification
+                                description: 'Identification details for the entity. Contains type-specific fields such as BIC and LEI for corporate entities, or other IDs for consumers.
+
+
+                                  When absent, the entity type could not be determined (only name is known).
+
+
+                                  FedNow: Maps to ISO 20022 Id element. Absent when only `Nm` is present.'
+                            type: object
+                            title: Party
+                            description: Entity involved in a transfer
+                          - type: 'null'
+                          description: 'The ultimate party for whom the transfer is intended. In nested or third-party scenarios, this identifies the actual individual or entity that is the final recipient of the funds, which may differ from the account owner.
+
+
+                            FedNow: Maps to ISO 20022 UltmtCdtr (Ultimate Creditor).'
+                      type: object
+                      title: DestinationEntities
+                      description: Destination side entities - entities and agents involved in receiving the transfer
+                    - type: 'null'
+                    description: 'Destination side entities. Contains information about entities and financial institutions involved in receiving the transfer, including the receiving financial institution and ultimate destination of funds.
+
+
+                      FedNow: Populated from ISO 20022 message elements.'
+                type: object
+                required:
+                - transferId
+                - currencyAmount
+                - createdDate
+                - paymentMethod
+                - accountNo
+                - sourceAccount
+                - destinationAccount
+                - direction
+                - status
+                - statusDetails
+                title: GetTransferResponse
+              examples:
+                response:
+                  value: "{\n    \"transferId\": \"b47ac10b-58cc-4372-a567-0e02b2c3d479\",\n    \"currencyAmount\": {\n      \"amount\": 199.32,\n      \"currency\": \"USD\"\n    },\n    \"purpose\": \"Expense reimbursement\",\n    \"createdDate\": \"2025-11-11T07:19:24.485954-07:00\",\n    \"paymentMethod\": \"CARD\",\n    \"accountNo\": \"074103447228\",\n    \"sourceAccount\": {\n      \"type\": \"GALILEO\"\n    },\n    \"destinationAccount\": {\n      \"type\": \"EXTERNAL_ACCOUNT_REF\",\n      \"externalAccountLinkId\": \"0359320859384728394827182394832834\"\n    },\n    \"direction\": \"OUT\",\n    \"status\": \"COMPLETED\",\n    \"statusDetails\": \"Transfer completed successfully\",\n    \"railInformation\": null,\n    \"externalId\": \"My-Internal-ID-123\"\n}"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '401':
+          description: No valid API credentials provided.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '403':
+          description: The provided API credential does not allow this operation.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  detail:
+                    items:
+                      properties:
+                        loc:
+                          items:
+                            anyOf:
+                            - type: string
+                            - type: integer
+                          type: array
+                          title: Location
+                        msg:
+                          type: string
+                          title: Message
+                        type:
+                          type: string
+                          title: Error Type
+                      type: object
+                      required:
+                      - loc
+                      - msg
+                      - type
+                      title: ValidationError
+                    type: array
+                    title: Detail
+                type: object
+                title: HTTPValidationError
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '502':
+          description: Bad Gateway.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '503':
+          description: Service Unavailable.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Basic authentication token (base64-encoded {apilogin}:{apitranskey} credentials provided by SoFi Tech Solutions)
+        schema:
+          type: string
+          pattern: ^Basic [A-Za-z0-9+/]+=*$
+          example: Basic eW91cl9hcGlsb2dpbjp5b3VyX2FwaXRyYW5za2V5
+  /cancelTransfer:
+    post:
+      tags:
+      - Transfers
+      summary: Cancel Transfer
+      description: 'Use the Cancel Transfer endpoint to cancel an outgoing transfer that was initiated by Create Transfer.
+
+
+        Transfers must be in a `POSTED` status to be eligible for cancellation.'
+      operationId: paymenthub_post_canceltransfer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                accountNo:
+                  type: string
+                  title: Accountno
+                  description: The <<glossary:PRN>> associated with the outgoing transfer to cancel.
+                transferId:
+                  type: string
+                  title: Transferid
+                  description: 'Unique identifier of the transfer to cancel.
+
+                    Pattern: Alphanumeric string
+
+                    Example: `TXN-12345ABCDE`'
+              type: object
+              required:
+              - accountNo
+              - transferId
+              - apiLogin
+              - apiTransKey
+              - providerId
+              title: CancelTransferRequest
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  transferId:
+                    type: string
+                    title: Transferid
+                    description: The unique identifier for the cancelled transfer.
+                  reverseAdjustmentId:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                    title: Reverseadjustmentid
+                    description: The unique identifier for the reversed adjustment transaction.
+                type: object
+                required:
+                - transferId
+                - reverseAdjustmentId
+                title: CancelTransferResponse
+              examples:
+                response:
+                  value: "{\n    \"transferId\": \"890e4567-e89b-12d3-a456-426614174222\",\n    \"reverseAdjustmentId\": \"rev-adj-987654321\"\n}"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '401':
+          description: No valid API credentials provided.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '403':
+          description: The provided API credential does not allow this operation.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  detail:
+                    items:
+                      properties:
+                        loc:
+                          items:
+                            anyOf:
+                            - type: string
+                            - type: integer
+                          type: array
+                          title: Location
+                        msg:
+                          type: string
+                          title: Message
+                        type:
+                          type: string
+                          title: Error Type
+                      type: object
+                      required:
+                      - loc
+                      - msg
+                      - type
+                      title: ValidationError
+                    type: array
+                    title: Detail
+                type: object
+                title: HTTPValidationError
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '502':
+          description: Bad Gateway.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+        '503':
+          description: Service Unavailable.
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    description: Provides additional information about the error.
+                    properties:
+                      code:
+                        description: 'Identifier for the error. Possible values:'
+                        type: string
+                        enum:
+                        - INTERNAL_SERVICE_ERROR
+                        - VALIDATION_ERROR
+                        - BAD_REQUEST
+                        - CONCURRENT_IDEMPOTENT_REQUEST
+                        - ORIGINAL_TRANSACTION_NOT_COMPLETED
+                        - NOT_FOUND
+                        - TOO_MANY_RTNS
+                        - INVALID_LIMIT
+                        - INVALID_PAGE_TOKEN
+                        - RESOURCE_LIMIT_EXCEEDED
+                        - ME_NOT_CONFIGURED
+                        - ME_NOT_ENABLED
+                        - ME_PROGRAM_MISCONFIGURED
+                        title: ErrorCode
+                      message:
+                        type: string
+                        title: Message
+                        description: Short description of the error.
+                      details:
+                        anyOf:
+                        - additionalProperties: true
+                          type: object
+                        - type: 'null'
+                        title: Details
+                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                    type: object
+                    required:
+                    - code
+                    - message
+                    title: ErrorInfo
+                type: object
+                required:
+                - error
+                title: ErrorResponse
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        description: Basic authentication token (base64-encoded {apilogin}:{apitranskey} credentials provided by SoFi Tech Solutions)
+        schema:
+          type: string
+          pattern: ^Basic [A-Za-z0-9+/]+=*$
+          example: Basic eW91cl9hcGlsb2dpbjp5b3VyX2FwaXRyYW5za2V5
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

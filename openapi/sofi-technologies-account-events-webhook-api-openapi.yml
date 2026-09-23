@@ -1,0 +1,226 @@
+openapi: 3.2.0
+info:
+  title: Account Events Webhook API
+  description: 'Events API (also known as Alerts API) is a collection of webhooks that clients
+
+    can use to get events from Galileo.'
+  version: 1.0.0
+tags:
+- name: Account Events Webhook
+paths:
+  /AccountEvent:
+    post:
+      summary: Account Events Webhook
+      description: 'Galileo `POST`s to `/AccountEvent` to send Account Events to the client. An Account Event is triggered when an event occurs on an account (card activated, updated profile, card shipped, etc.).
+
+
+        ### Requests
+
+
+        The event data (described in the index pages that follow) will be in the body of the request, as JSON or form data.
+
+
+        #### JSON example (`application/json`)
+
+        ```json
+
+        {
+
+        "type": "card_shipped",
+
+        "account_id": "2011",
+
+        "balance": "500.00",
+
+        "cad": "12534",
+
+        "pmt_ref_no": "155200002022",
+
+        "prod_id": "1701",
+
+        "prog_id": "305",
+
+        "timestamp": "2019-10-09 11:20:33 MST",
+
+        "msg_event_id": "1234567891"
+
+        }
+
+        ```
+
+
+        #### Form example (`application/x-www-form-urlencoded`)
+
+        ```
+
+        type=card_shipped&prod_id=1619&prog_id=255&pmt_ref_no=199999999998&open_to_buy=4.05×tamp=2019-10-09+11%3A20%3A33+MST
+
+        ```
+
+
+        ### Responses
+
+
+        Valid values for `success_code`.
+
+
+        | Value | Description | Retransmit |
+
+        | :---: | --- | :---: |
+
+        | 0 | Success | No |
+
+        | 1 | Parameters do not pass validation (parsing error) | No |
+
+        | 2 | Cardholder account not in system | No |
+
+        | 3 | General system failure | No |
+
+        | 4 | Authentication failed | No |
+
+        | 5 | Not ready to accept messages | Yes |
+
+
+        #### JSON response example
+
+        ```json
+
+        {
+
+        "success_code": "0"
+
+        }
+
+        ```
+
+
+        XML responses should use the webhook name (`AccountEvent`) as the envelope.
+
+        #### XML example
+
+        ```xml
+
+        0
+
+        ```'
+      operationId: webhook_account_event_post
+      tags:
+      - Account Events Webhook
+      parameters:
+      - name: X-Request-ID
+        in: header
+        description: A unique identifier for the HTTP request.
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: Encryption-Type
+        in: header
+        description: Signature algorithm. For now, always `"HMAC-SHA256"`.
+        schema:
+          type: string
+          enum:
+          - HMAC-SHA256
+          default: HMAC-SHA256
+        required: true
+      - name: User-ID
+        in: header
+        description: Identifies request as coming from Galileo. Hard-coded to `"galileo"`.
+        schema:
+          type: string
+          enum:
+          - galileo
+          default: galileo
+        required: true
+      - name: Date
+        in: header
+        description: 'UTC timestamp when request is sent. Format: `"<timestamp><timezone>"` where `timestamp = YYYYMMDD:HHMMSS` and `timezone = UTC`. Example: `20170504:141752UTC`.'
+        schema:
+          type: string
+        required: true
+      - name: Signature
+        in: header
+        description: Signature of request. See overview for more details.
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          description: Response from client.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success_code:
+                    type: string
+                    description: 'Response ("success") codes. Possible values:
+
+
+                      * `0` - Success
+
+                      * `1` - Parameters do not pass validation
+
+                      * `2` - Cardholder account not in system
+
+                      * `3` - General system failure
+
+                      * `4` - Authentication failed
+
+                      * `5` - Not ready to accept messages. Event will be retransmitted.
+
+
+                      For all but `5`, the event will not be retransmitted.
+
+                      '
+                    enum:
+                    - '0'
+                    - '1'
+                    - '2'
+                    - '3'
+                    - '4'
+                    - '5'
+              examples:
+                response:
+                  value: "{\n  \"success_code\": \"0\"\n}\n"
+            application/xml:
+              schema:
+                type: object
+                properties:
+                  success_code:
+                    type: string
+                    description: 'Response ("success") codes. Possible values:
+
+
+                      * `0` - Success
+
+                      * `1` - Parameters do not pass validation
+
+                      * `2` - Cardholder account not in system
+
+                      * `3` - General system failure
+
+                      * `4` - Authentication failed
+
+                      * `5` - Not ready to accept messages. Event will be retransmitted.
+
+
+                      For all but `5`, the event will not be retransmitted.
+
+                      '
+                    enum:
+                    - '0'
+                    - '1'
+                    - '2'
+                    - '3'
+                    - '4'
+                    - '5'
+                xml:
+                  name: Account Event
+              examples:
+                response:
+                  value: "<AccountEvent>\n  <success_code>0</success_code>\n</AccountEvent>\n"
+x-explorer-enabled: false
+x-samples-enabled: false
+x-readme:
+  proxy-enabled: true

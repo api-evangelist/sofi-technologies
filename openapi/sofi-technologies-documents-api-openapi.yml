@@ -1,0 +1,513 @@
+openapi: 3.2.0
+info:
+  version: '25.02'
+  title: Dispute API 3.0 Documents API
+  description: The following documents the Intake API and Interaction APIs.
+  termsOfService: ''
+  contact: {}
+  license:
+    name: ''
+servers:
+- url: '{corename}.gft-dispute-api.{env}.gpsrv.com/gft-dispute-api/1.0/'
+tags:
+- name: Documents
+paths:
+  /claim/documents/retrieveRequirements:
+    parameters:
+    - $ref: '#/components/parameters/AuthorizationHeaderParam'
+    - $ref: '#/components/parameters/ProfileTypeHeaderParam'
+    post:
+      summary: /claim/documents/retrieveRequirements
+      operationId: postRetrieveRequirements
+      description: Use this endpoint to retrieve required documentation information about an existing claim
+      parameters: []
+      responses:
+        '200':
+          description: Successful document requirement retrieval
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  DocumentRequirementList:
+                    type: array
+                    description: List of document requirements that must be added to the claim.
+                    items:
+                      allOf:
+                      - type: object
+                        properties:
+                          TemplateDocumentStream:
+                            type: string
+                            description: Byte stream of the template form pdf
+                            example: JVBERi0xLjQKJcfl9OXwCjEgMCBvYmoKPDwKL0ZpbHRlciAvRmxhdGVEZWNvZGUKL0xlbmd0aCAxMjU4Cj4+CnN0cmVhbQp42s1YW3PTOBR+r+
+                          IsSatisified:
+                            type: boolean
+                            description: Has this document requirement been satisfied?
+                            example: false
+                          Identifier:
+                            type: string
+                            description: Document requirement identifier
+                            example: StatementOfDispute
+                          IsRequired:
+                            type: boolean
+                            description: Is this document required?
+                            example: true
+                          Label:
+                            type: string
+                            description: A user friendly label of the document requirement
+                            example: Statement of Dispute
+                          ValidAttachmentCategoryList:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                Key:
+                                  type: string
+                                  description: Key value, this is what is passed back in with the add document request
+                                  example: SupportingDocumentation
+                                Value:
+                                  type: string
+                                  description: User friendly display value
+                                  example: Supporting Documentation
+                      type: object
+                      properties:
+                        WasDocumentReceived:
+                          type: boolean
+                          description: was the document received
+                        IsDocumentPendingReview:
+                          type: boolean
+                          description: it the document pending review
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                success - with requirements:
+                  value:
+                    StatusList:
+                    - Type: Success
+                      Message: Success
+                      Code: '200'
+                    DocumentRequirementList:
+                    - TemplateDocumentStream: JVBERi0xLjQKJcfl9OXwCjEgMCBvYmoKPDwKL0ZpbHRlciAvRmxhdGVEZWNvZGUKL0xlbmd0aCAxMTc1Cj4+CnN0cmVolJUVPRgo=
+                      IsSatisfied: false
+                      Identifier: StatementOfDispute
+                      IsRequired: true
+                      WasDocumentReceived: true
+                      IsDocumentPendingReview: true
+                      Label: Statement of Dispute
+                      ValidAttachmentCategoryList:
+                      - Value: Accountholder
+                        Key: Accountholder
+                      - Value: Supporting Documentation
+                        Key: SupportingDocumentation
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '200'
+                  summary: A sample Success response with document requirements
+                success - no requirements:
+                  value:
+                    StatusList:
+                    - Type: Success
+                      Message: No documents are required for this case
+                      Code: '201'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '200'
+                  summary: A sample Success response with no document requirements
+        '400':
+          description: Error claim document requirement retrieval request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                error4Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: The requested Claim ID is not valid.
+                      Code: '4'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 4 response
+                error5Example:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: 'Invalid Request: {message}'
+                      Code: '5'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+                  summary: A sample Error 5 response
+        '500':
+          description: Error claim document requirement details retrieve request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                errorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Could not obtain a lock on the claim
+                      Code: '500'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '500'
+                  summary: A sample Error 500 response
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ClaimId
+              - transactionId
+              - providerId
+              properties:
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  maxLength: 60
+                  minLength: 1
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction").
+
+                    Pattern: Max 60 characters
+
+                    Example: `"984513-395483653-4483483478"`'
+                  example: 984513-395483653-4483483478
+                ClaimId:
+                  type: string
+                  description: Unique claim ID
+                  example: 2108160022C
+      tags:
+      - Documents
+  /claim/documents/add:
+    parameters:
+    - $ref: '#/components/parameters/AuthorizationHeaderParam'
+    - $ref: '#/components/parameters/ProfileTypeHeaderParam'
+    post:
+      summary: /claim/documents/add
+      operationId: postClaimDocumentsAdd
+      description: Use this endpoint to add a required document to an existing claim
+      parameters: []
+      responses:
+        '200':
+          description: Successful document add
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+        '400':
+          description: Error claim document add request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                ClaimAddDocumentErrorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Error Adding Document to Claim
+                      summary: A sample add document Error Response
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '400'
+        '500':
+          description: Error claim recovery details retrieve request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  StatusList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Type:
+                          type: string
+                          description: Status of the request
+                          examples:
+                          - Success
+                          enum:
+                          - Error
+                          - Success
+                        Message:
+                          type: string
+                          description: Message about the status
+                          examples:
+                          - Success
+                        Code:
+                          type: string
+                          description: Numeric code for the status
+                          examples:
+                          - '200'
+                  rtoken:
+                    type: string
+                    nullable: true
+                    description: A system-generated ID used for tracking
+                  StatusCode:
+                    type: integer
+                    nullable: true
+                    description: The HTTP response status code
+              examples:
+                errorExample:
+                  value:
+                    StatusList:
+                    - Type: Error
+                      Message: Could not obtain a lock on the claim
+                      Code: '500'
+                    rtoken: 984513-395483653-4483483478
+                    StatusCode: '500'
+                  summary: A sample Error 500 response
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Your unique provider identifier from SoFi Tech Solutions.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  maxLength: 60
+                  minLength: 1
+                  description: 'Supply a globally unique ID to identify this endpoint request ("transaction").
+
+                    Pattern: Max 60 characters
+
+                    Example: `"984513-395483653-4483483478"`'
+                  example: 984513-395483653-4483483478
+                ClaimId:
+                  type: string
+                  example: 2501240026C
+                DocumentRequirementList:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      DocumentStream:
+                        type: string
+                        description: Document content stream
+                        example: JVBERi0xLjQKJcfl9OXwCjEgMCBvYmoKPDwKL0ZpbHRlciAvRmxhdGVEZWNvZGUKL0xlbmd0aCAxMTc0Cj4+CnN0cmVhbQp42t1YbXPaOBD+jH/FztzdT
+                      Identifier:
+                        type: string
+                        description: ID of document requirement to be fulfilled. Identifier is returned in /claim/documents/retrieveRequirements
+                        example: ProofOfPayment
+                      Category:
+                        type: string
+                        description: category of the document
+                        example: SupportingDocumentation
+                        enum:
+                        - Accountholder
+                        - Association
+                        - Internal
+                        - SupportingDocumentation
+                      FileName:
+                        type: string
+                        description: Name of the file being attached
+                        example: ProofOfPayment.pdf
+                      Label:
+                        type: string
+                        description: Label for the document being added
+                        example: Proof Of Payment
+              required:
+              - transactionId
+              - providerId
+      tags:
+      - Documents
+components:
+  parameters:
+    ProfileTypeHeaderParam:
+      name: profile-type
+      in: header
+      description: Optional param to call Dispute API as a customer-service agent or a cardholder
+      schema:
+        type: string
+        enum:
+        - agent
+        - cardholder
+        default: agent
+    AuthorizationHeaderParam:
+      name: Authorization
+      in: header
+      description: For `{token}` insert base64-encoded `apiLogin:apiTransKey`
+      schema:
+        type: string
+        default: Basic {token}
+externalDocs:
+  url: ''
+  description: ''
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true

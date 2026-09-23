@@ -1,0 +1,1184 @@
+openapi: 3.2.0
+info:
+  title: Dispute API 2.0 Dispute Management API
+  version: '1.0'
+servers:
+- url: dispute-api-{corename}.{env}.gpsrv.com/
+tags:
+- name: Dispute Management
+paths:
+  /getCaseConfirmation:
+    post:
+      summary: Get Case Confirmation
+      description: '> 👍 Availability
+
+        >
+
+        > No new clients will be set up with Dispute API 2.0. Legacy clients will eventually be migrated to Dispute API 3.0.
+
+
+        Use the Get Case Confirmation endpoint to retrieve a confirmation number and PDF after the dispute claim has been submitted.
+
+
+        This endpoint is part of a conversational API—a series of endpoint calls that must be made in a certain order. For instructions see the Creating an API 2.0 Dispute guide.
+
+
+        - **Previous endpoint:** Submit Case'
+      parameters: []
+      tags:
+      - Dispute Management
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Provider''s web service username, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Galileo-issued unique provider identifier.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'A provider-generated ID that is unique to each API call. A UUID is preferred. Do not reuse this identifier for multiple API calls.
+
+                    Pattern: 60 characters or less
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 9845dk-39fdk3fj3-4483483478
+                caseId:
+                  type: string
+                  pattern: ^$|^([0-9]{11}[A-Z]{1})$
+                  description: 'Case identifier as returned by <a href="ref:dispute_post_createcase" target="_blank">Create Case</a>.
+
+                    Pattern: Max 11 digits with a letter
+
+                    Example: "`22021000017C`"'
+                  example: 22021000017C
+              required:
+              - apiLogin
+              - apiTransKey
+              - caseId
+              - providerId
+              - transactionId
+      responses:
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processingTime:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transactionId:
+                        type:
+                        - string
+                        - 'null'
+                        description: The `transactionId` that was passed in the API request
+                    required:
+                    - transactionId
+                  systemTimestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A Galileo-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  responseData:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      confirmationDocumentName:
+                        type: string
+                        description: Filename of the PDF
+                      confirmationHeader:
+                        type: string
+                        description: Confirmation header
+                      confirmationMessageMarkup:
+                        type: string
+                        description: A base64-encoded HTML page that displays the confirmation
+                      confirmationDocumentStream:
+                        type: string
+                        description: A base64-encoded PDF that contains the confirmation.
+                    required:
+                    - confirmationDocumentName
+                    - confirmationDocumentStream
+                    - confirmationHeader
+                    - confirmationMessageMarkup
+                required:
+                - echo
+                - processingTime
+                - responseData
+                - rtoken
+                - status
+                - statusCode
+                - systemTimestamp
+              examples:
+                response:
+                  value: "{\n  \"statusCode\": 0,\n  \"status\": \"Success\",\n  \"processingTime\": 0.081,\n  \"responseData\": {\n    \"confirmationDocumentStream\": \"JVBERi0xLjQKJcfl9OXwCjEgMCBvYmoKPDwKL0ZpbHRlciAvUVPRgo=\",\n    \"confirmationMessageMarkup\": \"PHRhYmxlIGNsYXNzPSJxdm9Cb2R5Q29udGVudCI+PHRyPjx0ZD4gPCEtLXF2b0JvZHlDb250ZW50=\",\n    \"confirmationHeader\": \"Confirmation #: 2108240024C\",\n    \"confirmationDocumentName\": \"Confirmation.pdf\"\n  },\n  \"echo\": {\n    \"transactionId\": \"9845dk-39fdk3fj3-4483483478\"\n  },\n  \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n  \"systemTimestamp\": \"2020-07-13 10:38:13\"\n}\n"
+      operationId: dispute_post_getcaseconfirmation
+  /addAttachments:
+    post:
+      summary: Add Attachments
+      description: '> 👍 Availability
+
+        >
+
+        > No new clients will be set up with Dispute API 2.0. Legacy clients will eventually be migrated to Dispute API 3.0.
+
+
+        Use the Add Attachments endpoint to attach documents to the case, such as screenshots and receipts. This endpoint is valid only for a case that has completed the intake flow.'
+      parameters: []
+      tags:
+      - Dispute Management
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Provider''s web service username, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Galileo-issued unique provider identifier.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'A provider-generated ID that is unique to each API call. A UUID is preferred. Do not reuse this identifier for multiple API calls.
+
+                    Pattern: 60 characters or less
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 9845dk-39fdk3fj3-4483483478
+                attachments:
+                  type: string
+                  description: 'JSON array of attached files and metadata. See <a href="ref:api-reference-attachments-subfields" target="_blank">`attachments` Subfields</a> for the fields to include. Supported file types: JPG, JPEG, TIFF, PNG, PDF. Max file size: Mastercard 20 MB, Visa 10 MB.
+
+                    Pattern: JSON string
+
+                    Example: `[{"fileName": "filename1.png", "category": "SupportingDocumentation", "label": "receipt1", "documentStream": "PHRhYmxlIGNsYXNzPSJxdm9Cb2R5Q29udGVudCI+PHRyPjx0ZD4gPCEtLXF2b0JvZHlDb250ZW50"}]`'
+                  example: "[\n                    {\n                        \"fileName\": \"filename1.png\",\n                        \"category\": \"SupportingDocumentation\",\n                        \"label\": \"receipt1\",\n                        \"documentStream\": \"PHRhYmxlIGNsYXNzPSJxdm9Cb2R5Q29udGVudCI+PHRyPjx0ZD4gPCEtLXF2b0JvZHlDb250ZW50\"\n    }\n                ]"
+                caseId:
+                  type: string
+                  pattern: ^$|^([0-9]{11}[A-Z]{1})$
+                  description: 'Case identifier as returned by <a href="ref:dispute_post_createcase" target="_blank">Create Case</a>.
+
+                    Pattern: Max 11 digits with a letter
+
+                    Example: "`22021000017C`"'
+                  example: 22021000017C
+              required:
+              - apiLogin
+              - apiTransKey
+              - attachments
+              - caseId
+              - providerId
+              - transactionId
+      responses:
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processingTime:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transactionId:
+                        type:
+                        - string
+                        - 'null'
+                        description: The `transactionId` that was passed in the API request
+                    required:
+                    - transactionId
+                  systemTimestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A Galileo-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  responseData:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    type: object
+                    properties: {}
+                required:
+                - echo
+                - processingTime
+                - responseData
+                - rtoken
+                - status
+                - statusCode
+                - systemTimestamp
+              examples:
+                response:
+                  value: "{\n  \"status\": \"Success\",\n  \"statusCode\": 0,\n  \"processingTime\": 0.999,\n  \"responseData\": {},\n  \"echo\": {\n    \"transactionId\": \"7396a82c-d125-4db5-ae24-9acf7ce7dc81\"\n  },\n  \"rtoken\": \"6a8f3266-5ff1-465f-9b27-8370a24d459e\",\n  \"systemTimestamp\": \"2022-04-19 11:53:25\"\n}\n"
+      operationId: dispute_post_addattachments
+  /ping:
+    post:
+      summary: Ping
+      description: 'Use the Ping endpoint to test API connectivity and permissions. Ping does not perform any functions on the Galileo system. Some use cases for Ping are:
+
+        - Testing access from an automated monitoring service
+
+        - Integrating with an API call to confirm assumptions and validate access'
+      parameters: []
+      tags:
+      - Dispute Management
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Provider''s web service username, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Galileo-issued unique provider identifier.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'A provider-generated ID that is unique to each API call. A UUID is preferred. Do not reuse this identifier for multiple API calls.
+
+                    Pattern: 60 characters or less
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 9845dk-39fdk3fj3-4483483478
+              required:
+              - apiLogin
+              - apiTransKey
+              - providerId
+              - transactionId
+      responses:
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processingTime:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transactionId:
+                        type:
+                        - string
+                        - 'null'
+                        description: The `transactionId` that was passed in the API request
+                    required:
+                    - transactionId
+                  systemTimestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A Galileo-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  responseData:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    type: object
+                    properties: {}
+                required:
+                - echo
+                - processingTime
+                - responseData
+                - rtoken
+                - status
+                - statusCode
+                - systemTimestamp
+              examples:
+                response:
+                  value: "{\n  \"statusCode\": 0,\n  \"status\": \"Success\",\n  \"processingTime\": 0.071,\n  \"responseData\": {},\n  \"echo\": {\n    \"transactionId\": \"784fdk-39fek3fj3-3483183079\"\n  },\n  \"rtoken\": \"1jc12da0-4eba-1a3a-76e1-0bc8fde6g661\",\n  \"systemTimestamp\": \"2020-07-15 10:48:12\"\n}\n"
+      operationId: dispute_post_ping
+  /getTransactionsList:
+    post:
+      summary: Get Transactions List
+      description: '> 👍 Availability
+
+        >
+
+        > No new clients will be set up with Dispute API 2.0. Legacy clients will eventually be migrated to Dispute API 3.0.
+
+
+        Use the Get Transactions List endpoint to retrieve a detailed list of disputed transactions that are associated with the specified case ID. This endpoint is valid only for a case that has completed the intake flow.
+
+
+        Managing Disputes for instructions on using this endpoint.-->'
+      parameters: []
+      tags:
+      - Dispute Management
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Provider''s web service username, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Galileo-issued unique provider identifier.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'A provider-generated ID that is unique to each API call. A UUID is preferred. Do not reuse this identifier for multiple API calls.
+
+                    Pattern: 60 characters or less
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 9845dk-39fdk3fj3-4483483478
+                caseId:
+                  type: string
+                  pattern: ^$|^([0-9]{11}[A-Z]{1})$
+                  description: 'Case identifier as returned by <a href="ref:dispute_post_createcase" target="_blank">Create Case</a> or <a href="ref:dispute_post_getcaselist" target="_blank">Get Case List</a>.
+
+                    Pattern: Max 11 digits followed by an upper-case letter
+
+                    Example: `"22021000017C"`'
+                  example: 22021000017C
+              required:
+              - apiLogin
+              - apiTransKey
+              - caseId
+              - providerId
+              - transactionId
+      responses:
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processingTime:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transactionId:
+                        type:
+                        - string
+                        - 'null'
+                        description: The `transactionId` that was passed in the API request
+                    required:
+                    - transactionId
+                  systemTimestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A Galileo-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  responseData:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transactionsList:
+                        type: object
+                        properties:
+                          cardLastFourDigits:
+                            type: string
+                            description: Last 4 digits of the card used
+                          postingDate:
+                            type: string
+                            description: Transaction posting date
+                          disputeStatus:
+                            type: string
+                            description: Work status of the dispute. See <a href="ref:api-reference-status-values#disputestatus" target="_blank">`disputeStatus`</a> in the _Status Values_ enumeration for valid values.
+                          postingDateTime:
+                            type: string
+                            description: Transaction posting date as a Date-Time
+                          transactionAmount:
+                            type: number
+                            description: Transaction amount
+                          disputedAmount:
+                            type: number
+                            description: Disputed amount
+                          currentStage:
+                            type: string
+                            description: Transaction status. See <a href="ref:api-reference-status-values#currentstage" target="_blank">`currentStage`</a> in the _Status Values_ enumeration for valid values.
+                          lastCommitDate:
+                            type: string
+                            description: Commit date
+                          description:
+                            type: string
+                            description: Transaction description
+                          extDisputeId:
+                            type: string
+                            description: Unique ID for the dispute associated with this transaction
+                          transactionId:
+                            type: string
+                            description: Unique transaction ID
+                        required:
+                        - cardLastFourDigits
+                        - currentStage
+                        - description
+                        - disputeStatus
+                        - disputedAmount
+                        - extDisputeId
+                        - lastCommitDate
+                        - transactionAmount
+                        - transactionId
+                required:
+                - echo
+                - processingTime
+                - responseData
+                - rtoken
+                - status
+                - statusCode
+                - systemTimestamp
+              examples:
+                response:
+                  value: "{\n    \"statusCode\": 0,\n    \"status\": \"Success\",\n    \"processingTime\": 157.052,\n    \"responseData\": {\n        \"transactionList\": [\n            {\n                \"transactionAmount\": \"439.780000000\",\n                \"cardLastFourDigits\": \"5898\",\n                \"disputedAmount\": \"439.780000000\",\n                \"description\": \"LOPEZ LLC #9556, NORTH JOHN, DE\",\n                \"extDisputeId\": \"23100600054D\",\n                \"postingDate\": \"2023-06-11\",\n                \"disputeStatus\": \"Pending-TempMatching\",\n                \"currentStage\": \"Enhance\",\n                \"lastCommitDate\": \"2023-10-06T20:45:24.691Z\",\n                \"transactionId\": \"P643|162983403900|4813|M|AUW\",\n                \"isReopenRequestInProgress\": True\n            },\n            {\n                \"transactionAmount\": \"57.960000000\",\n                \"cardLastFourDigits\": \"5898\",\n                \"disputedAmount\": \"57.960000000\",\n                \"description\": \"OLSON INC #8253, STEVENBOROUG, CT\",\n                \"extDisputeId\": \"23100600055D\",\n                \"postingDate\": \"2021-03-02\",\n                \"disputeStatus\": \"New\",\n                \"currentStage\": \"Enhance\",\n                \"lastCommitDate\": \"2023-10-06T20:45:25.338Z\",\n                \"postingDateTime\": \"2021-03-02T00:00:00.000Z\",\n                \"transactionId\": \"P643|162983403900|4803|M\"\n            }\n        ]\n    },\n    \"echo\": {\n        \"transactionId\": \"0766d58d-69c4-45fc-abe1-1c61fa46ade8\"\n    },\n    \"systemTimestamp\": \"2023-10-06 15:48:08\",\n    \"rtoken\": \"f6a001ef-e2e6-49fa-a38b-ba37b704a1b8\"\n}"
+      operationId: dispute_post_gettransactionslist
+  /getCaseList:
+    post:
+      summary: Get Case List
+      description: '> 👍 Availability
+
+        >
+
+        > No new clients will be set up with Dispute API 2.0. Legacy clients will eventually be migrated to Dispute API 3.0.
+
+
+        Use the Get Case List endpoint to retrieve a list of submitted cases. You must populate `daysToLookBack` plus only one of these parameters: `accountNo`, `caseId`, `customerId`.
+
+
+        See Managing Disputes for instructions on using this endpoint.'
+      parameters: []
+      tags:
+      - Dispute Management
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Provider''s web service username, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Galileo-issued unique provider identifier.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'A provider-generated ID that is unique to each API call. A UUID is preferred. Do not reuse this identifier for multiple API calls.
+
+                    Pattern: 60 characters or less
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 9845dk-39fdk3fj3-4483483478
+                caseId:
+                  type:
+                  - string
+                  - 'null'
+                  pattern: ^$|^([0-9]{11}[A-Z]{1})$
+                  description: 'Case identifier as returned by <a href="ref:dispute_post_createcase" target="_blank">Create Case</a>. **Required** if `accountNo` and `customerId` are not populated.
+
+                    Pattern: Max 11 digits followed by an upper-case letter
+
+                    Example: `"22021000017C"`'
+                  example: 22021000017C
+                customerId:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'Customer identifier.
+
+                    Example: `P643|162983403900`'
+                  example: P643|162983403900
+                accountNo:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'The <<glossary:PRN>>, <<glossary:PAN>>, or <<glossary:CAD>> of the account. If more than one card is associated with the PRN, use the PAN or the CAD. **Required** if `caseId` and `customerId` are not populated.
+
+                    Pattern: PAN, PRN, or CAD
+
+                    Example: `"999101293846"`'
+                  example: '999101293846'
+                daysToLookBack:
+                  type:
+                  - integer
+                  - 'null'
+                  format: int32
+                  description: 'Number of days in the past to retrieve cases. Default: 30 days
+
+                    Pattern: integer
+
+                    Example: `60`'
+                  example: 60
+              required:
+              - apiLogin
+              - apiTransKey
+              - providerId
+              - transactionId
+      responses:
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processingTime:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transactionId:
+                        type:
+                        - string
+                        - 'null'
+                        description: The `transactionId` that was passed in the API request
+                    required:
+                    - transactionId
+                  systemTimestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A Galileo-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  responseData:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      claimListResponse:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            caseId:
+                              type: string
+                              description: Unique case ID
+                            accountHolder:
+                              type: string
+                              description: Account Holder
+                            accountNumber:
+                              type: string
+                              description: Account Number
+                            requiredDocumentCount:
+                              type: integer
+                              format: int32
+                              description: Number of documents required on this case
+                            customerId:
+                              type: string
+                              description: Customer ID
+                            isCaseSubmitted:
+                              type: boolean
+                              description: Whether the case has been submitted
+                            createName:
+                              type: string
+                              description: Who created the case
+                            totalCaseAmount:
+                              type: number
+                              description: The sum of all disputed transaction amounts
+                            caseStatus:
+                              type: string
+                              description: Status of the case. See <a href="ref:api-reference-status-values#casestatus" target="_blank">`caseStatus`</a> in the _Status Values_ enumeration for valid values.
+                            accountType:
+                              type: string
+                              description: Type of account
+                            customerContactDate:
+                              type: string
+                              description: Customer Contact Date
+                required:
+                - echo
+                - processingTime
+                - responseData
+                - rtoken
+                - status
+                - statusCode
+                - systemTimestamp
+              examples:
+                response:
+                  value: "{\n    \"statusCode\": 0,\n    \"status\": \"Success\",\n    \"processingTime\": 0.081,\n    \"responseData\": {\n\t\t\"claimListResponse\": [\n            {\n              \"accountHolder\": \"Pamela Hansen\",\n              \"requiredDocumentCount\": 0,\n              \"accountType\": \"Deposit\",\n              \"customerContactDate\": \"2023-09-13T00:00:00.000Z\",\n              \"customerId\": \"P643|162983403900\",\n              \"totalCaseAmount\": 439.78,\n              \"isCaseSubmitted\": True,\n              \"caseId\": \"23091300034C\",\n              \"accountNumber\": \"P643|162983403900\",\n              \"caseStatus\": \"New\",\n              \"createName\": \"GFT API User\"\n              }\n              ]\n            },\n    \"echo\": {\n      \"transactionId\": \"9845dk-39fdk3fj3-4483483478\"\n    },\n    \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n    \"systemTimestamp\": \"2023-07-13 10:38:13\"\n  }\n  "
+      operationId: dispute_post_getcaselist
+  /getRequirements:
+    post:
+      summary: Get Requirements
+      description: '> 👍 Availability
+
+        >
+
+        > No new clients will be set up with Dispute API 2.0. Legacy clients will eventually be migrated to Dispute API 3.0.
+
+
+        Use the Get Requirements endpoint to retrieve the required document(s) for the dispute case. Use this endpoint only after the dispute-intake process has been completed. During the dispute-intake process, use Get Doc Requirements.'
+      parameters: []
+      tags:
+      - Dispute Management
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Provider''s web service username, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Galileo-issued unique provider identifier.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'A provider-generated ID that is unique to each API call. A UUID is preferred. Do not reuse this identifier for multiple API calls.
+
+                    Pattern: 60 characters or less
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 9845dk-39fdk3fj3-4483483478
+                caseId:
+                  type: string
+                  pattern: ^$|^([0-9]{11}[A-Z]{1})$
+                  description: 'Case identifier as returned by <a href="ref:dispute_post_createcase" target="_blank">Create Case</a>.
+
+                    Pattern: Max 11 digits with a letter
+
+                    Example: "`22021000017C`"'
+                  example: 22021000017C
+              required:
+              - apiLogin
+              - apiTransKey
+              - caseId
+              - providerId
+              - transactionId
+      responses:
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processingTime:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transactionId:
+                        type:
+                        - string
+                        - 'null'
+                        description: The `transactionId` that was passed in the API request
+                    required:
+                    - transactionId
+                  systemTimestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A Galileo-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  responseData:
+                    description: A structure for the response data. It can be empty but usually will contain information.
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      identifier:
+                        type: string
+                        description: Identifier for the PDF
+                      label:
+                        type: string
+                        description: Display text for the PDF
+                      isDocumentPendingReview:
+                        type: boolean
+                        description: Whether the document is pending review.
+                      isRequired:
+                        type: boolean
+                        description: Whether the completed form is required for the dispute
+                      validAttachmentCategoryList:
+                        type: array
+                        description: Metadata for the PDF
+                        items:
+                          type: object
+                          properties:
+                            value:
+                              type: string
+                            key:
+                              type: string
+                      isSatisfied:
+                        type: boolean
+                        description: Whether the document requirement has been satisfied.
+                      templateDocumentStream:
+                        type: string
+                        description: Base64-encoded PDF form
+                    required:
+                    - identifier
+                    - isRequired
+                    - isSatisfied
+                    - label
+                    - templateDocumentStream
+                    - validAttachmentCategoryList
+                required:
+                - echo
+                - processingTime
+                - responseData
+                - rtoken
+                - status
+                - statusCode
+                - systemTimestamp
+              examples:
+                response:
+                  value: "{\n  \"statusCode\": 0,\n  \"status\": \"Success\",\n  \"processingTime\": 0.081,\n  \"responseData\": {\n     \"templateDocumentStream\": \"JVBERi0xLjQKJcfl9OXwCjEgMCBvYmoKPDwKL0ZpbHRlciAvRmxhdGVEZWNvZGUKL0xlbmd0aCAxMTc1Cj4+CnN0cmVolJUVPRgo=\",\n      \"isSatisfied\": false,\n      \"identifier\": \"StatementOfDispute\",\n      \"isRequired\": true,\n      \"label\": \"Statement of Dispute\",\n      \"validAttachmentCategoryList\": [\n        {\n          \"value\": \"Accountholder\",\n          \"key\": \"Accountholder\"\n        },\n        {\n          \"value\": \"Supporting Documentation\",\n          \"key\": \"SupportingDocumentation\"\n        }\n      ]\n\n},\n  \"echo\": {\n    \"transactionId\": \"9845dk-39fdk3fj3-4483483478\"\n  },\n  \"rtoken\": \"8cc16de0-5eda-4e2a-968e-3b08fce6f778\",\n  \"systemTimestamp\": \"2020-07-13 10:38:13\"\n}\n"
+      operationId: dispute_post_getrequirements
+  /addDocument:
+    post:
+      summary: Add Document
+      description: '> 👍 Availability
+
+        >
+
+        > No new clients will be set up with Dispute API 2.0. Legacy clients will eventually be migrated to Dispute API 3.0.
+
+
+        Use the Add Document endpoint to attach a required document to the case, as specified in the response to the Get Requirements endpoint. Use this endpoint only after the dispute-intake process has been completed. During the dispute-intake process, use Add Required Docs.'
+      parameters: []
+      tags:
+      - Dispute Management
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                apiLogin:
+                  type: string
+                  description: 'Provider''s web service username, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 50 characters
+
+                    Example: `"AbC123-9999"`'
+                  example: AbC123-9999
+                apiTransKey:
+                  type: string
+                  description: 'Web service password, as provided by Galileo for the requesting IP address.
+
+                    Pattern: Max 15 characters
+
+                    Example: `"4sb62fh6w4h7w34g"`'
+                  example: 4sb62fh6w4h7w34g
+                providerId:
+                  type: integer
+                  format: int32
+                  description: 'Galileo-issued unique provider identifier.
+
+                    Pattern: Max 10 digits
+
+                    Example: `9999`'
+                  example: 9999
+                transactionId:
+                  type: string
+                  minimum: 1
+                  maximum: 60
+                  description: 'A provider-generated ID that is unique to each API call. A UUID is preferred. Do not reuse this identifier for multiple API calls.
+
+                    Pattern: 60 characters or less
+
+                    Example: `"9845dk-39fdk3fj3-4483483478"`'
+                  example: 9845dk-39fdk3fj3-4483483478
+                caseId:
+                  type: string
+                  pattern: ^$|^([0-9]{11}[A-Z]{1})$
+                  description: 'Case identifier as returned by <a href="ref:dispute_post_createcase" target="_blank">Create Case</a>.
+
+                    Pattern: Max 11 digits with a letter
+
+                    Example: "`22021000017C`"'
+                  example: 22021000017C
+                document:
+                  type: string
+                  description: 'JSON array containing the required document and metadata. Pass only one document per endpoint call. See <a href="ref:api-reference-document-subfields" target="_blank">`document` Subfields</a> for the fields to include.
+
+                    Pattern: JSON string
+
+                    Example: `[{"documentStream": "<Base64-encoded string>","identifier": "StatementOfDispute","category": "SupportingDocumentation","fileName": "StatementOfDispute.pdf","label": "Statement of Dispute"}]`'
+                  example: "\n            [{\n              \"documentStream\": \"JVBERi0xLjQKJcfl9OXwCjEgMCBvYmoKPDwKL0ZpbHRlciAvRmxhdGVEZWNvZGUKL0xlbmd0aCAxMjU4Cj4+CnN0cmVhbQp42s1YW3PTOBR+r+\",\n              \"identifier\": \"StatementOfDispute\",\n              \"category\": \"SupportingDocumentation\",\n              \"fileName\": \"StatementOfDispute.pdf\",\n              \"label\": \"Statement of Dispute\"\n            }]\n            "
+              required:
+              - apiLogin
+              - apiTransKey
+              - caseId
+              - document
+              - providerId
+              - transactionId
+      responses:
+        default:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: The response status code
+                  status:
+                    type:
+                    - string
+                    - 'null'
+                    description: The condition of a process or response
+                  processingTime:
+                    type:
+                    - number
+                    - 'null'
+                    format: float
+                    description: The time elapsed in processing the transaction
+                  echo:
+                    description: A structure that contains transaction ID information
+                    type:
+                    - object
+                    - 'null'
+                    properties:
+                      transactionId:
+                        type:
+                        - string
+                        - 'null'
+                        description: The `transactionId` that was passed in the API request
+                    required:
+                    - transactionId
+                  systemTimestamp:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: A system generated timestamp
+                  rtoken:
+                    type:
+                    - string
+                    - 'null'
+                    description: A Galileo-generated ID used for tracking
+                  errors:
+                    type: array
+                    description: A list of errors generated while the request was processed
+                    items:
+                      type: string
+                  responseData:
+                    description: A structure for the response data. This endpoint does not return response data, so it will always be empty.
+                    type: object
+                    properties: {}
+                required:
+                - echo
+                - processingTime
+                - responseData
+                - rtoken
+                - status
+                - statusCode
+                - systemTimestamp
+              examples:
+                response:
+                  value: "{\n  \"status\": \"Success\",\n  \"statusCode\": 0,\n  \"processingTime\": 0.518,\n  \"responseData\": {\n    \"message\": \"Success\"\n  },\n  \"echo\": {\n    \"transactionId\": \"9e9639fc-c58f-4495-ae8e-3251f5387b8e\"\n  },\n  \"rtoken\": \"e7f854e0-5f06-4782-a683-6086ebd397fb\",\n  \"systemTimestamp\": \"2022-04-19 11:32:44\"\n}\n"
+      operationId: dispute_post_adddocument
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true
