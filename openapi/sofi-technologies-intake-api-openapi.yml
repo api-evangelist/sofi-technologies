@@ -9909,6 +9909,13 @@ paths:
       - Intake
 components:
   parameters:
+    AuthorizationHeaderParam:
+      name: Authorization
+      in: header
+      description: For `{token}` insert base64-encoded `apiLogin:apiTransKey`
+      schema:
+        type: string
+        default: Basic {token}
     ProfileTypeHeaderParam:
       name: profile-type
       in: header
@@ -9919,13 +9926,6 @@ components:
         - agent
         - cardholder
         default: agent
-    AuthorizationHeaderParam:
-      name: Authorization
-      in: header
-      description: For `{token}` insert base64-encoded `apiLogin:apiTransKey`
-      schema:
-        type: string
-        default: Basic {token}
 externalDocs:
   url: ''
   description: ''

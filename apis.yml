@@ -1127,6 +1127,8 @@ apis:
   humanURL: https://docs.tech.sofi.com/pro/reference/program-api-intro
   baseURL: https://api-{corename}.{env}.gpsrv.com/intserv/4.0/
   tags:
+  - Risk Management
+  tags_raw:
   - Risk
   properties:
   - type: OpenAPI
