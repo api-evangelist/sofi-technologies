@@ -26,6 +26,7 @@ tags:
 - Disputes
 - Identity Verification
 - Webhook
+- Consumer Banking
 tags_raw:
 - Fintech
 - Payments
@@ -39,6 +40,7 @@ tags_raw:
 - Disputes
 - Identity Verification
 - Webhooks
+- Consumer Banking
 created: '2026-04-19'
 modified: '2026-09-06'
 specificationVersion: '0.23'
@@ -1428,6 +1430,9 @@ apis:
     url: >-
       https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
 common:
+- type: CapabilityMap
+  url: capabilities/sofi-technologies-capability-edges.yml
+  name: SoFi Technologies Business Capability Map
 - type: AgentSkill
   url: skills/sofi-technologies-open-card-account.md
 - type: AgentSkill

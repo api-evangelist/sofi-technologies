@@ -1,0 +1,25 @@
+slug: sofi-technologies
+provider: SoFi Technologies
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 1
+edges:
+- tag: Dispute Management
+  spec_file: sofi-technologies-dispute-management-api-openapi.yml
+  capability_id: BC-430.20
+  capability_id_l1: BC-430
+  capability_name: Complaints & Issue Management
+  confidence: 0.7
+  evidence: POST /getCaseList  Get Case List; POST /getCaseConfirmation; POST /getRequirements  Get Requirements
+  reason: Case-based handling of customer transaction disputes, including case listing, confirmation and
+    evidence requirements, which corresponds to complaint/issue capture and resolution. Moderate confidence
+    because the frame offers no dedicated dispute-and-chargeback capability.
