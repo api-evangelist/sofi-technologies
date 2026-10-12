@@ -1,0 +1,121 @@
+generated: '2026-10-12'
+method: derived
+source: the pre-flight dossier, apis.yml pointers, spec servers, well-known, vendors -- nothing fetched here
+generator: derive-hosts.py
+summary:
+  hosts: 9
+  own: 3
+  other_domain: 3
+  platform: 3
+  roles:
+  - collections
+  - identity
+  - other
+  - portal
+  - security
+  - status
+  - website
+hosts:
+- host: api-{corename}.{env}.gpsrv.com
+  found_by:
+  - apis[]
+  types: []
+  serves:
+  - api
+  registrable_domain: gpsrv.com
+  role: other
+  relation: other-domain
+- host: docs.tech.sofi.com
+  found_by:
+  - pointer
+  - apis[]
+  types:
+  - DeveloperPortal
+  - Documentation
+  - APIReference
+  - GettingStarted
+  serves:
+  - docs
+  registrable_domain: sofi.com
+  role: portal
+  relation: own
+- host: hackerone.com
+  found_by:
+  - pointer
+  types:
+  - Security
+  serves: []
+  registrable_domain: hackerone.com
+  role: security
+  relation: other-domain
+- host: sofi.statuspage.io
+  found_by:
+  - pointer
+  - vendor-detect
+  types:
+  - StatusPage
+  serves:
+  - status-page
+  vendor: statuspage
+  registrable_domain: statuspage.io
+  role: status
+  relation: other-domain
+- host: tech.sofi.com
+  found_by:
+  - pointer
+  types:
+  - SignUp
+  - Support
+  - Blog
+  - Newsroom
+  - About
+  - Careers
+  serves: []
+  registrable_domain: sofi.com
+  role: identity
+  relation: own
+- host: twitter.com
+  found_by:
+  - pointer
+  types:
+  - X
+  serves: []
+  registrable_domain: twitter.com
+  role: other
+  relation: platform
+- host: www.linkedin.com
+  found_by:
+  - pointer
+  types:
+  - LinkedIn
+  serves: []
+  registrable_domain: linkedin.com
+  role: other
+  relation: platform
+- host: www.postman.com
+  found_by:
+  - pointer
+  - vendor-detect
+  types:
+  - Postman
+  serves:
+  - api-collections
+  vendor: postman
+  registrable_domain: postman.com
+  role: collections
+  relation: platform
+- host: www.sofi.com
+  found_by:
+  - pointer
+  - vendor-detect
+  types:
+  - Pricing
+  - Website
+  - TermsOfService
+  - PrivacyPolicy
+  serves:
+  - cdn
+  vendor: cloudflare
+  registrable_domain: sofi.com
+  role: website
+  relation: own

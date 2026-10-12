@@ -1,0 +1,200 @@
+generated: '2026-10-12'
+method: derived
+generator: derive-vocabulary.py
+source:
+- openapi/sofi-technologies-account-events-webhook-api-openapi.yml
+- openapi/sofi-technologies-account-level-controls-api-openapi.yml
+- openapi/sofi-technologies-accounts-and-cards-api-openapi.yml
+- openapi/sofi-technologies-ach-debit-webhook-api-openapi.yml
+- openapi/sofi-technologies-alerts-api-openapi.yml
+vocabulary:
+  name: SoFi Technologies Domain Vocabulary
+  description: 'Terms declared by SoFi Technologies''s own API contract: its resource groups, objects and enumerations, with the contract''s definitions.
+    Derived, not authored.'
+  version: '2026-10-12'
+  terms:
+  - term: Loan
+    definition: Loan management endpoints.
+    tags:
+    - Resource Group
+    source: openapi/sofi-technologies-loan-api-openapi.yml
+  - term: BankAccountDetails
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/BankAccountDetails
+  - term: BankAccountDetailsResponse
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/BankAccountDetailsResponse
+  - term: CardAccountDetails
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/CardAccountDetails
+  - term: CardAccountDetailsResponse
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/CardAccountDetailsResponse
+  - term: ConsumerAccountOwner
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/ConsumerAccountOwner
+  - term: ConsumerAccountOwnerResponse
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/ConsumerAccountOwnerResponse
+  - term: CorporateAccountOwner
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/CorporateAccountOwner
+  - term: CorporateAccountOwnerResponse
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/CorporateAccountOwnerResponse
+  - term: ExternalAccountLinkCardValidationResponse
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/ExternalAccountLinkCardValidationResponse
+  - term: ExternalAccountLinkClientValidationResponse
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/ExternalAccountLinkClientValidationResponse
+  - term: ExternalAccountLinkFinicityValidationResponse
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/ExternalAccountLinkFinicityValidationResponse
+  - term: ExternalAccountLinkLegacyValidationResponse
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/ExternalAccountLinkLegacyValidationResponse
+  - term: ExternalAccountLinkMicroEntryValidationResponse
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/ExternalAccountLinkMicroEntryValidationResponse
+  - term: ExternalAccountLinkNoValidationResponse
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/ExternalAccountLinkNoValidationResponse
+  - term: GalileoAccountOwner
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/GalileoAccountOwner
+  - term: GalileoAccountOwnerResponse
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/GalileoAccountOwnerResponse
+  - term: ModifiableExternalBankAccountDetails
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/ModifiableExternalBankAccountDetails
+  - term: ModifiableExternalCardAccountDetails
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-external-account-links-api-openapi.yml#/components/schemas/ModifiableExternalCardAccountDetails
+  - term: AccountRequest
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-transfers-api-openapi.yml#/components/schemas/AccountRequest
+  - term: ConsumerIdentification
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-transfers-api-openapi.yml#/components/schemas/ConsumerIdentification
+  - term: CorporateIdentification
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-transfers-api-openapi.yml#/components/schemas/CorporateIdentification
+  - term: ExternalAccountDetails
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-transfers-api-openapi.yml#/components/schemas/ExternalAccountDetails
+  - term: ExternalAccountReference
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-transfers-api-openapi.yml#/components/schemas/ExternalAccountReference
+  - term: ExternalAccountReferenceResponse
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-transfers-api-openapi.yml#/components/schemas/ExternalAccountReferenceResponse
+  - term: FedNowRailInformation
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-transfers-api-openapi.yml#/components/schemas/FedNowRailInformation
+  - term: FedwireRailInformation
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-transfers-api-openapi.yml#/components/schemas/FedwireRailInformation
+  - term: GalileoAccount
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-transfers-api-openapi.yml#/components/schemas/GalileoAccount
+  - term: GalileoAccountResponse
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-transfers-api-openapi.yml#/components/schemas/GalileoAccountResponse
+  - term: GalileoFailureDetails
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-transfers-api-openapi.yml#/components/schemas/GalileoFailureDetails
+  - term: NetworkFailureDetails
+    definition: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves; the
+      shape is unknown and is NOT a claim about the API.
+    tags:
+    - Object
+    source: openapi/sofi-technologies-transfers-api-openapi.yml#/components/schemas/NetworkFailureDetails

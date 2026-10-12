@@ -1,8 +1,13 @@
 aid: sofi-technologies
+
 url: https://raw.githubusercontent.com/api-evangelist/sofi-technologies/refs/heads/main/apis.yml
+
 name: SoFi Technologies
+
 type: Index
+
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/sofi-technologies.png
+
 description: 'SoFi Technologies, Inc. (NASDAQ: SOFI) is a US member-centric digital financial services
   company and federally chartered bank holding company. Alongside its consumer banking, lending and investing
   business it operates SoFi Tech Solutions - the B2B financial technology platform formed from its acquisitions
@@ -13,6 +18,7 @@ description: 'SoFi Technologies, Inc. (NASDAQ: SOFI) is a US member-centric digi
   Loan, Risk and Public Config APIs and three client-hosted webhook contracts. The platform declares ISO
   20022, ISO 8583, Nacha ACH, EMV and 3-D Secure in its own contracts, and discovery runs through a real
   RFC 9727 api-catalog linkset.'
+
 tags:
 - Fintech
 - Payments
@@ -27,6 +33,7 @@ tags:
 - Identity Verification
 - Webhook
 - Consumer Banking
+
 tags_raw:
 - Fintech
 - Payments
@@ -41,9 +48,13 @@ tags_raw:
 - Identity Verification
 - Webhooks
 - Consumer Banking
+
 created: '2026-04-19'
+
 modified: '2026-09-06'
+
 specificationVersion: '0.23'
+
 deliveryModel:
   model: commercial-hosted
   open_source: false
@@ -56,6 +67,7 @@ deliveryModel:
   - https://docs.tech.sofi.com/pro/docs/environments
   generated: '2026-09-06'
   method: searched
+
 accessModel:
   pricing: enterprise
   onboarding: sales-assisted
@@ -72,6 +84,114 @@ accessModel:
   note: 'The specifications and the entire developer hub are public and need no login. Calling anything
     does not: apiLogin / apiTransKey / providerId are issued during onboarding and bound to the caller
     IP. Sandbox access is requested through a form and granted by a human.'
+
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
+
+common:
+- type: Spectral
+  url: rules/sofi-technologies-rules.yml
+- type: Vocabulary
+  url: vocabulary/sofi-technologies-vocabulary.yml
+- type: Hosts
+  url: hosts/sofi-technologies-hosts.yml
+- type: Vendors
+  url: vendors/sofi-technologies-vendors.yml
+- type: CapabilityMap
+  url: capabilities/sofi-technologies-capability-edges.yml
+  name: SoFi Technologies Business Capability Map
+- type: AgentSkill
+  url: skills/sofi-technologies-open-card-account.md
+- type: AgentSkill
+  url: skills/sofi-technologies-ach-money-movement.md
+- type: AgentSkill
+  url: skills/sofi-technologies-file-dispute-claim.md
+- type: AgenticAccess
+  url: agentic-access/sofi-technologies-agentic-access.yml
+- type: Pricing
+  url: https://www.sofi.com/sofi-plus/
+- type: StatusPage
+  url: https://sofi.statuspage.io
+- type: X
+  url: https://twitter.com/SoFi
+- type: Webhooks
+  url: asyncapi/sofi-technologies-webhooks.yml
+- type: MCPServer
+  url: mcp/sofi-technologies-mcp.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/sofi-technologies-llms.txt
+- type: WellKnown
+  url: well-known/sofi-technologies-well-known.yml
+- type: Conventions
+  url: conventions/sofi-technologies-conventions.yml
+- type: Idempotency
+  url: conventions/sofi-technologies-conventions.yml
+- type: Authentication
+  url: authentication/sofi-technologies-authentication.yml
+- type: ErrorCatalog
+  url: errors/sofi-technologies-problem-types.yml
+- type: DeclineCodes
+  url: errors/sofi-technologies-decline-codes.yml
+- type: Lifecycle
+  url: lifecycle/sofi-technologies-lifecycle.yml
+- type: Deprecation
+  url: lifecycle/sofi-technologies-lifecycle.yml
+- type: ChangeLog
+  url: changelog/sofi-technologies-changelog.yml
+- type: Conformance
+  url: conformance/sofi-technologies-conformance.yml
+- type: DataModel
+  url: data-model/sofi-technologies-data-model.yml
+- type: Sandbox
+  url: sandbox/sofi-technologies-sandbox.yml
+- type: Plans
+  url: plans/sofi-technologies-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/sofi-technologies-rate-limits.yml
+- type: FinOps
+  url: finops/sofi-technologies-finops.yml
+- type: DomainSecurity
+  url: security/sofi-technologies-domain-security.yml
+- type: VulnerabilityDisclosure
+  url: security/sofi-technologies-vulnerability-disclosure.yml
+- type: Security
+  url: https://hackerone.com/sofi-1
+- type: Overlay
+  url: overlays/sofi-technologies-program-api-overlay.yaml
+- type: Website
+  url: https://www.sofi.com
+- type: DeveloperPortal
+  url: https://docs.tech.sofi.com/pro/
+- type: Documentation
+  url: https://docs.tech.sofi.com/pro/docs/introduction
+- type: APIReference
+  url: https://docs.tech.sofi.com/pro/reference/program-api-intro
+- type: GettingStarted
+  url: https://docs.tech.sofi.com/pro/docs/quickstart
+- type: Postman
+  url: https://www.postman.com/galileo-ft/workspace
+- type: SignUp
+  url: https://tech.sofi.com/lp/request-access/
+- type: Support
+  url: https://tech.sofi.com/contact-us/
+- type: Blog
+  url: https://tech.sofi.com/blog/
+- type: Newsroom
+  url: https://tech.sofi.com/news/
+- type: About
+  url: https://tech.sofi.com/about/
+- type: Careers
+  url: https://tech.sofi.com/careers/
+- type: TermsOfService
+  url: https://www.sofi.com/terms-of-use/
+- type: PrivacyPolicy
+  url: https://www.sofi.com/privacy-policies/
+- type: LinkedIn
+  url: https://www.linkedin.com/company/sofi-technologies
+
 apis:
 - aid: sofi-technologies:sofi-technologies-account-events-webhook-api
   name: SoFi Technologies Account Events Webhook API
@@ -1429,111 +1549,13 @@ apis:
   - type: APIReference
     url: >-
       https://docs.tech.sofi.com/pro/reference/api-reference-external-trans-api-about-external-trans-api
-common:
-- type: CapabilityMap
-  url: capabilities/sofi-technologies-capability-edges.yml
-  name: SoFi Technologies Business Capability Map
-- type: AgentSkill
-  url: skills/sofi-technologies-open-card-account.md
-- type: AgentSkill
-  url: skills/sofi-technologies-ach-money-movement.md
-- type: AgentSkill
-  url: skills/sofi-technologies-file-dispute-claim.md
-- type: AgenticAccess
-  url: agentic-access/sofi-technologies-agentic-access.yml
-- type: Pricing
-  url: https://www.sofi.com/sofi-plus/
-- type: StatusPage
-  url: https://sofi.statuspage.io
-- type: X
-  url: https://twitter.com/SoFi
-- type: Webhooks
-  url: asyncapi/sofi-technologies-webhooks.yml
-- type: MCPServer
-  url: mcp/sofi-technologies-mcp.yml
-- type: ToolCrosswalk
-  url: mcp/sofi-technologies-tool-crosswalk.yml
-- type: AgentSkill
-  url: skills/_index.yml
-- type: LLMsTxt
-  url: llms/sofi-technologies-llms.txt
-- type: WellKnown
-  url: well-known/sofi-technologies-well-known.yml
-- type: Conventions
-  url: conventions/sofi-technologies-conventions.yml
-- type: Idempotency
-  url: conventions/sofi-technologies-conventions.yml
-- type: Authentication
-  url: authentication/sofi-technologies-authentication.yml
-- type: ErrorCatalog
-  url: errors/sofi-technologies-problem-types.yml
-- type: DeclineCodes
-  url: errors/sofi-technologies-decline-codes.yml
-- type: Lifecycle
-  url: lifecycle/sofi-technologies-lifecycle.yml
-- type: Deprecation
-  url: lifecycle/sofi-technologies-lifecycle.yml
-- type: ChangeLog
-  url: changelog/sofi-technologies-changelog.yml
-- type: Conformance
-  url: conformance/sofi-technologies-conformance.yml
-- type: DataModel
-  url: data-model/sofi-technologies-data-model.yml
-- type: Sandbox
-  url: sandbox/sofi-technologies-sandbox.yml
-- type: Packages
-  url: packages/sofi-technologies-packages.yml
-- type: Plans
-  url: plans/sofi-technologies-plans-pricing.yml
-- type: RateLimits
-  url: rate-limits/sofi-technologies-rate-limits.yml
-- type: FinOps
-  url: finops/sofi-technologies-finops.yml
-- type: DomainSecurity
-  url: security/sofi-technologies-domain-security.yml
-- type: VulnerabilityDisclosure
-  url: security/sofi-technologies-vulnerability-disclosure.yml
-- type: Security
-  url: https://hackerone.com/sofi-1
-- type: Overlay
-  url: overlays/sofi-technologies-program-api-overlay.yaml
-- type: Website
-  url: https://www.sofi.com
-- type: DeveloperPortal
-  url: https://docs.tech.sofi.com/pro/
-- type: Documentation
-  url: https://docs.tech.sofi.com/pro/docs/introduction
-- type: APIReference
-  url: https://docs.tech.sofi.com/pro/reference/program-api-intro
-- type: GettingStarted
-  url: https://docs.tech.sofi.com/pro/docs/quickstart
-- type: Postman
-  url: https://www.postman.com/galileo-ft/workspace
-- type: SignUp
-  url: https://tech.sofi.com/lp/request-access/
-- type: Support
-  url: https://tech.sofi.com/contact-us/
-- type: Blog
-  url: https://tech.sofi.com/blog/
-- type: Newsroom
-  url: https://tech.sofi.com/news/
-- type: About
-  url: https://tech.sofi.com/about/
-- type: Careers
-  url: https://tech.sofi.com/careers/
-- type: TermsOfService
-  url: https://www.sofi.com/terms-of-use/
-- type: PrivacyPolicy
-  url: https://www.sofi.com/privacy-policies/
-- type: LinkedIn
-  url: https://www.linkedin.com/company/sofi-technologies
-maintainers:
-- FN: Kin Lane
-  email: kin@apievangelist.com
+
 x-parent:
   slug: sofi
+
 x-relationship:
   kind: product
+
 x-api-bases:
   note: 'STEP 22b: repair-api-bases.py reports `disagreement` for this record, and the disagreement is
     correct rather than a defect. SoFi Tech Solutions gives each API family its own host template - api-{corename}.{env}.gpsrv.com
@@ -1545,6 +1567,7 @@ x-api-bases:
     server values and are recorded verbatim rather than replaced with a SoFi host that does not exist.
     corename is assigned per client at onboarding; env is cv (client validation) or pd (production). The
     shared Sandbox is reached at https://sandbox-api.gpsrv.com/intserv/4.0/.'
+
 x-contract-ownership:
   note: 'The eleven OpenAPI definitions in openapi/ were fetched from the RFC 9727 api-catalog at https://docs.tech.sofi.com/pro/.well-known/api-catalog
     - SoFi Technologies own hostname - and they name their publisher in their own text: the External Trans
@@ -1555,9 +1578,9 @@ x-contract-ownership:
     Tech Solutions in 2026 (https://tech.sofi.com/news/galileo-financial-technologies-rebranding-to-sofi-tech-solutions/).
     The sibling record all/galileo-fs documents the same platform under its pre-rebrand identity and legacy
     docs.galileo-ft.com host; this record documents the surface as SoFi publishes it today.'
+
 x-enrichment:
-  date: '2026-09-06'
+  date: '2026-10-12'
   status: enriched
-  artifacts_added: 35
-  artifacts_updated: 5
-  pass: local-v3
+  artifacts_added: 1
+  pass: local-v5

@@ -16,10 +16,12 @@ paths:
 
         >
 
-        >Some of the field descriptions for this endpoint reference FedNow or Fedwire, which are future capabilities not yet available for clients. Right now, this endpoint supports only Mastercard Data Connect: Account Linking and Mastercard Data Connect: Balance Check.
+        >Some of the field descriptions for this endpoint reference FedNow or Fedwire, which are future capabilities not yet available for clients.
+        Right now, this endpoint supports only Mastercard Data Connect: Account Linking and Mastercard Data Connect: Balance Check.
 
 
-        Use the Create External Account Link endpoint to create a link from an account at an external bank to the caller account when a user manually inputs their external account information. This account will be usable for transfers over FedWire or credit rails, depending on your configuration.'
+        Use the Create External Account Link endpoint to create a link from an account at an external bank to the caller account when a user manually
+        inputs their external account information. This account will be usable for transfers over FedWire or credit rails, depending on your configuration.'
       operationId: paymenthub_post_createexternalaccountlink
       parameters:
       - name: x-gft-idempotency-key
@@ -139,7 +141,8 @@ paths:
 
                               Pattern:
 
-                              - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+                              - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state
+                              code (e.g., ''NY'', ''CA'')
 
                               - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
                             examples:
@@ -153,7 +156,8 @@ paths:
 
                               Pattern:
 
-                              - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+                              - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code
+                              (e.g., ''11201'')
 
                               - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
                             examples:
@@ -313,7 +317,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -361,7 +366,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -408,7 +414,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -454,7 +461,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -501,7 +509,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -581,7 +590,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -627,7 +637,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -675,7 +686,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -722,7 +734,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -737,7 +750,9 @@ paths:
       tags:
       - External Account Links
       summary: Load External Account Links
-      description: Use the Load External Account Links endpoint to initiate a link between external account(s) and the caller account when a user inputs their external account credentials during a secure session in your application. The external account will be usable for transfers over FedWire or credit rails, depending on your configuration.
+      description: Use the Load External Account Links endpoint to initiate a link between external account(s) and the caller account when a user
+        inputs their external account credentials during a secure session in your application. The external account will be usable for transfers
+        over FedWire or credit rails, depending on your configuration.
       operationId: paymenthub_post_loadexternalaccountlinks
       parameters:
       - name: x-gft-idempotency-key
@@ -927,7 +942,9 @@ paths:
                 title: Response 200 Load External Account Links Call Loadexternalaccountlinks Post
               examples:
                 response:
-                  value: "[\n    {\n      \"externalAccountLinkId\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"status\": \"PENDING\",\n      \"integration\": {\n        \"type\": \"FINICITY\",\n        \"customerId\": \"1005061234\",\n        \"accountId\": \"5011648377\",\n        \"institutionId\": \"102105\"\n      }\n    }\n]"
+                  value: "[\n    {\n      \"externalAccountLinkId\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"status\": \"PENDING\"\
+                    ,\n      \"integration\": {\n        \"type\": \"FINICITY\",\n        \"customerId\": \"1005061234\",\n        \"accountId\"\
+                    : \"5011648377\",\n        \"institutionId\": \"102105\"\n      }\n    }\n]"
         '400':
           content:
             application/json:
@@ -964,7 +981,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1012,7 +1030,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1059,7 +1078,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1105,7 +1125,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1152,7 +1173,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1232,7 +1254,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1278,7 +1301,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1326,7 +1350,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1373,7 +1398,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1488,7 +1514,8 @@ paths:
 
                                 Pattern:
 
-                                - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+                                - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state
+                                code (e.g., ''NY'', ''CA'')
 
                                 - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
                               examples:
@@ -1502,7 +1529,8 @@ paths:
 
                                 Pattern:
 
-                                - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+                                - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP
+                                code (e.g., ''11201'')
 
                                 - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
                               examples:
@@ -1688,7 +1716,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1735,7 +1764,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1782,7 +1812,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1829,7 +1860,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1908,7 +1940,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -1955,7 +1988,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -2002,7 +2036,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -2049,7 +2084,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -2077,10 +2113,12 @@ paths:
 
         >
 
-        >Some of the field descriptions for this endpoint reference FedNow or Fedwire, which are future capabilities not yet available for clients. Right now, this endpoint supports only Mastercard Data Connect: Account Linking and Mastercard Data Connect: Balance Check.
+        >Some of the field descriptions for this endpoint reference FedNow or Fedwire, which are future capabilities not yet available for clients.
+        Right now, this endpoint supports only Mastercard Data Connect: Account Linking and Mastercard Data Connect: Balance Check.
 
 
-        Use the Get External Account Link endpoint to retrieve a remote account that was created by Create External Account Link for the specified `accountNo`.'
+        Use the Get External Account Link endpoint to retrieve a remote account that was created by Create External Account Link for the specified
+        `accountNo`.'
       operationId: paymenthub_post_getexternalaccountlink
       requestBody:
         content:
@@ -2152,7 +2190,8 @@ paths:
                     - type: string
                     - type: 'null'
                     title: Nickname
-                    description: "Display name for the remote account. Not considered to be sensitive data. \nPattern: Max 34 alphanumeric, punctuation\nExample: `\"Celia College Fund\"`"
+                    description: "Display name for the remote account. Not considered to be sensitive data. \nPattern: Max 34 alphanumeric, punctuation\n\
+                      Example: `\"Celia College Fund\"`"
                     examples:
                     - Celia College Fund
                     - dest name 1
@@ -2228,7 +2267,8 @@ paths:
 
                                 Pattern:
 
-                                - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+                                - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state
+                                code (e.g., ''NY'', ''CA'')
 
                                 - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
                               examples:
@@ -2242,7 +2282,8 @@ paths:
 
                                 Pattern:
 
-                                - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+                                - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP
+                                code (e.g., ''11201'')
 
                                 - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
                               examples:
@@ -2346,7 +2387,10 @@ paths:
                 title: GetExternalAccountLinkResponse
               examples:
                 response:
-                  value: "{\n    \"externalAccountLinkId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"status\": \"ACTIVE\",\n    \"nickname\": \"Celia College Fund\",\n    \"owner\": {\n      \"type\": \"CORPORATE\",\n      \"ownershipType\": \"FIRST_PARTY\",\n      \"address\": null\n    },\n    \"details\": {\n      \"type\": \"BANK\"\n    },\n    \"validation\": {\n      \"type\": \"CLIENT\",\n      \"status\": \"PENDING\",\n      \"status_reason\": null\n    }\n}"
+                  value: "{\n    \"externalAccountLinkId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"status\": \"ACTIVE\",\n    \"nickname\"\
+                    : \"Celia College Fund\",\n    \"owner\": {\n      \"type\": \"CORPORATE\",\n      \"ownershipType\": \"FIRST_PARTY\",\n \
+                    \     \"address\": null\n    },\n    \"details\": {\n      \"type\": \"BANK\"\n    },\n    \"validation\": {\n      \"type\"\
+                    : \"CLIENT\",\n      \"status\": \"PENDING\",\n      \"status_reason\": null\n    }\n}"
         '400':
           description: Bad Request
           content:
@@ -2384,7 +2428,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -2431,7 +2476,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -2478,7 +2524,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -2525,7 +2572,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -2604,7 +2652,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -2651,7 +2700,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -2698,7 +2748,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -2745,7 +2796,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -2769,7 +2821,8 @@ paths:
       tags:
       - External Account Links
       summary: List External Account Links
-      description: Use the List External Account Links endpoint to retrieve a list of remote accounts that were created by Create External Account Link for the specified `accountNo`.
+      description: Use the List External Account Links endpoint to retrieve a list of remote accounts that were created by Create External Account
+        Link for the specified `accountNo`.
       operationId: paymenthub_post_listexternalaccountlinks
       requestBody:
         content:
@@ -2849,7 +2902,8 @@ paths:
                             - type: string
                             - type: 'null'
                             title: Nickname
-                            description: "Display name for the remote account. Not considered to be sensitive data. \nPattern: Max 34 alphanumeric, punctuation\nExample: `\"Celia College Fund\"`"
+                            description: "Display name for the remote account. Not considered to be sensitive data. \nPattern: Max 34 alphanumeric,\
+                              \ punctuation\nExample: `\"Celia College Fund\"`"
                             examples:
                             - Celia College Fund
                             - dest name 1
@@ -2925,7 +2979,8 @@ paths:
 
                                         Pattern:
 
-                                        - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter state code (e.g., ''NY'', ''CA'')
+                                        - Default: 2-35 characters with at least one non-whitespace character. For US addresses, typically 2-letter
+                                        state code (e.g., ''NY'', ''CA'')
 
                                         - FEDWIRE: 2-35 characters, limited to alphanumeric and special characters'
                                       examples:
@@ -2939,7 +2994,8 @@ paths:
 
                                         Pattern:
 
-                                        - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit ZIP code (e.g., ''11201'')
+                                        - Default: 1-15 characters with at least one non-whitespace character. For US addresses, typically 5-digit
+                                        ZIP code (e.g., ''11201'')
 
                                         - FEDWIRE: 1-15 characters, limited to alphanumeric and special characters'
                                       examples:
@@ -3057,7 +3113,12 @@ paths:
                 title: ListExternalAccountLinksResponse
               examples:
                 response:
-                  value: "{\n    \"externalAccountLinks\": [\n      {\n        \"externalAccountLinkId\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"status\": \"ACTIVE\",\n        \"nickname\": \"Celia College Fund\",\n        \"owner\": {\n          \"type\": \"CORPORATE\",\n          \"ownershipType\": \"FIRST_PARTY\",\n          \"address\": null\n        },\n        \"details\": {\n          \"type\": \"BANK\"\n        },\n        \"validation\": {\n          \"type\": \"CLIENT\",\n          \"status\": \"PENDING\",\n          \"status_reason\": null\n        }\n      }\n    ],\n    \"nextPage\": \"123e4567-e89b-12d3-a456-4266100532\"\n}"
+                  value: "{\n    \"externalAccountLinks\": [\n      {\n        \"externalAccountLinkId\": \"550e8400-e29b-41d4-a716-446655440000\"\
+                    ,\n        \"status\": \"ACTIVE\",\n        \"nickname\": \"Celia College Fund\",\n        \"owner\": {\n          \"type\"\
+                    : \"CORPORATE\",\n          \"ownershipType\": \"FIRST_PARTY\",\n          \"address\": null\n        },\n        \"details\"\
+                    : {\n          \"type\": \"BANK\"\n        },\n        \"validation\": {\n          \"type\": \"CLIENT\",\n          \"status\"\
+                    : \"PENDING\",\n          \"status_reason\": null\n        }\n      }\n    ],\n    \"nextPage\": \"123e4567-e89b-12d3-a456-4266100532\"\
+                    \n}"
         '400':
           description: Bad Request
           content:
@@ -3095,7 +3156,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3142,7 +3204,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3189,7 +3252,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3236,7 +3300,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3315,7 +3380,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3362,7 +3428,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3409,7 +3476,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3456,7 +3524,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3571,7 +3640,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3618,7 +3688,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3665,7 +3736,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3712,7 +3784,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3791,7 +3864,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3838,7 +3912,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3885,7 +3960,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3932,7 +4008,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -3956,7 +4033,8 @@ paths:
       tags:
       - External Account Links
       summary: Get External Account Link Access
-      description: Use the Get External Account Link Access endpoint to initiate a secure, user-facing session for linking an external account. This endpoint generates a temporary link for the user to securely provide their credentials to a third-party partner like Finicity.
+      description: Use the Get External Account Link Access endpoint to initiate a secure, user-facing session for linking an external account.
+        This endpoint generates a temporary link for the user to securely provide their credentials to a third-party partner like Finicity.
       operationId: paymenthub_post_getexternalaccountlinkaccess
       requestBody:
         content:
@@ -4112,7 +4190,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -4159,7 +4238,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -4206,7 +4286,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -4253,7 +4334,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -4300,7 +4382,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -4379,7 +4462,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -4426,7 +4510,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -4473,7 +4558,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -4520,7 +4606,8 @@ paths:
                           type: object
                         - type: 'null'
                         title: Details
-                        description: Contains details about the error when available. For example, which fields has validations problems or which action fails.
+                        description: Contains details about the error when available. For example, which fields has validations problems or which
+                          action fails.
                     type: object
                     required:
                     - code
@@ -4542,3 +4629,95 @@ paths:
 x-readme:
   explorer-enabled: true
   proxy-enabled: true
+components:
+  schemas:
+    BankAccountDetails:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    BankAccountDetailsResponse:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    CardAccountDetails:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    CardAccountDetailsResponse:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    ConsumerAccountOwner:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    ConsumerAccountOwnerResponse:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    CorporateAccountOwner:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    CorporateAccountOwnerResponse:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    ExternalAccountLinkCardValidationResponse:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    ExternalAccountLinkClientValidationResponse:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    ExternalAccountLinkFinicityValidationResponse:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    ExternalAccountLinkLegacyValidationResponse:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    ExternalAccountLinkMicroEntryValidationResponse:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    ExternalAccountLinkNoValidationResponse:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    GalileoAccountOwner:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    GalileoAccountOwnerResponse:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    ModifiableExternalBankAccountDetails:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true
+    ModifiableExternalCardAccountDetails:
+      type: object
+      description: Referenced by this document but never defined in it. API Evangelist added this empty placeholder so the document resolves;
+        the shape is unknown and is NOT a claim about the API.
+      x-ae-placeholder: true

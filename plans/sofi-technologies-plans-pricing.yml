@@ -1,3 +1,4 @@
+name: SoFi Technologies API Plans
 specification: API Commons Plans
 specificationVersion: '0.1'
 schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
@@ -10,34 +11,47 @@ method: searched
 source: https://tech.sofi.com/
 reconciled: true
 tags:
-  - Fintech
-  - Payments
-  - Banking
-description: >-
-  SoFi Tech Solutions publishes no developer pricing. The platform is sold through a signed
-  program agreement negotiated with the SoFi Tech Solutions team, and pricing depends on the
-  program's card, deposit and payment configuration. There is no self-serve tier, no rate card,
-  no per-call price and no published minimum. Sandbox access is free but is requested through a
-  form and granted by SoFi, not provisioned on signup.
+- Fintech
+- Payments
+- Banking
+description: SoFi Tech Solutions publishes no developer pricing. The platform is sold through a signed
+  program agreement negotiated with the SoFi Tech Solutions team, and pricing depends on the program's
+  card, deposit and payment configuration. There is no self-serve tier, no rate card, no per-call price
+  and no published minimum. Sandbox access is free but is requested through a form and granted by SoFi,
+  not provisioned on signup.
 plan_count: 0
 plans: []
 probes:
-  - { url: 'https://tech.sofi.com/pricing', status: 200, result: 'redirects to https://tech.sofi.com/ - no pricing page exists' }
-  - { url: 'https://tech.sofi.com/contact', status: 200, result: 'redirects to https://tech.sofi.com/contact-us/ - the sales gate' }
-  - { url: 'https://www.galileo-ft.com/request-access/', status: 200, result: 'redirects to https://tech.sofi.com/lp/request-access/ - Sandbox access request form' }
-  - { url: 'https://docs.tech.sofi.com/pro/llms.txt', status: 200, result: '679-line documentation index with no pricing page in it' }
+- url: https://tech.sofi.com/pricing
+  status: 200
+  result: redirects to https://tech.sofi.com/ - no pricing page exists
+- url: https://tech.sofi.com/contact
+  status: 200
+  result: redirects to https://tech.sofi.com/contact-us/ - the sales gate
+- url: https://www.galileo-ft.com/request-access/
+  status: 200
+  result: redirects to https://tech.sofi.com/lp/request-access/ - Sandbox access request form
+- url: https://docs.tech.sofi.com/pro/llms.txt
+  status: 200
+  result: 679-line documentation index with no pricing page in it
 access_model:
   self_serve: false
   free_tier: false
-  trial: 'Sandbox access on request - no card, no clock, but a human grants it'
+  trial: Sandbox access on request - no card, no clock, but a human grants it
   contact_sales: https://tech.sofi.com/contact-us/
   sandbox_request: https://tech.sofi.com/lp/request-access/
-notes: >-
-  A plan_count of 0 here is a measurement, not a gap in this pass: the entire public developer
-  hub was indexed via the provider's own llms.txt and it contains no pricing, plan or rate-card
-  page. This artifact replaces a 2026-05-04 bulk-sweep placeholder that described SoFi
-  Technologies as a closed B2C bank with no developer surface at all - which was wrong about the
-  surface, though right that there is no published price.
+notes: 'A plan_count of 0 here is a measurement, not a gap in this pass: the entire public developer hub
+  was indexed via the provider''s own llms.txt and it contains no pricing, plan or rate-card page. This
+  artifact replaces a 2026-05-04 bulk-sweep placeholder that described SoFi Technologies as a closed B2C
+  bank with no developer surface at all - which was wrong about the surface, though right that there is
+  no published price.'
 maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+- FN: Kin Lane
+  email: kin@apievangelist.com
+delivery:
+  delivery: managed
+  note: Hosted issuer-processor platform; credentials issued under a program agreement (apis.yml deliveryModel,
+    sourced from docs.tech.sofi.com environments page).
+audience: unclear
+pricing_basis: negotiated
+published: false

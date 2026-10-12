@@ -1,0 +1,6 @@
+generated: '2026-10-12'
+method: probed
+generator: harvest-llms.py
+source: https://docs.tech.sofi.com/llms.txt
+bytes: 141580
+note: saved verbatim; the provider's own document

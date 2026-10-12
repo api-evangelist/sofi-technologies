@@ -1,0 +1,22 @@
+generated: '2026-10-12'
+method: none
+source:
+- https://zapier.com/apps/sofi-technologies/integrations
+- https://n8n.io/integrations/sofi-technologies/
+- https://composio.dev/toolkits/sofi-technologies
+- https://monid.ai/tools/sofi-technologies
+checked:
+- https://composio.dev/toolkits/sofi-technologies
+- https://monid.ai/tools/sofi-technologies
+- https://n8n.io/integrations/sofi-technologies/
+- https://tech.sofi.com/integrations/
+- https://tech.sofi.com/partners/
+- https://www.galileo-ft.com/partners/
+- https://zapier.com/apps/sofi-technologies/integrations
+- https://zapier.com/apps/sofi/integrations
+summary: null
+marketplace_apps: []
+edges: []
+templates: []
+note: zapier.com/apps/sofi 404; tech.sofi.com and galileo-ft.com answered 403 to plain and browser fetches (2026-10-12),
+  so the provider partner page could not be read; contracts name no third-party service.
