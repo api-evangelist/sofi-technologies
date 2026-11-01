@@ -1,4 +1,4 @@
-# SoFi Technologies (sofi-technologies)
+# SoFi Technologies
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,21 +66,179 @@
 
 SoFi Technologies, Inc. (NASDAQ: SOFI) is a US member-centric digital financial services company and federally chartered bank holding company. Alongside its consumer banking, lending and investing business it operates SoFi Tech Solutions - the B2B financial technology platform formed from its acquisitions of Galileo Financial Technologies and Technisys, and rebranded under the SoFi name in 2026. SoFi Tech Solutions is the API business: a card issuer-processor and banking-as-a-service platform whose public developer hub at docs.tech.sofi.com publishes eleven OpenAPI definitions covering 258 operations - the 167-operation Program API for accounts, cards, authorizations, ACH and bill pay, plus Payment Hub, Dispute, Loan, Risk and Public Config APIs and three client-hosted webhook contracts. The platform declares ISO 20022, ISO 8583, Nacha ACH, EMV and 3-D Secure in its own contracts, and discovery runs through a real RFC 9727 api-catalog linkset.
 
-**URL:** [Visit APIs.json URL](https://raw.githubusercontent.com/api-evangelist/sofi-technologies/refs/heads/main/apis.yml)
+**Areas:** Fintech · Payments · Banking · Card Issuing · Banking as a Service · Personal Finance · Lending · ACH · ISO 20022 · Disputes · Identity Verification · Webhook
 
-**Run:** [Capabilities Using Naftiko](https://github.com/naftiko/fleet?utm_source=api-evangelist&utm_medium=readme&utm_campaign=company-api-evangelist&utm_content=repo)
+## SoFi Technologies on APIs.io
 
-## Tags:
+Everything profiled for SoFi Technologies is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/sofi-technologies/](https://apis.io/providers/sofi-technologies/)** — or go straight to one of the APIs or properties below.
 
- - Fintech, Payments, Banking, Card Issuing, Banking as a Service, Personal Finance, Lending, ACH, ISO 20022, Disputes, Identity Verification, Webhooks
+### APIs (36)
 
-## Timestamps
+- [SoFi Technologies Account Events Webhook API](https://apis.io/apis/sofi-technologies/sofi-technologies-account-events-webhook-api/) — The Account Events Webhook API from SoFi Technologies — 1 operation(s) for account events webhook.
+- [SoFi Technologies Account-Level Controls API](https://apis.io/apis/sofi-technologies/sofi-technologies-account-level-controls-api/) — The Account-Level Controls API from SoFi Technologies — 9 operation(s) for account-level controls.
+- [SoFi Technologies Accounts and Cards API](https://apis.io/apis/sofi-technologies/sofi-technologies-accounts-and-cards-api/) — The Accounts and Cards API from SoFi Technologies — 47 operation(s) for accounts and cards.
+- [SoFi Technologies ACH Debit Webhook API](https://apis.io/apis/sofi-technologies/sofi-technologies-ach-debit-webhook-api/) — The ACH Debit Webhook API from SoFi Technologies — 1 operation(s) for ach debit webhook.
+- [SoFi Technologies Alerts API](https://apis.io/apis/sofi-technologies/sofi-technologies-alerts-api/) — The Alerts API from SoFi Technologies — 7 operation(s) for alerts.
+- [SoFi Technologies Attachments API](https://apis.io/apis/sofi-technologies/sofi-technologies-attachments-api/) — The Attachments API from SoFi Technologies — 1 operation(s) for attachments.
+- [SoFi Technologies Auth API Webhook API](https://apis.io/apis/sofi-technologies/sofi-technologies-auth-api-webhook-api/) — The Auth API Webhook API from SoFi Technologies — 2 operation(s) for auth api webhook.
+- [SoFi Technologies Authorization Events Webhook API](https://apis.io/apis/sofi-technologies/sofi-technologies-authorization-events-webhook-api/) — The Authorization Events Webhook API from SoFi Technologies — 1 operation(s) for authorization events webhook.
+- [SoFi Technologies Billpay Webhook API](https://apis.io/apis/sofi-technologies/sofi-technologies-billpay-webhook-api/) — The Billpay Webhook API from SoFi Technologies — 1 operation(s) for billpay webhook.
+- [SoFi Technologies Claim API](https://apis.io/apis/sofi-technologies/sofi-technologies-claim-api/) — The Claim API from SoFi Technologies — 4 operation(s) for claim.
+- [SoFi Technologies Configuration API](https://apis.io/apis/sofi-technologies/sofi-technologies-configuration-api/) — The Configuration API from SoFi Technologies — 1 operation(s) for configuration.
+- [SoFi Technologies Corporate Credit and RTF API](https://apis.io/apis/sofi-technologies/sofi-technologies-corporate-credit-and-rtf-api/) — The Corporate Credit and RTF API from SoFi Technologies — 8 operation(s) for corporate credit and rtf.
+- [SoFi Technologies Corporate Hierarchy API](https://apis.io/apis/sofi-technologies/sofi-technologies-corporate-hierarchy-api/) — The Corporate Hierarchy API from SoFi Technologies — 9 operation(s) for corporate hierarchy.
+- [SoFi Technologies Credit API](https://apis.io/apis/sofi-technologies/sofi-technologies-credit-api/) — The Credit API from SoFi Technologies — 8 operation(s) for credit.
+- [SoFi Technologies Dispute Management API](https://apis.io/apis/sofi-technologies/sofi-technologies-dispute-management-api/) — The Dispute Management API from SoFi Technologies — 7 operation(s) for dispute management.
+- [SoFi Technologies Disputed Transactions API](https://apis.io/apis/sofi-technologies/sofi-technologies-disputed-transactions-api/) — The Disputed Transactions API from SoFi Technologies — 1 operation(s) for disputed transactions.
+- [SoFi Technologies Documents API](https://apis.io/apis/sofi-technologies/sofi-technologies-documents-api/) — The Documents API from SoFi Technologies — 2 operation(s) for documents.
+- [SoFi Technologies External Account Links API](https://apis.io/apis/sofi-technologies/sofi-technologies-external-account-links-api/) — The External Account Links API from SoFi Technologies — 7 operation(s) for external account links.
+- [SoFi Technologies Federal Benefit Enrollment API](https://apis.io/apis/sofi-technologies/sofi-technologies-federal-benefit-enrollment-api/) — The Federal Benefit Enrollment API from SoFi Technologies — 4 operation(s) for federal benefit enrollment.
+- [SoFi Technologies Instant Issue API](https://apis.io/apis/sofi-technologies/sofi-technologies-instant-issue-api/) — The Instant Issue API from SoFi Technologies — 7 operation(s) for instant issue.
+- [SoFi Technologies Intake API](https://apis.io/apis/sofi-technologies/sofi-technologies-intake-api/) — The Intake API from SoFi Technologies — 17 operation(s) for intake.
+- [SoFi Technologies Intake Flow API](https://apis.io/apis/sofi-technologies/sofi-technologies-intake-flow-api/) — The Intake Flow API from SoFi Technologies — 15 operation(s) for intake flow.
+- [SoFi Technologies IVR API](https://apis.io/apis/sofi-technologies/sofi-technologies-ivr-api/) — The IVR API from SoFi Technologies — 3 operation(s) for ivr.
+- [SoFi Technologies IVS API](https://apis.io/apis/sofi-technologies/sofi-technologies-ivs-api/) — The IVS API from SoFi Technologies — 6 operation(s) for ivs.
+- [SoFi Technologies Loan API](https://apis.io/apis/sofi-technologies/sofi-technologies-loan-api/) — Loan management endpoints.
+- [SoFi Technologies Location Management API](https://apis.io/apis/sofi-technologies/sofi-technologies-location-management-api/) — The Location Management API from SoFi Technologies — 5 operation(s) for location management.
+- [SoFi Technologies Miscellaneous API](https://apis.io/apis/sofi-technologies/sofi-technologies-miscellaneous-api/) — The Miscellaneous API from SoFi Technologies — 5 operation(s) for miscellaneous.
+- [SoFi Technologies Overdraft API](https://apis.io/apis/sofi-technologies/sofi-technologies-overdraft-api/) — The Overdraft API from SoFi Technologies — 3 operation(s) for overdraft.
+- [SoFi Technologies Risk API](https://apis.io/apis/sofi-technologies/sofi-technologies-risk-api/) — The Risk API from SoFi Technologies — 3 operation(s) for risk.
+- [SoFi Technologies Settlement Events Webhook API](https://apis.io/apis/sofi-technologies/sofi-technologies-settlement-events-webhook-api/) — The Settlement Events Webhook API from SoFi Technologies — 1 operation(s) for settlement events webhook.
+- [SoFi Technologies Status API](https://apis.io/apis/sofi-technologies/sofi-technologies-status-api/) — The Status API from SoFi Technologies — 1 operation(s) for status.
+- [SoFi Technologies Tasks API](https://apis.io/apis/sofi-technologies/sofi-technologies-tasks-api/) — The Tasks API from SoFi Technologies — 4 operation(s) for tasks.
+- [SoFi Technologies Transaction Events Webhook API](https://apis.io/apis/sofi-technologies/sofi-technologies-transaction-events-webhook-api/) — The Transaction Events Webhook API from SoFi Technologies — 1 operation(s) for transaction events webhook.
+- [SoFi Technologies Transaction Simulation API](https://apis.io/apis/sofi-technologies/sofi-technologies-transaction-simulation-api/) — The Transaction Simulation API from SoFi Technologies — 6 operation(s) for transaction simulation.
+- [SoFi Technologies Transactions API](https://apis.io/apis/sofi-technologies/sofi-technologies-transactions-api/) — The Transactions API from SoFi Technologies — 46 operation(s) for transactions.
+- [SoFi Technologies Transfers API](https://apis.io/apis/sofi-technologies/sofi-technologies-transfers-api/) — The Transfers API from SoFi Technologies — 4 operation(s) for transfers.
 
-- **Created:** 2026-04-19
-- **Modified:** 2026-09-06
+### Published properties
 
-## Maintainers
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-**FN:** Kin Lane
+#### AsyncAPI (1)
 
-**Email:** kin@apievangelist.com
+Event-driven and webhook contracts.
+
+- [Sofi Technologies Webhooks](https://apis.io/asyncapis/sofi-technologies/sofi-technologies-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [SoFi Tech Solutions Documentation MCP](https://apis.io/servers/sofi-technologies/sofi-tech-solutions-documentation-mcp/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Sofi Technologies Agentic Access](https://apis.io/agentic-access/sofi-technologies/sofi-technologies-agentic-access/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Sofi Technologies Program Api Overlay](https://apis.io/overlays/sofi-technologies/sofi-technologies-program-api-overlay/)
+
+#### Governance rules (1)
+
+Spectral rulesets for the provider's contracts.
+
+- [SoFi Technologies API Rules](https://apis.io/rules/sofi-technologies/sofi-technologies-rules/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Sofi Technologies Authentication](https://apis.io/security/sofi-technologies/sofi-technologies-authentication/)
+- [Sofi Technologies Domain Security](https://apis.io/security/sofi-technologies/sofi-technologies-domain-security/)
+- [Sofi Technologies Vulnerability Disclosure](https://apis.io/security/sofi-technologies/sofi-technologies-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Sofi Technologies Plans Pricing](https://apis.io/plans/sofi-technologies/sofi-technologies-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Sofi Technologies Rate Limits](https://apis.io/rate-limits/sofi-technologies/sofi-technologies-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Sofi Technologies Finops](https://apis.io/finops/sofi-technologies/sofi-technologies-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.sofi.com)
+- [Documentation](https://docs.tech.sofi.com/pro/docs/introduction)
+- [Getting started](https://docs.tech.sofi.com/pro/docs/quickstart)
+- [API reference](https://docs.tech.sofi.com/pro/reference/program-api-intro)
+- [Pricing](https://www.sofi.com/sofi-plus/)
+- [Sign up](https://tech.sofi.com/lp/request-access/)
+- [Support](https://tech.sofi.com/contact-us/)
+- [Blog](https://tech.sofi.com/blog/)
+- [Security](https://hackerone.com/sofi-1)
+- [Terms of service](https://www.sofi.com/terms-of-use/)
+- [Privacy policy](https://www.sofi.com/privacy-policies/)
+- [Status](https://sofi.statuspage.io)
+
+## API Evangelist rating
+
+**Kin Score 57.4** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 80.8 |
+| Contract quality | 54.4 |
+| Contract governance | 35.6 |
+| Operational transparency | 89.5 |
+| Developer ergonomics | 36.3 |
+| Access clarity | 44.7 |
+
+**Agent readiness 53.6** — agent-native
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | documented (partial credit) |
+| MCP Server | verified |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | verified |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | yes |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 30.7** — Banking & Open Finance
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/sofi-technologies/](https://apis.io/providers/sofi-technologies/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for SoFi Technologies: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/sofi-technologies/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
